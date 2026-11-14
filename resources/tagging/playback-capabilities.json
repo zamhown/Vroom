@@ -1,0 +1,1032 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:playback-capabilities:1",
+  "description": "Playback capabilities: presentation timing and commands, the native mpv settings and requests, external player profiles and online subtitles. Split from host-capabilities.json so playback changes are versioned separately from the tagging contract.",
+  "playback": {
+    "optionsSchema": "playback-options.schema.json",
+    "inspect": "playback.info",
+    "open": "playback.open",
+    "status": "playback.status",
+    "stop": "playback.stop",
+    "preview": "playback.preview",
+    "previewSchema": "playback-preview.schema.json",
+    "presentation": {
+      "controlsIdleMs": 2400,
+      "scrubIntervalMs": 90,
+      "commands": [
+        {
+          "id": "focus",
+          "label": "Player.focus",
+          "keys": [
+            "t"
+          ]
+        },
+        {
+          "id": "fullscreen",
+          "label": "PlayerPage.fullscreen",
+          "keys": [
+            "f"
+          ]
+        },
+        {
+          "id": "jumpBack",
+          "label": "Player.jumpBack",
+          "keys": [
+            "arrowleft",
+            "j"
+          ]
+        },
+        {
+          "id": "jumpForward",
+          "label": "Player.jumpForward",
+          "keys": [
+            "arrowright",
+            "l"
+          ]
+        }
+      ]
+    }
+  },
+  "nativePlayback": {
+    "engine": "mpv",
+    "version": "0.42.0",
+    "schema": "native-playback.schema.json",
+    "groups": [
+      "playback",
+      "audio",
+      "subtitles",
+      "image",
+      "rendering"
+    ],
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "speed": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 8,
+          "default": 1,
+          "x-group": "playback",
+          "x-step": 0.05
+        },
+        "audio-pitch-correction": {
+          "type": "boolean",
+          "default": true,
+          "x-group": "playback"
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200,
+          "default": 80,
+          "x-group": "audio",
+          "x-step": 5
+        },
+        "audio-delay": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 10,
+          "default": 0,
+          "x-group": "audio",
+          "x-step": 0.05
+        },
+        "audio-channels": {
+          "enum": [
+            "auto-safe",
+            "stereo",
+            "mono"
+          ],
+          "default": "auto-safe",
+          "x-group": "audio",
+          "x-labels": [
+            "automatic",
+            "stereo",
+            "mono"
+          ]
+        },
+        "replaygain": {
+          "enum": [
+            "no",
+            "track",
+            "album"
+          ],
+          "default": "no",
+          "x-group": "audio",
+          "x-labels": [
+            "off",
+            "trackGain",
+            "albumGain"
+          ]
+        },
+        "af": {
+          "enum": [
+            "",
+            "lavfi=[dynaudnorm=f=250:g=15]",
+            "lavfi=[acompressor=threshold=0.125:ratio=4:makeup=2]",
+            "lavfi=[equalizer=f=120:t=q:w=1:g=4,equalizer=f=4000:t=q:w=1:g=3]"
+          ],
+          "default": "",
+          "x-group": "audio",
+          "x-labels": [
+            "off",
+            "normalize",
+            "compress",
+            "enhance"
+          ]
+        },
+        "audio-spdif": {
+          "enum": [
+            "",
+            "ac3,dts,eac3,truehd,dts-hd"
+          ],
+          "default": "",
+          "x-group": "audio",
+          "x-labels": [
+            "off",
+            "passthrough"
+          ]
+        },
+        "audio-exclusive": {
+          "type": "boolean",
+          "default": false,
+          "x-group": "audio"
+        },
+        "sub-delay": {
+          "type": "number",
+          "minimum": -120,
+          "maximum": 120,
+          "default": 0,
+          "x-group": "subtitles",
+          "x-step": 0.1
+        },
+        "sub-scale": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 4,
+          "default": 1,
+          "x-group": "subtitles",
+          "x-step": 0.1
+        },
+        "sub-pos": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 150,
+          "default": 100,
+          "x-group": "subtitles",
+          "x-step": 1
+        },
+        "sub-font-size": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 100,
+          "default": 55,
+          "x-group": "subtitles",
+          "x-step": 1
+        },
+        "sub-outline-size": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3,
+          "x-group": "subtitles",
+          "x-step": 0.5
+        },
+        "sub-shadow-offset": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 0,
+          "x-group": "subtitles",
+          "x-step": 0.5
+        },
+        "sub-color": {
+          "enum": [
+            "#FFFFFF",
+            "#FFFF00",
+            "#00FF00"
+          ],
+          "default": "#FFFFFF",
+          "x-group": "subtitles",
+          "x-labels": [
+            "white",
+            "yellow",
+            "green"
+          ]
+        },
+        "sub-ass-override": {
+          "enum": [
+            "yes",
+            "no",
+            "force"
+          ],
+          "default": "yes",
+          "x-group": "subtitles",
+          "x-labels": [
+            "automatic",
+            "originalStyle",
+            "forceStyle"
+          ]
+        },
+        "video-rotate": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ],
+          "default": 0,
+          "x-group": "image"
+        },
+        "video-zoom": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 0.1
+        },
+        "video-pan-x": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 0.05
+        },
+        "video-pan-y": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 0.05
+        },
+        "video-aspect-override": {
+          "enum": [
+            "no",
+            1.333333,
+            1.777778,
+            2.35
+          ],
+          "default": "no",
+          "x-group": "image",
+          "x-labels": [
+            "originalAspect",
+            "aspect43",
+            "aspect169",
+            "aspect235"
+          ]
+        },
+        "panscan": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 0.1
+        },
+        "brightness": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 1
+        },
+        "contrast": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 1
+        },
+        "saturation": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 1
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 1
+        },
+        "hue": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100,
+          "default": 0,
+          "x-group": "image",
+          "x-step": 1
+        },
+        "vf": {
+          "enum": [
+            "",
+            "hflip",
+            "vflip"
+          ],
+          "default": "",
+          "x-group": "image",
+          "x-labels": [
+            "off",
+            "mirror",
+            "flip"
+          ]
+        },
+        "deinterlace": {
+          "type": "boolean",
+          "default": false,
+          "x-group": "image"
+        },
+        "hwdec": {
+          "enum": [
+            "auto-safe",
+            "no",
+            "auto-copy"
+          ],
+          "default": "auto-safe",
+          "x-group": "rendering",
+          "x-labels": [
+            "automatic",
+            "software",
+            "copyBack"
+          ]
+        },
+        "video-sync": {
+          "enum": [
+            "audio",
+            "display-resample",
+            "display-vdrop"
+          ],
+          "default": "audio",
+          "x-group": "rendering",
+          "x-labels": [
+            "audioClock",
+            "displayClock",
+            "displayDrop"
+          ]
+        },
+        "scale": {
+          "enum": [
+            "bilinear",
+            "bicubic",
+            "spline36",
+            "lanczos",
+            "ewa_lanczossharp"
+          ],
+          "default": "lanczos",
+          "x-group": "rendering"
+        },
+        "dscale": {
+          "enum": [
+            "bilinear",
+            "mitchell",
+            "lanczos"
+          ],
+          "default": "mitchell",
+          "x-group": "rendering"
+        },
+        "deband": {
+          "type": "boolean",
+          "default": false,
+          "x-group": "rendering"
+        },
+        "tone-mapping": {
+          "enum": [
+            "auto",
+            "bt.2390",
+            "hable",
+            "reinhard",
+            "clip"
+          ],
+          "default": "auto",
+          "x-group": "rendering"
+        }
+      }
+    },
+    "requests": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.capabilities"
+            },
+            "args": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.open"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "filmId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "position": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 315360000
+                },
+                "settings": {
+                  "$ref": "#/nativePlayback/settings"
+                },
+                "partId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "filmId",
+                "position",
+                "settings"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.fullscreen"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "enabled": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "sessionId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.status"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                }
+              },
+              "required": [
+                "sessionId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.stop"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                }
+              },
+              "required": [
+                "sessionId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.surface"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "bounds": {
+                  "type": "object",
+                  "properties": {
+                    "left": {
+                      "type": "number",
+                      "minimum": -100000,
+                      "maximum": 100000
+                    },
+                    "top": {
+                      "type": "number",
+                      "minimum": -100000,
+                      "maximum": 100000
+                    },
+                    "width": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 65536
+                    },
+                    "height": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 65536
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0.5,
+                      "maximum": 8
+                    },
+                    "visible": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "top",
+                    "width",
+                    "height",
+                    "scale",
+                    "visible"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "sessionId",
+                "bounds"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.settings"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "values": {
+                  "$ref": "#/nativePlayback/settings"
+                }
+              },
+              "required": [
+                "sessionId",
+                "values"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.pause"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "paused": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "sessionId",
+                "paused"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.seek"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "position": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 315360000
+                },
+                "precision": {
+                  "enum": [
+                    "exact",
+                    "keyframe"
+                  ],
+                  "default": "exact"
+                }
+              },
+              "required": [
+                "sessionId",
+                "position"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.frame"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "direction": {
+                  "enum": [
+                    -1,
+                    1
+                  ]
+                }
+              },
+              "required": [
+                "sessionId",
+                "direction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.chapter"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "index": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "sessionId",
+                "index"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.track"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "kind": {
+                  "enum": [
+                    "aid",
+                    "sid",
+                    "secondary-sid",
+                    "vid"
+                  ]
+                },
+                "track": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "auto",
+                        "no"
+                      ]
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "sessionId",
+                "kind",
+                "track"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.device"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "device": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sessionId",
+                "device"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.loop"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "start": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 315360000
+                },
+                "end": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 315360000
+                }
+              },
+              "required": [
+                "sessionId",
+                "enabled",
+                "start",
+                "end"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.subtitle"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "data": {
+                  "type": "string",
+                  "maxLength": 6666672
+                }
+              },
+              "required": [
+                "sessionId",
+                "name",
+                "data"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "native.screenshot"
+            },
+            "args": {
+              "type": "object",
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "subtitles": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "sessionId",
+                "subtitles"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "method",
+            "args"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "externalPlayers": {
+    "profiles": [
+      {
+        "id": "mpv",
+        "name": "mpv",
+        "platforms": [
+          "windows",
+          "macos"
+        ],
+        "tracksProgress": true
+      },
+      {
+        "id": "vlc",
+        "name": "VLC",
+        "platforms": [
+          "windows",
+          "macos"
+        ],
+        "tracksProgress": false
+      },
+      {
+        "id": "iina",
+        "name": "IINA",
+        "platforms": [
+          "macos"
+        ],
+        "tracksProgress": false
+      },
+      {
+        "id": "potplayer",
+        "name": "PotPlayer",
+        "platforms": [
+          "windows"
+        ],
+        "tracksProgress": false
+      }
+    ],
+    "commands": [
+      "external.players",
+      "external.open"
+    ]
+  },
+  "onlineSubtitles": {
+    "schema": "online-subtitles.schema.json",
+    "provider": "opensubtitles.com",
+    "maximumBytes": 5000000,
+    "storedFormat": "srt",
+    "credentials": "host-system-secure-store",
+    "automaticDownloads": false
+  }
+}

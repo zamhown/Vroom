@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vroom.local/schemas/playback-preview.schema.json",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "mediaRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "position": {
+      "type": "number",
+      "minimum": 0
+    },
+    "partId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "id",
+    "mediaRevision",
+    "position"
+  ],
+  "additionalProperties": false
+}

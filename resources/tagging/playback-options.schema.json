@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vroom.local/schemas/playback-options.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "audioStream": { "type": ["integer", "null"], "minimum": 0 },
+    "audioDelay": { "type": "number", "minimum": -5, "maximum": 5 },
+    "channels": { "enum": ["source", "mono", "stereo"] },
+    "deinterlace": { "type": "boolean" }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:media-identity:1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "media.identity.prepare"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "filmId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "fileId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "filmId",
+            "fileId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "media.identity.preview"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "filmId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "fileId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32768
+            }
+          },
+          "required": [
+            "filmId",
+            "fileId",
+            "revision",
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "media.identity.commit"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "previewToken": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "previewToken"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

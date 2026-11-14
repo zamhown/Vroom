@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Vroom.Tests" />
+    <PackageReference Include="JsonSchema.Net" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="LLamaSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource
+      Include="../../resources/localization/manifest.json"
+      LogicalName="Vroom.Localization.manifest.json"
+    />
+    <EmbeddedResource
+      Include="../../resources/localization/language-pack.schema.json"
+      LogicalName="Vroom.Localization.language-pack.schema.json"
+    />
+    <EmbeddedResource
+      Include="../../resources/localization/packs/*.json"
+      LogicalName="Vroom.Localization.packs.%(Filename)%(Extension)"
+    />
+    <Content
+      Include="../../resources/localization/**/*.json"
+      Link="resources/localization/%(RecursiveDir)%(Filename)%(Extension)"
+      CopyToOutputDirectory="PreserveNewest"
+    />
+    <EmbeddedResource
+      Include="../../resources/tagging/*"
+      Link="TaggingResources/%(Filename)%(Extension)"
+      LogicalName="Vroom.Tagging.%(Filename)%(Extension)"
+    />
+    <Content
+      Include="../../resources/tagging/*"
+      Link="resources/tagging/%(Filename)%(Extension)"
+      CopyToOutputDirectory="PreserveNewest"
+    />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:tag-bundle:3",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "tag-bundle"
+    },
+    "formatVersion": {
+      "const": 3
+    },
+    "definitions": {
+      "$ref": "urn:vroom:schema:tag-definitions:3"
+    },
+    "annotations": {
+      "$ref": "urn:vroom:schema:annotations:3"
+    }
+  },
+  "required": [
+    "kind",
+    "formatVersion",
+    "definitions",
+    "annotations"
+  ],
+  "additionalProperties": false
+}

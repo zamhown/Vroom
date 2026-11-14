@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:annotations:3",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "annotations"
+    },
+    "formatVersion": {
+      "const": 3
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "subject": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "film",
+                  "term"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "whole",
+                  "point",
+                  "interval"
+                ]
+              },
+              "scopeId": {
+                "type": "string"
+              },
+              "startUs": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              },
+              "endUs": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              },
+              "mediaRevision": {
+                "type": "string"
+              },
+              "pts": {
+                "type": "string"
+              },
+              "timeBase": {
+                "type": "string"
+              },
+              "streamIndex": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "partId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          "tagKey": {
+            "type": "string"
+          },
+          "operation": {
+            "enum": [
+              "set",
+              "clear"
+            ]
+          },
+          "value": {},
+          "note": {
+            "type": "string"
+          },
+          "definitionHash": {
+            "type": "string"
+          },
+          "valueContractHash": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "editPolicy": {
+            "type": "object"
+          },
+          "modified": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "subject",
+          "scope",
+          "tagKey",
+          "operation",
+          "value",
+          "definitionHash",
+          "valueContractHash",
+          "origin"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "generation": {
+      "type": "integer"
+    },
+    "mode": {
+      "enum": [
+        "current",
+        "archive"
+      ]
+    },
+    "archives": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "terms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/term"
+      }
+    },
+    "entityIdentities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "externalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "termId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "namespace",
+          "externalId",
+          "termId"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "kind",
+    "formatVersion",
+    "media",
+    "records"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+    },
+    "term": {
+      "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/term"
+    }
+  }
+}

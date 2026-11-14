@@ -1,0 +1,806 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:query:3",
+  "type": "object",
+  "properties": {
+    "where": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/predicate"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "libraryId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vocabulary": {
+      "type": "string"
+    },
+    "search": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "locale": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ignoreDefaultQuery": {
+      "description": "When true, catalogPolicy.defaultQuery is not applied (for example to include films the default query hides).",
+      "type": "boolean"
+    },
+    "scope": {
+      "description": "Host playback scope: films to resume, recently played or recently added. Ordering defaults to the scope when orderBy is empty.",
+      "enum": ["continue-watching", "recently-played", "recently-added"]
+    },
+    "orderBy": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "direction": {
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "value",
+              "label",
+              "min",
+              "max"
+            ]
+          },
+          "nulls": {
+            "enum": [
+              "first",
+              "last"
+            ]
+          }
+        },
+        "required": [
+          "tag"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "groupBy": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mode": {
+            "enum": [
+              "value",
+              "member",
+              "facet"
+            ]
+          },
+          "facet": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tag"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [],
+  "additionalProperties": false,
+  "$defs": {
+    "predicate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "and"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/predicate"
+              },
+              "maxItems": 100
+            }
+          },
+          "required": [
+            "op",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "or"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/predicate"
+              },
+              "maxItems": 100
+            }
+          },
+          "required": [
+            "op",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not"
+            },
+            "arg": {
+              "$ref": "#/$defs/predicate"
+            }
+          },
+          "required": [
+            "op",
+            "arg"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "exists"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "required": [
+            "op",
+            "tag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "missing"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "required": [
+            "op",
+            "tag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "eq"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {}
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "ne"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {}
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "gt"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "gte"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "lt"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "lte"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "contains"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "has"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "in"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "values": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 500,
+              "items": {}
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "related"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "where": {
+              "$ref": "#/$defs/predicate"
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "where"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "facet"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "facet": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "selection": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "facet",
+            "selection"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "scoped"
+            },
+            "scope": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "whole",
+                    "point",
+                    "interval",
+                    "any"
+                  ]
+                },
+                "startUs": {
+                  "type": "string",
+                  "pattern": "^[0-9]{1,16}$"
+                },
+                "endUs": {
+                  "type": "string",
+                  "pattern": "^[0-9]{1,16}$"
+                },
+                "match": {
+                  "enum": [
+                    "overlaps",
+                    "contains"
+                  ]
+                },
+                "partId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            "quantifier": {
+              "enum": [
+                "any",
+                "all",
+                "none"
+              ]
+            },
+            "where": {
+              "$ref": "#/$defs/predicate"
+            }
+          },
+          "required": [
+            "op",
+            "scope",
+            "quantifier",
+            "where"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "like"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "between"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": [
+                  "number",
+                  "string"
+                ]
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not-between"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": [
+                  "number",
+                  "string"
+                ]
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not-in"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "values": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 500,
+              "items": {}
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not-like"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "glob"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not-glob"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "starts-with"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "ends-with"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "is"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {}
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "is-not"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {}
+          },
+          "required": [
+            "op",
+            "tag",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

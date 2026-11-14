@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vroom.local/schemas/native-playback-command.schema.json",
+  "$ref": "urn:vroom:schema:playback-capabilities:1#/nativePlayback/requests"
+}

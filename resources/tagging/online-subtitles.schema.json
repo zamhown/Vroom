@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:online-subtitles:1",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.account"
+        },
+        "args": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.configure"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "apiKey": {
+              "type": "string",
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "apiKey"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.signIn"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "password": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "username",
+            "password"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.signOut"
+        },
+        "args": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.search"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "filmId": {
+              "$ref": "#/$defs/id"
+            },
+            "partId": {
+              "$ref": "#/$defs/id"
+            },
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "language": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "filmId",
+            "query"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.download"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "$ref": "#/$defs/id"
+            },
+            "fileId": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "ticket",
+            "fileId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "subtitles.read"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "filmId": {
+              "$ref": "#/$defs/id"
+            },
+            "partId": {
+              "$ref": "#/$defs/id"
+            },
+            "fileId": {
+              "$ref": "#/$defs/id"
+            }
+          },
+          "required": [
+            "filmId",
+            "partId",
+            "fileId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "method",
+        "args"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

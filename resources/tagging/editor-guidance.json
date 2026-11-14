@@ -1,0 +1,396 @@
+{
+  "version": 1,
+  "description": {
+    "zh-CN": "配置编辑器的通用帮助、控件操作提示和位置名称。不包含具体影片标签规则。",
+    "en": "Generic editor help, control instructions and placement names; no film-tag-specific rules."
+  },
+  "fields": {
+    "enabled": {
+      "label": {
+        "zh-CN": "配置状态",
+        "en": "Definition status"
+      },
+      "description": {
+        "zh-CN": "停用后，这条标签声明不再参与录入、展示和筛选；历史标注仍然保留。发布变更后生效。",
+        "en": "Disabling excludes this definition from input, display and filtering. Annotation history is retained. Publish to apply."
+      }
+    },
+    "parents": {
+      "label": {
+        "zh-CN": "声明层级",
+        "en": "Definition hierarchy"
+      },
+      "description": {
+        "zh-CN": "组织字段声明的配置结构，不表示具体值之间的关系。",
+        "en": "Organizes field declarations, not relationships between value entities."
+      }
+    },
+    "targets": {
+      "label": {
+        "zh-CN": "可标注对象",
+        "en": "Subjects"
+      },
+      "description": {
+        "zh-CN": "独立选择整部影片、标签值、影片时间点或影片区间，可多选。字段声明本身不能被标注。",
+        "en": "Choose whole films, value entities, film time points or film intervals independently. Field declarations cannot be annotated."
+      },
+      "schema": {
+        "type": "array",
+        "items": {
+          "enum": [
+            "film-whole",
+            "term-whole",
+            "film-point",
+            "film-interval"
+          ]
+        },
+        "minItems": 1,
+        "uniqueItems": true
+      }
+    },
+    "input": {
+      "label": {
+        "zh-CN": "录入组件",
+        "en": "Input control"
+      },
+      "description": {
+        "zh-CN": "决定用户录入这个标签的值时使用的控件。",
+        "en": "The control used to enter a value for this tag."
+      }
+    },
+    "input.props": {
+      "label": {
+        "zh-CN": "常规设置",
+        "en": "Regular settings"
+      },
+      "description": {
+        "zh-CN": "应用于普通尺寸的录入控件。",
+        "en": "Settings for the regular input control."
+      }
+    },
+    "input.compact": {
+      "label": {
+        "zh-CN": "紧凑设置",
+        "en": "Compact settings"
+      },
+      "description": {
+        "zh-CN": "窄区域使用的设置，覆盖常规设置中的同名属性。",
+        "en": "Overrides for compact input controls."
+      }
+    },
+    "value": {
+      "label": {
+        "zh-CN": "取值规则",
+        "en": "Value rules"
+      },
+      "description": {
+        "zh-CN": "定义可保存的数据类型、范围和数量；它与控件外观是两回事。",
+        "en": "Defines the data type, range and number of values that can be saved, independently of appearance."
+      }
+    },
+    "value.semanticVersion": {
+      "label": {
+        "zh-CN": "取值语义版本",
+        "en": "Value semantics version"
+      },
+      "description": {
+        "zh-CN": "仅在取值含义发生不兼容变化时增加；普通文案或外观调整无需修改。",
+        "en": "Increase only for incompatible changes to value meaning, not copy or appearance changes."
+      }
+    },
+    "value.schema": {
+      "label": {
+        "zh-CN": "数据约束",
+        "en": "Data constraints"
+      },
+      "description": {
+        "zh-CN": "保存时校验这些约束。与新规则不相容的旧标注保留在历史中。",
+        "en": "Values are validated when saved. Incompatible old annotations stay in history."
+      }
+    },
+    "writes": {
+      "label": {
+        "zh-CN": "修改与自动填入",
+        "en": "Editing and automation"
+      },
+      "description": {
+        "zh-CN": "控制手动修改，以及自动任务遇到已有值时的处理。",
+        "en": "Controls manual edits and how automatic tasks handle existing values."
+      }
+    },
+    "writes.manual": {
+      "label": {
+        "zh-CN": "允许手动修改",
+        "en": "Allow manual editing"
+      },
+      "description": {
+        "zh-CN": "关闭后，影片表单中只展示结果；自动任务仍可按自己的规则更新。",
+        "en": "When disabled, film forms show the value without editing. Automation follows its own rules."
+      },
+      "schema": {
+        "type": "boolean"
+      }
+    },
+    "writes.manualClearBlocksAutomatic": {
+      "label": {
+        "zh-CN": "清空后阻止自动填入",
+        "en": "Block automatic refill after clearing"
+      },
+      "description": {
+        "zh-CN": "开启后，手动清空的值不会被扫描或资料补全立即填回。",
+        "en": "Prevents scans and enrichment from refilling a manually cleared value."
+      },
+      "schema": {
+        "type": "boolean"
+      }
+    },
+    "writes.sourcePriority": {
+      "label": {
+        "zh-CN": "数据来源优先级",
+        "en": "Source priority"
+      },
+      "description": {
+        "zh-CN": "仅对采用“按来源优先级”写入的规则生效，越靠前优先级越高。",
+        "en": "Applies to rules using source priority. Earlier sources take precedence."
+      },
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "group": {
+      "label": {
+        "zh-CN": "配置分组",
+        "en": "Configuration group"
+      },
+      "description": {
+        "zh-CN": "组织声明的展示分组，不可标注。",
+        "en": "Presentation grouping for declarations; not an annotation subject."
+      }
+    },
+    "subjectVocabularies": {
+      "label": {
+        "zh-CN": "适用值集合",
+        "en": "Subject vocabularies"
+      },
+      "description": {
+        "zh-CN": "此字段可标注哪些集合里的具体值。留空表示所有值集合。",
+        "en": "Which value collections this field applies to. Empty means all."
+      }
+    },
+    "input.component": {
+      "label": {
+        "zh-CN": "组件类型",
+        "en": "Component type"
+      },
+      "description": {
+        "zh-CN": "选择组件后，常规设置与紧凑设置只提供该组件支持的参数。",
+        "en": "Available standard and compact settings follow the selected component."
+      }
+    },
+    "initialization.*.args": {
+      "label": {
+        "zh-CN": "执行参数",
+        "en": "Executor parameters"
+      },
+      "description": {
+        "zh-CN": "参数随执行方式切换；不适用的已有参数会保留并停用。",
+        "en": "Parameters follow the executor. Existing inactive parameters are retained."
+      }
+    },
+    "initialization.*.executor": {
+      "label": {
+        "zh-CN": "执行方式",
+        "en": "Executor"
+      },
+      "description": {
+        "zh-CN": "选择执行方式后，在关联设置中填写对应参数。",
+        "en": "Choose an executor, then configure its related parameters."
+      }
+    },
+    "enrichment.*.source": {
+      "label": {
+        "zh-CN": "补全来源",
+        "en": "Enrichment source"
+      },
+      "description": {
+        "zh-CN": "选择来源后，“来源字段”仅列出该来源提供的字段。",
+        "en": "Available fields follow the selected source."
+      }
+    },
+    "enrichment.*.field": {
+      "label": {
+        "zh-CN": "来源字段",
+        "en": "Source field"
+      },
+      "description": {
+        "zh-CN": "从所选来源的解析结果中选择字段。",
+        "en": "Choose a field from the selected source’s parsed results."
+      }
+    },
+    "automation.*.args": {
+      "label": {
+        "zh-CN": "执行参数",
+        "en": "Executor parameters"
+      },
+      "description": {
+        "zh-CN": "参数随执行方式切换；不适用的已有参数会保留并停用。",
+        "en": "Parameters follow the executor. Existing inactive parameters are retained."
+      }
+    },
+    "automation.*.executor": {
+      "label": {
+        "zh-CN": "执行方式",
+        "en": "Executor"
+      },
+      "description": {
+        "zh-CN": "选择执行方式后，在关联设置中填写对应参数。",
+        "en": "Choose an executor, then configure its related parameters."
+      }
+    },
+    "value.vocabulary": {
+      "label": {
+        "zh-CN": "可枚举值集合",
+        "en": "Vocabulary"
+      },
+      "description": {
+        "zh-CN": "选项来自独立的值实体，每个值都可有自己的资料和关系。",
+        "en": "Options are independent entities with their own attributes and relationships."
+      }
+    },
+    "writes.createTerms": {
+      "label": {
+        "zh-CN": "允许新建值",
+        "en": "Allow new values"
+      },
+      "description": {
+        "zh-CN": "存在此配置时允许新增值；移除此配置即可禁止新增。",
+        "en": "The presence of this configuration allows creating values. Remove it to disable creation."
+      }
+    },
+    "writes.createTerms.namespace": {
+      "label": {
+        "zh-CN": "新值标识前缀",
+        "en": "New value ID prefix"
+      },
+      "description": {
+        "zh-CN": "仅用于新值的稳定标识，不是显示名称。",
+        "en": "Used for stable IDs of new values, not display names."
+      }
+    }
+  },
+  "components": {
+    "text@1": {
+      "zh-CN": "直接输入文本；留空表示没有输入。",
+      "en": "Enter text directly. An empty field has no input."
+    },
+    "textarea@1": {
+      "zh-CN": "可以输入多行文本。",
+      "en": "Enter multiple lines of text."
+    },
+    "toggle@1": {
+      "zh-CN": "开启表示“是”，关闭表示“否”；清空标注表示“尚未设置”，与“否”不同。",
+      "en": "On means yes; off means no. Clearing an annotation means unset, which is different from no."
+    },
+    "number@1": {
+      "zh-CN": "输入数值，也可以使用加减按钮。数值范围由取值规则决定。",
+      "en": "Enter a number or use the step buttons. Value rules define the allowed range."
+    },
+    "slider@1": {
+      "zh-CN": "拖动滑块选择数值；聚焦后可使用方向键微调。",
+      "en": "Drag to choose a number; use arrow keys when focused."
+    },
+    "rating@1": {
+      "zh-CN": "点击或拖动选择分值；聚焦后可用方向键逐档调整。",
+      "en": "Click or drag to choose a score; use arrow keys when focused."
+    },
+    "select@1": {
+      "zh-CN": "搜索并选择一项。允许新增时，可在搜索结果中创建选项。",
+      "en": "Search and select one item. When creation is enabled, create an item from the results."
+    },
+    "multi-select@1": {
+      "zh-CN": "可以选择多项，点击已选项的关闭按钮移除。",
+      "en": "Select multiple items; remove one using its close button."
+    },
+    "asset@1": {
+      "zh-CN": "填写图片位置或导入图片；预览不会导入文件。",
+      "en": "Enter an image location or import an image. Preview does not import files."
+    },
+    "date@1": {
+      "zh-CN": "输入年、月、日或打开日历选择；未知日期保持未设置。",
+      "en": "Enter a year, month and day or choose from the calendar. Leave unknown dates unset."
+    }
+  },
+  "slots": {
+    "film.details.primary": {
+      "zh-CN": "影片信息 · 标题下方",
+      "en": "Film details · below title"
+    },
+    "film.details.fields": {
+      "zh-CN": "影片信息 · 属性编辑",
+      "en": "Film details · editable properties"
+    },
+    "film.details.facts": {
+      "zh-CN": "影片信息 · 媒体信息",
+      "en": "Film details · media information"
+    },
+    "player.annotations.primary": {
+      "zh-CN": "播放侧栏 · 顶部属性",
+      "en": "Player sidebar · primary properties"
+    },
+    "player.annotations.fields": {
+      "zh-CN": "播放侧栏 · 标注表单",
+      "en": "Player sidebar · annotation form"
+    },
+    "player.annotation.value": {
+      "zh-CN": "已保存标注 · 数值",
+      "en": "Saved annotation · value"
+    },
+    "film.card.meta.trailing": {
+      "zh-CN": "影片卡片 · 底部右侧",
+      "en": "Film card · lower right"
+    },
+    "film.card.meta.leading": {
+      "zh-CN": "影片卡片 · 底部左侧",
+      "en": "Film card · lower left"
+    },
+    "film.card.overlay.top-left": {
+      "zh-CN": "影片海报 · 左上角",
+      "en": "Film poster · top left"
+    },
+    "film.card.overlay.top-right": {
+      "zh-CN": "影片海报 · 右上角",
+      "en": "Film poster · top right"
+    },
+    "film.card.overlay.bottom": {
+      "zh-CN": "影片海报 · 底部",
+      "en": "Film poster · bottom"
+    },
+    "film.card.title": {
+      "zh-CN": "影片卡片 · 标题",
+      "en": "Film card · title"
+    },
+    "film.table.columns": {
+      "zh-CN": "影片列表 · 表格列",
+      "en": "Film list · column"
+    },
+    "nav.after-all-films": {
+      "zh-CN": "导航栏 · 全部影片下方",
+      "en": "Navigation · below all films"
+    },
+    "player.queue.item.trailing": {
+      "zh-CN": "播放队列 · 影片右侧",
+      "en": "Playback queue · item trailing"
+    },
+    "player.toolbar.extensions": {
+      "zh-CN": "播放器 · 控制栏",
+      "en": "Player · toolbar"
+    },
+    "term.details.fields": {
+      "zh-CN": "标签值资料 · 属性",
+      "en": "Value details · attributes"
+    }
+  }
+}

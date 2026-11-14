@@ -1,0 +1,1309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:tag-definitions:3",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "kind": {
+      "const": "tag-definitions"
+    },
+    "formatVersion": {
+      "const": 3
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "requires": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "definitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/definition"
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "urn:vroom:schema:capabilities:3#/$defs/parseRule"
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "urn:vroom:schema:capabilities:3#/$defs/source"
+      }
+    },
+    "catalogPolicy": {
+      "type": "object",
+      "description": "Catalog-wide query policy. defaultSort uses the same shape as a query.schema.json orderBy item.",
+      "properties": {
+        "defaultQuery": {
+          "type": "object"
+        },
+        "search": {
+          "type": "object"
+        },
+        "dedup": {
+          "type": "object"
+        },
+        "defaultSort": {
+          "type": "object",
+          "required": [
+            "tag"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "direction": {
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "nulls": {
+              "enum": [
+                "first",
+                "last"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "value",
+                "label",
+                "min",
+                "max"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "i18n": {
+      "type": "object",
+      "properties": {
+        "defaultLocale": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$"
+        },
+        "messages": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "defaultLocale",
+        "messages"
+      ],
+      "additionalProperties": false
+    },
+    "eventBindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "rule": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "required": [
+          "tag",
+          "rule"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "surfaceBindings": {
+          "type": "object"
+        },
+        "actions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "#/$defs/text"
+              },
+              "icon": {
+                "type": "string",
+                "format": "icon",
+                "enum": [
+                  "Star",
+                  "StarFilled",
+                  "Clock",
+                  "Tag",
+                  "Folder",
+                  "Play",
+                  "Info",
+                  "Save",
+                  "Close",
+                  "Undo",
+                  "Redo",
+                  "Bookmark",
+                  "Video",
+                  "Camera",
+                  "Collection",
+                  "Filter",
+                  "List",
+                  "Grid",
+                  "Checkmark",
+                  "Edit",
+                  "Settings",
+                  "Search",
+                  "Refresh",
+                  "Translate",
+                  "TimePoint",
+                  "TimeRange"
+                ]
+              },
+              "presentation": {
+                "enum": [
+                  "label",
+                  "icon"
+                ],
+                "default": "label"
+              },
+              "appearance": {
+                "enum": [
+                  "default",
+                  "quiet"
+                ],
+                "default": "default"
+              }
+            }
+          }
+        },
+        "identity": {
+          "type": "object",
+          "description": "Film identity: expressions over the effective annotation projection and media facts.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+              },
+              "tabTitle": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+              },
+              "primaryImage": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+              },
+              "primaryImagePresentation": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression",
+                "description": "Evaluated only when primaryImage resolves; may also read host-capabilities primaryImageFacts (image.width, image.height, image.aspectRatio). The result is a host-capabilities $defs/imagePresentation naming an imagePresentations entry; any other result shows the whole image."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "naming": {
+          "type": "object"
+        },
+        "agentHints": {
+          "type": "object"
+        },
+        "layouts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "surface": {
+                "type": "string"
+              },
+              "subjectKind": {
+                "type": "string"
+              },
+              "title": {
+                "$ref": "#/$defs/text"
+              },
+              "root": {
+                "$ref": "#/$defs/node"
+              }
+            },
+            "required": [
+              "surface",
+              "root"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "placementOrder": {
+          "type": "object",
+          "description": "Member order per region: definition keys in display order. Fields placed in a region but not listed follow in key order.",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "vocabularies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "description": {
+            "$ref": "#/$defs/text"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/term"
+            }
+          }
+        },
+        "required": [
+          "label",
+          "enabled",
+          "items"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "groups": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "description": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "required": [
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "kind",
+    "formatVersion",
+    "package",
+    "definitions"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Localized text: locale tag to text. Readers use the requested locale, then its language, then the package i18n.defaultLocale, then the first entry.",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$",
+            "not": {
+              "enum": [
+                "message",
+                "args"
+              ]
+            }
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            },
+            "args": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "component": {
+      "oneOf": [
+        {
+          "$ref": "urn:vroom:schema:capabilities:3#/$defs/input"
+        },
+        {
+          "$ref": "urn:vroom:schema:capabilities:3#/$defs/display"
+        }
+      ]
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "event": {
+          "type": "string"
+        },
+        "executor": {
+          "enum": [
+            "value.constant@1",
+            "fact.copy@1",
+            "expression@1",
+            "regex.extract@1",
+            "dictionary.match@1",
+            "path.facet-alias-match@1",
+            "value.match@1"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "apply": {
+          "enum": [
+            "if-unset",
+            "replace-same-source",
+            "prefer-source",
+            "union",
+            "unless-locked",
+            "suggest-only"
+          ]
+        },
+        "when": {
+          "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+        }
+      },
+      "required": [
+        "id",
+        "event",
+        "executor",
+        "args",
+        "apply"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "value.constant@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.value.constant@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "fact.copy@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.fact.copy@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "expression@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.expression@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "regex.extract@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.regex.extract@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "dictionary.match@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.dictionary.match@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "path.facet-alias-match@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.path.facet-alias-match@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executor": {
+                "const": "value.match@1"
+              }
+            },
+            "required": [
+              "executor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/executors.value.match@1"
+              },
+              "event": {
+                "enum": [
+                  "film.discovered",
+                  "media.probed"
+                ]
+              },
+              "apply": {
+                "enum": [
+                  "if-unset",
+                  "replace-same-source"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "stack",
+            "grid",
+            "section",
+            "disclosure",
+            "identity",
+            "asset",
+            "value",
+            "field-set",
+            "form",
+            "collection",
+            "table",
+            "action-bar",
+            "menu",
+            "scope-picker",
+            "time-range",
+            "timeline",
+            "annotation-list",
+            "candidates",
+            "provenance",
+            "status",
+            "ribbon",
+            "ribbon-tab",
+            "ribbon-group",
+            "control",
+            "activity-feed"
+          ]
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "gap": {
+          "enum": [
+            "compact",
+            "field",
+            "section"
+          ]
+        },
+        "region": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        },
+        "tracks": {
+          "type": "object"
+        },
+        "fieldPicker": {
+          "type": "object"
+        },
+        "visibleWhen": {
+          "type": "object"
+        },
+        "disabledWhen": {
+          "type": "object"
+        },
+        "query": {
+          "type": "object"
+        },
+        "states": {
+          "type": "object"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "binding": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "commitMode": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "immediate",
+            "on-submit"
+          ],
+          "description": "auto/immediate persist edits through the serialized autosave history; on-submit retains an explicit form.submit boundary. immediate also uses the compact inline field layout."
+        },
+        "actionsPlacement": {
+          "enum": [
+            "below",
+            "inline-end"
+          ],
+          "default": "below",
+          "description": "Place field-set/form actions below its fields, or at the trailing edge of the same row."
+        },
+        "mode": {
+          "type": "string"
+        },
+        "stateKey": {
+          "type": "string"
+        },
+        "capture": {
+          "type": "string"
+        },
+        "itemLayout": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "activity": {
+          "$ref": "urn:vroom:schema:capabilities:3#/$defs/activityFeed"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ribbon"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "title",
+              "children"
+            ],
+            "properties": {
+              "children": {
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "ribbon-tab"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ribbon-tab"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "title",
+              "children"
+            ],
+            "properties": {
+              "children": {
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "ribbon-group"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ribbon-group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "title",
+              "children"
+            ],
+            "properties": {
+              "children": {
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "action-bar",
+                        "control"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "control"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "binding"
+            ],
+            "properties": {
+              "binding": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/layoutControl"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "children"
+                  ]
+                },
+                {
+                  "required": [
+                    "actions"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "activity-feed"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "activity"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "children"
+                  ]
+                },
+                {
+                  "required": [
+                    "actions"
+                  ]
+                },
+                {
+                  "required": [
+                    "visibleWhen"
+                  ]
+                },
+                {
+                  "required": [
+                    "disabledWhen"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9_-]+)+$",
+          "maxLength": 160
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "film-whole",
+              "term-whole",
+              "film-point",
+              "film-interval"
+            ]
+          },
+          "description": "Independent annotation subjects: whole film, enumerable value, film time point, film interval."
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "cardinality": {
+              "enum": [
+                "one",
+                "many"
+              ]
+            },
+            "schema": {
+              "type": "object"
+            },
+            "semanticVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "unit": {
+              "type": "string"
+            },
+            "default": {
+              "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression",
+              "description": "Read-time default evaluated over media facts (for example {\"literal\": false} or {\"fact\": \"file.path\"}). It is projected for films without an annotation and never written as an annotation. A field with writes.manual=false and no rules is derived and always shows this value."
+            },
+            "vocabulary": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Value collection of an enumerable field. Values are stable {\"term\": id} references to terms of this collection; schema must then describe that reference object."
+            }
+          },
+          "required": [
+            "cardinality",
+            "schema",
+            "semanticVersion"
+          ],
+          "additionalProperties": false,
+          "description": "The authoritative value contract. Select the value type and cardinality before choosing a compatible input component. Input changes MUST NOT mutate this contract."
+        },
+        "input": {
+          "$ref": "urn:vroom:schema:capabilities:3#/$defs/input"
+        },
+        "display": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "urn:vroom:schema:capabilities:3#/$defs/display"
+          }
+        },
+        "placements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "slot": {
+                "type": "string"
+              },
+              "view": {
+                "type": "string"
+              },
+              "mode": {
+                "enum": [
+                  "edit",
+                  "display",
+                  "navigate"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "slot",
+              "view",
+              "mode"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "facets": {
+          "type": "object"
+        },
+        "navigation": {
+          "type": "object"
+        },
+        "query": {
+          "$ref": "#/$defs/queryFeatures"
+        },
+        "writes": {
+          "type": "object",
+          "properties": {
+            "manual": {
+              "type": "boolean"
+            },
+            "manualClearBlocksAutomatic": {
+              "type": "boolean"
+            },
+            "sourcePriority": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "createTerms": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "description": "Allows writers (people, suggest-only rules and sources) to create new terms in the field's collection."
+            }
+          },
+          "additionalProperties": false
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "initialization": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "automation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "enrichment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "apply": {
+                "enum": [
+                  "if-unset",
+                  "replace-same-source",
+                  "prefer-source",
+                  "union",
+                  "unless-locked",
+                  "suggest-only"
+                ]
+              },
+              "transform": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+              },
+              "entities": {
+                "type": "object",
+                "properties": {
+                  "namespace": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "identity": {
+                    "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+                  },
+                  "label": {
+                    "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "urn:vroom:schema:capabilities:3#/$defs/expression"
+                    }
+                  }
+                },
+                "required": [
+                  "namespace",
+                  "identity",
+                  "label"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "source",
+              "field",
+              "apply"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "group": {
+          "type": "string"
+        },
+        "subjectVocabularies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "enrichmentPolicy": {
+          "type": "object",
+          "properties": {
+            "minIndependentSources": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "key",
+        "revision",
+        "enabled",
+        "label",
+        "parents",
+        "targets",
+        "value",
+        "input",
+        "placements"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "properties": {
+                  "component": {
+                    "const": "rating@1"
+                  }
+                },
+                "required": [
+                  "component"
+                ]
+              }
+            },
+            "required": [
+              "input"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/valueContract.rating@1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "properties": {
+                  "component": {
+                    "const": "date@1"
+                  }
+                },
+                "required": [
+                  "component"
+                ]
+              }
+            },
+            "required": [
+              "input"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "urn:vroom:schema:capabilities:3#/$defs/valueContract.date@1"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "term": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "vocabularyIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "extensions": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "enabled",
+        "label",
+        "vocabularyIds"
+      ],
+      "additionalProperties": false
+    },
+    "queryFeatures": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "boolean"
+        },
+        "sort": {
+          "type": "boolean"
+        },
+        "groupBy": {
+          "type": "array",
+          "description": "Allowed grouping modes. 'facet' allows grouping by any band set declared in facets.",
+          "items": {
+            "enum": [
+              "value",
+              "member",
+              "facet"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "deduplicate": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

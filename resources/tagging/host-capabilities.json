@@ -1,0 +1,4834 @@
+{
+  "protocolVersion": 1,
+  "layoutSurfaces": [
+    "film.details",
+    "player.inspector",
+    "annotation.row",
+    "term.details",
+    "library.actions",
+    "workspace.sidebar"
+  ],
+  "placementRegions": [
+    "nav.after-all-films",
+    "film.card.overlay.top-left",
+    "film.card.overlay.top-right",
+    "film.card.overlay.bottom",
+    "film.card.meta.leading",
+    "film.card.meta.trailing",
+    "film.card.title",
+    "film.table.columns",
+    "player.queue.item.trailing",
+    "player.toolbar.extensions",
+    "library.filters",
+    "library.sorts",
+    "library.groupings",
+    "term.details.fields"
+  ],
+  "events": {
+    "film": [
+      "film.discovered",
+      "media.probed",
+      "annotation.changed",
+      "annotation.cleared",
+      "source.result-ready",
+      "candidate.accepted",
+      "candidate.rejected",
+      "playback.started",
+      "playback.paused",
+      "playback.seeked",
+      "playback.ended",
+      "playback.position-saved"
+    ],
+    "notification": [
+      "definition.activated",
+      "exchange.committed"
+    ],
+    "term": [
+      "annotation.changed",
+      "annotation.cleared",
+      "source.result-ready",
+      "candidate.accepted",
+      "candidate.rejected"
+    ]
+  },
+  "uiCommands": [
+    "form.submit",
+    "form.cancel",
+    "form.undo",
+    "form.redo",
+    "playback.open",
+    "platform.reveal",
+    "media.probe",
+    "metadata.enrich",
+    "export.open",
+    "annotation.seek",
+    "annotation.edit",
+    "annotation.clear",
+    "media.resources",
+    "playback.external",
+    "annotations.bulk",
+    "automation.bulk",
+    "library.import",
+    "library.play",
+    "library.query",
+    "library.save-view",
+    "library.select",
+    "library.copy",
+    "library.scan",
+    "library.export",
+    "library.remove"
+  ],
+  "limits": {
+    "definitionPackageCharacters": 4000000,
+    "definitions": 50000,
+    "layoutDepth": 20,
+    "layoutNodes": 1000,
+    "ruleChainDepth": 8,
+    "bulkTargets": 100000,
+    "batchWrites": 1000,
+    "importUiBytes": 15000000
+  },
+  "notes": {
+    "en": "Reserved events are not emitted or available to automation in this host. Layout regions are additionally declared by the active layout. Technical media state remains host-owned.",
+    "zh-CN": "预留事件尚未由当前宿主发出，不能绑定自动化规则。启用的布局还会声明其他区域。真实媒体状态由宿主管理。"
+  },
+  "mediaExport": {
+    "surface": "media.export",
+    "resource": "media-export.json",
+    "schema": "media-export.schema.json",
+    "commands": [
+      "export.capabilities",
+      "export.scan",
+      "export.preview",
+      "export.commit",
+      "export.preset.save",
+      "export.preset.delete",
+      "export.log",
+      "export.encoder",
+      "export.preset.resolve",
+      "export.reveal"
+    ],
+    "scheduler": [
+      "job.scheduler",
+      "job.configure",
+      "job.schedule"
+    ]
+  },
+  "termModel": {
+    "version": 2,
+    "subjectKinds": [
+      "film",
+      "term"
+    ],
+    "acyclicReferences": true
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:capabilities:3",
+  "definitionLanguage": 3,
+  "features": [
+    "layout-tree@1",
+    "localized-text@1",
+    "event-rules@1",
+    "term-entities@2",
+    "term-dag@2",
+    "typed-query@1",
+    "capability-contract@1",
+    "media-structure@1",
+    "source-consensus@1",
+    "source-entities@1",
+    "source-subscriptions@1",
+    "ribbon-layout@1"
+  ],
+  "components": {
+    "text@1": {
+      "types": [
+        "string"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "文本输入",
+        "en": "Text input"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.text@1"
+      },
+      "icon": "Text"
+    },
+    "textarea@1": {
+      "types": [
+        "string"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "多行文本",
+        "en": "Multiline text"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.textarea@1"
+      },
+      "icon": "TextAlignLeft"
+    },
+    "number@1": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "数字输入",
+        "en": "Number input"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.number@1"
+      },
+      "icon": "Number"
+    },
+    "slider@1": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "滑块",
+        "en": "Slider"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.slider@1"
+      },
+      "icon": "Slider"
+    },
+    "rating@1": {
+      "types": [
+        "integer"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "星级评分",
+        "en": "Star rating"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.rating@1"
+      },
+      "icon": "Star",
+      "valueContract": {
+        "$ref": "#/$defs/valueContract.rating@1"
+      },
+      "requirementHelp": {
+        "zh-CN": "整数，最小值为 1，最大值为 2–100。请先在基本信息中设置范围。",
+        "en": "Requires integers starting at 1, maximum 2–100. Set the range in Basics first."
+      }
+    },
+    "toggle@1": {
+      "types": [
+        "boolean"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "开关",
+        "en": "Switch"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.toggle@1"
+      },
+      "icon": "Toggle"
+    },
+    "asset@1": {
+      "types": [
+        "string"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "图片",
+        "en": "Image"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.asset@1"
+      },
+      "icon": "Image"
+    },
+    "date@1": {
+      "types": [
+        "string"
+      ],
+      "cardinality": "one",
+      "role": "input",
+      "label": {
+        "zh-CN": "日期",
+        "en": "Date"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.date@1"
+      },
+      "icon": "Calendar",
+      "valueContract": {
+        "$ref": "#/$defs/valueContract.date@1"
+      },
+      "requirementHelp": {
+        "zh-CN": "仅适用于日期类型。",
+        "en": "Requires the date value type."
+      }
+    },
+    "select@1": {
+      "types": [
+        "object"
+      ],
+      "cardinality": "one",
+      "enumerable": true,
+      "role": "input",
+      "label": {
+        "zh-CN": "单项选择",
+        "en": "Single select"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.select@1"
+      },
+      "icon": "Tag"
+    },
+    "multi-select@1": {
+      "types": [
+        "object"
+      ],
+      "cardinality": "many",
+      "enumerable": true,
+      "role": "input",
+      "label": {
+        "zh-CN": "多项选择",
+        "en": "Multi select"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.multi-select@1"
+      },
+      "icon": "List"
+    },
+    "text-display@1": {
+      "role": "display",
+      "label": {
+        "zh-CN": "文本",
+        "en": "Text"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.text-display@1"
+      }
+    },
+    "number-text@1": {
+      "role": "display",
+      "label": {
+        "zh-CN": "数字文本",
+        "en": "Number display"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.number-text@1"
+      },
+      "types": [
+        "integer",
+        "number"
+      ]
+    },
+    "rating-display@1": {
+      "role": "display",
+      "label": {
+        "zh-CN": "星级展示",
+        "en": "Rating display"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.rating-display@1"
+      },
+      "types": [
+        "integer",
+        "number"
+      ]
+    },
+    "boolean-label@1": {
+      "role": "display",
+      "label": {
+        "zh-CN": "状态文字",
+        "en": "Boolean label"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.boolean-label@1"
+      },
+      "types": [
+        "boolean"
+      ]
+    },
+    "icon-toggle@1": {
+      "role": "display",
+      "label": {
+        "zh-CN": "图标开关",
+        "en": "Icon toggle"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.icon-toggle@1"
+      },
+      "types": [
+        "boolean"
+      ]
+    },
+    "filter-link@1": {
+      "role": "navigation",
+      "label": {
+        "zh-CN": "筛选入口",
+        "en": "Filter link"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.filter-link@1"
+      }
+    },
+    "rating-band-navigation@1": {
+      "role": "navigation",
+      "label": {
+        "zh-CN": "分档导航",
+        "en": "Band navigation"
+      },
+      "parameters": {
+        "$ref": "#/$defs/components.rating-band-navigation@1"
+      }
+    }
+  },
+  "executors": {
+    "value.constant@1": {
+      "targets": [
+        "film-whole",
+        "term-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.value.constant@1"
+      },
+      "label": {
+        "zh-CN": "填入固定值",
+        "en": "Constant value"
+      }
+    },
+    "fact.copy@1": {
+      "targets": [
+        "film-whole",
+        "term-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.fact.copy@1"
+      },
+      "label": {
+        "zh-CN": "读取媒体属性",
+        "en": "Copy media fact"
+      }
+    },
+    "expression@1": {
+      "targets": [
+        "film-whole",
+        "term-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.expression@1"
+      },
+      "label": {
+        "zh-CN": "计算表达式",
+        "en": "Compute an expression"
+      }
+    },
+    "regex.extract@1": {
+      "targets": [
+        "film-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.regex.extract@1"
+      },
+      "label": {
+        "zh-CN": "从路径提取文本",
+        "en": "Extract from a path"
+      }
+    },
+    "dictionary.match@1": {
+      "targets": [
+        "film-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.dictionary.match@1"
+      },
+      "label": {
+        "zh-CN": "匹配值集合中的名称",
+        "en": "Match names in a collection"
+      }
+    },
+    "path.facet-alias-match@1": {
+      "targets": [
+        "film-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.path.facet-alias-match@1"
+      },
+      "label": {
+        "zh-CN": "匹配分类别名",
+        "en": "Match facet aliases"
+      }
+    },
+    "value.match@1": {
+      "targets": [
+        "film-whole"
+      ],
+      "parameters": {
+        "$ref": "#/$defs/executors.value.match@1"
+      },
+      "label": {
+        "zh-CN": "按条件填写",
+        "en": "Fill by conditions"
+      },
+      "maxPerField": 1,
+      "events": [
+        "film.discovered",
+        "media.probed"
+      ],
+      "applyModes": [
+        "if-unset",
+        "replace-same-source"
+      ]
+    }
+  },
+  "sourceFormats": {
+    "html": {
+      "selector": {
+        "type": "string"
+      },
+      "extract": {
+        "type": "string",
+        "default": "text"
+      },
+      "label": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      },
+      "description": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      }
+    },
+    "xml": {
+      "selector": {
+        "type": "string"
+      },
+      "label": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      },
+      "description": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      }
+    },
+    "json": {
+      "pointer": {
+        "type": "string"
+      },
+      "label": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      },
+      "description": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      },
+      "structured": {
+        "type": "boolean"
+      }
+    },
+    "text": {
+      "patterns": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/pattern"
+        },
+        "minItems": 1
+      },
+      "normalize": {
+        "enum": [
+          "nfkc-upper"
+        ]
+      },
+      "label": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      },
+      "description": {
+        "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+      }
+    }
+  },
+  "valueConstraints": {
+    "minimum": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "schema": {
+        "type": "number"
+      }
+    },
+    "maximum": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "schema": {
+        "type": "number"
+      }
+    },
+    "exclusiveMinimum": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "schema": {
+        "type": "number"
+      }
+    },
+    "exclusiveMaximum": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "schema": {
+        "type": "number"
+      }
+    },
+    "multipleOf": {
+      "types": [
+        "number",
+        "integer"
+      ],
+      "schema": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "minLength": {
+      "types": [
+        "string"
+      ],
+      "schema": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "maxLength": {
+      "types": [
+        "string"
+      ],
+      "schema": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "pattern": {
+      "types": [
+        "string"
+      ],
+      "schema": {
+        "type": "string"
+      }
+    },
+    "format": {
+      "types": [
+        "string"
+      ],
+      "schema": {
+        "type": "string"
+      }
+    },
+    "items": {
+      "types": [
+        "array"
+      ],
+      "schema": {
+        "type": "object"
+      }
+    },
+    "minItems": {
+      "types": [
+        "array"
+      ],
+      "schema": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "maxItems": {
+      "types": [
+        "array"
+      ],
+      "schema": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "uniqueItems": {
+      "types": [
+        "array"
+      ],
+      "schema": {
+        "type": "boolean"
+      }
+    },
+    "properties": {
+      "types": [
+        "object"
+      ],
+      "schema": {
+        "type": "object"
+      }
+    },
+    "required": {
+      "types": [
+        "object"
+      ],
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalProperties": {
+      "types": [
+        "object"
+      ],
+      "schema": {
+        "type": "boolean"
+      }
+    }
+  },
+  "$defs": {
+    "input": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "text@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.text@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.text@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "textarea@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.textarea@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.textarea@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "number@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.number@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.number@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "slider@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.slider@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.slider@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "rating@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.rating@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.rating@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "toggle@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.toggle@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.toggle@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "asset@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.asset@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.asset@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "date@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.date@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.date@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "select@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.select@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.select@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "multi-select@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.multi-select@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.multi-select@1"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "display": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "text-display@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.text-display@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.text-display@1"
+            },
+            "label": {
+              "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text",
+              "description": "Localized style name, separate from the stable display key referenced by placements."
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "number-text@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.number-text@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.number-text@1"
+            },
+            "label": {
+              "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text",
+              "description": "Localized style name, separate from the stable display key referenced by placements."
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "rating-display@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.rating-display@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.rating-display@1"
+            },
+            "label": {
+              "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text",
+              "description": "Localized style name, separate from the stable display key referenced by placements."
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "boolean-label@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.boolean-label@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.boolean-label@1"
+            },
+            "label": {
+              "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text",
+              "description": "Localized style name, separate from the stable display key referenced by placements."
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "icon-toggle@1"
+            },
+            "props": {
+              "$ref": "#/$defs/components.icon-toggle@1"
+            },
+            "compact": {
+              "$ref": "#/$defs/components.icon-toggle@1"
+            },
+            "label": {
+              "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text",
+              "description": "Localized style name, separate from the stable display key referenced by placements."
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "components.text@1": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.textarea@1": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.number@1": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 1
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.slider@1": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number",
+          "default": 0
+        },
+        "max": {
+          "type": "number",
+          "default": 100
+        },
+        "step": {
+          "type": "number",
+          "default": 1
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.rating@1": {
+      "type": "object",
+      "properties": {
+        "maxSymbols": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.toggle@1": {
+      "type": "object",
+      "properties": {
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "trueLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "falseLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.asset@1": {
+      "type": "object",
+      "properties": {
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.date@1": {
+      "type": "object",
+      "properties": {
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.select@1": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.multi-select@1": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.text-display@1": {
+      "type": "object",
+      "properties": {
+        "emptyText": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "suffix": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.number-text@1": {
+      "type": "object",
+      "properties": {
+        "emptyText": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "suffix": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.rating-display@1": {
+      "type": "object",
+      "properties": {
+        "emptyText": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "maxSymbols": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "showValue": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.boolean-label@1": {
+      "type": "object",
+      "properties": {
+        "emptyText": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "trueLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "falseLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.icon-toggle@1": {
+      "type": "object",
+      "properties": {
+        "emptyText": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "trueLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "falseLabel": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "trueIcon": {
+          "type": "string",
+          "format": "icon",
+          "enum": [
+            "Star",
+            "StarFilled",
+            "Heart",
+            "HeartFilled",
+            "Clock",
+            "Tag",
+            "Folder",
+            "Play",
+            "Info",
+            "Save",
+            "Close",
+            "Undo",
+            "Redo",
+            "Bookmark",
+            "Video",
+            "Camera",
+            "Collection",
+            "Filter",
+            "List",
+            "Grid",
+            "Checkmark",
+            "Edit",
+            "Settings",
+            "Search",
+            "Refresh",
+            "Translate",
+            "TimePoint",
+            "TimeRange"
+          ]
+        },
+        "falseIcon": {
+          "type": "string",
+          "format": "icon",
+          "enum": [
+            "Star",
+            "StarFilled",
+            "Heart",
+            "HeartFilled",
+            "Clock",
+            "Tag",
+            "Folder",
+            "Play",
+            "Info",
+            "Save",
+            "Close",
+            "Undo",
+            "Redo",
+            "Bookmark",
+            "Video",
+            "Camera",
+            "Collection",
+            "Filter",
+            "List",
+            "Grid",
+            "Checkmark",
+            "Edit",
+            "Settings",
+            "Search",
+            "Refresh",
+            "Translate",
+            "TimePoint",
+            "TimeRange"
+          ]
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.filter-link@1": {
+      "type": "object",
+      "properties": {
+        "facet": {
+          "type": "string"
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "components.rating-band-navigation@1": {
+      "type": "object",
+      "properties": {
+        "facet": {
+          "type": "string"
+        },
+        "symbols": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "span": {
+              "enum": [
+                "auto",
+                "full"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "executors.value.constant@1": {
+      "type": "object",
+      "properties": {
+        "value": {}
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "executors.fact.copy@1": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "enum": [
+            "catalog.libraryId",
+            "file.path",
+            "file.baseName",
+            "file.relativePath",
+            "file.size",
+            "file.added",
+            "file.modified",
+            "probe.duration",
+            "probe.video.width",
+            "probe.video.height",
+            "probe.video.frameRate",
+            "probe.video.codec",
+            "probe.audio.codec",
+            "playback.position"
+          ]
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "executors.expression@1": {
+      "type": "object",
+      "properties": {
+        "expression": {
+          "$ref": "#/$defs/expression"
+        }
+      },
+      "required": [
+        "expression"
+      ],
+      "additionalProperties": false
+    },
+    "executors.regex.extract@1": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "file.path",
+              "file.baseName",
+              "file.relativePath",
+              "file.size",
+              "file.added",
+              "file.modified"
+            ]
+          }
+        },
+        "rule": {
+          "type": "string"
+        },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern"
+          },
+          "minItems": 1
+        },
+        "normalize": {
+          "enum": [
+            "nfkc-upper"
+          ]
+        },
+        "createOptions": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "inputs"
+      ],
+      "additionalProperties": false
+    },
+    "executors.dictionary.match@1": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "file.path",
+              "file.baseName",
+              "file.relativePath",
+              "file.size",
+              "file.added",
+              "file.modified"
+            ]
+          }
+        },
+        "vocabulary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "inputs",
+        "vocabulary"
+      ],
+      "additionalProperties": false
+    },
+    "executors.path.facet-alias-match@1": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "file.path",
+              "file.baseName",
+              "file.relativePath",
+              "file.size",
+              "file.added",
+              "file.modified"
+            ]
+          }
+        },
+        "facet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "inputs",
+        "facet"
+      ],
+      "additionalProperties": false
+    },
+    "expression": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "literal": {}
+          },
+          "required": [
+            "literal"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fact"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "enum": [
+                "eq",
+                "ne",
+                "is",
+                "is-not",
+                "lt",
+                "lte",
+                "gt",
+                "gte",
+                "between",
+                "not-between",
+                "in",
+                "not-in",
+                "contains",
+                "starts-with",
+                "ends-with",
+                "like",
+                "not-like",
+                "glob",
+                "not-glob",
+                "exists",
+                "missing",
+                "has",
+                "and",
+                "or",
+                "not",
+                "first-valid",
+                "coalesce",
+                "nullif",
+                "case",
+                "add",
+                "subtract",
+                "multiply",
+                "divide",
+                "modulo",
+                "negate",
+                "count",
+                "concat",
+                "length",
+                "lower",
+                "upper",
+                "trim",
+                "abs",
+                "round",
+                "object-get",
+                "parse-number",
+                "array-distinct",
+                "array-union",
+                "array-intersect",
+                "url-encode",
+                "date-only"
+              ]
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/expression"
+              },
+              "maxItems": 100
+            },
+            "separator": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "args"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "eq"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "ne"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "is"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "is-not"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "lt"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "lte"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "gt"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "gte"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "between"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 3,
+                    "maxItems": 3
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "not-between"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 3,
+                    "maxItems": 3
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "in"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "not-in"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "contains"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "starts-with"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "ends-with"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "like"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "not-like"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "glob"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "not-glob"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "exists"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "missing"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "has"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "and"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 0,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "or"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 0,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "not"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "first-valid"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "coalesce"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "nullif"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "case"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 3,
+                    "maxItems": 99
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "add"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "subtract"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "multiply"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "divide"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "modulo"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "negate"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "count"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "concat"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "length"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "lower"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "upper"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "trim"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "abs"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "round"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "not": {
+                  "properties": {
+                    "op": {
+                      "const": "concat"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "separator"
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "object-get"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "parse-number"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "array-distinct"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "array-union"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "array-intersect"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 2,
+                    "maxItems": 100
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "url-encode"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "op": {
+                    "const": "date-only"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "args": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "transport": {
+          "enum": [
+            "sidecar",
+            "http"
+          ]
+        },
+        "extension": {
+          "type": "string",
+          "pattern": "^\\.[a-zA-Z0-9]+$"
+        },
+        "request": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "GET"
+            },
+            "urlTemplate": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/expression"
+              }
+            },
+            "mode": {
+              "enum": [
+                "http",
+                "auto",
+                "browser"
+              ],
+              "default": "http"
+            },
+            "browser": {
+              "$ref": "#/$defs/sourceBrowser"
+            }
+          },
+          "required": [
+            "urlTemplate"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "auto",
+                      "browser"
+                    ]
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "then": {
+                "required": [
+                  "browser"
+                ]
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "browser"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "parse": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "enum": [
+                "html",
+                "xml",
+                "json",
+                "text"
+              ]
+            },
+            "fields": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "required": [
+            "format",
+            "fields"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "html"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/$defs/sourceField.html"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "xml"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/$defs/sourceField.xml"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "json"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/$defs/sourceField.json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "text"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/$defs/sourceField.text"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "match": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string"
+              },
+              "normalizeWith": {
+                "type": "string"
+              },
+              "optional": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field",
+              "tag"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "maxResponseBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4194304
+            },
+            "minIntervalMs": {
+              "type": "integer",
+              "minimum": 500,
+              "maximum": 10000
+            },
+            "cacheTtlSeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 604800
+            },
+            "failureCooldownSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600,
+              "default": 30
+            },
+            "maxCooldownSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400,
+              "default": 1800
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "when": {
+          "$ref": "#/$defs/expression"
+        },
+        "evidenceGroup": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "subscription": {
+          "type": "object",
+          "properties": {
+            "enabledTag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "intervalMinutes": {
+              "type": "integer",
+              "minimum": 15,
+              "maximum": 43200
+            }
+          },
+          "required": [
+            "enabledTag",
+            "intervalMinutes"
+          ],
+          "additionalProperties": false
+        },
+        "refresh": {
+          "enum": [
+            "missing",
+            "always"
+          ],
+          "description": "Automatic enrichment policy. \"missing\" (default) consults the source only while a field it fills is empty; \"always\" consults it on every automatic run. Explicit requests always run."
+        }
+      },
+      "required": [
+        "transport",
+        "parse"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "transport": {
+                "const": "http"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "request"
+            ],
+            "not": {
+              "required": [
+                "extension"
+              ]
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "request"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "valueContract.rating@1": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "integer"
+            },
+            "minimum": {
+              "const": 1
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "type",
+            "minimum",
+            "maximum"
+          ]
+        }
+      },
+      "required": [
+        "schema"
+      ]
+    },
+    "valueContract.date@1": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "const": "date"
+            }
+          },
+          "required": [
+            "format"
+          ]
+        }
+      },
+      "required": [
+        "schema"
+      ]
+    },
+    "imagePresentation": {
+      "type": "object",
+      "description": "Result of ui.identity.*.primaryImagePresentation: a registered imagePresentations entry and its parameters. Hosts fill parameter defaults; any other result shows the whole image.",
+      "properties": {
+        "component": {
+          "type": "string"
+        },
+        "props": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "component"
+      ],
+      "additionalProperties": false
+    },
+    "imagePresentations.image@1": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "imagePresentations.disc-case@1": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "enum": [
+            "3d",
+            "front",
+            "back"
+          ],
+          "default": "3d",
+          "description": "3d: a case turned slightly to show the front cover and part of the spine, turning to the back cover on hover. front/back: only that cover, flat."
+        },
+        "spine": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 0.3,
+          "default": 0.05,
+          "description": "Spine width as a fraction of the image width. The image is laid out back | spine | front from left to right; the covers share the rest equally."
+        }
+      },
+      "additionalProperties": false
+    },
+    "pattern": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "groups": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "trimLeadingZeros": {
+                "type": "boolean"
+              },
+              "padLeft": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "pattern"
+      ],
+      "additionalProperties": false
+    },
+    "parseRule": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "normalize": {
+          "enum": [
+            "nfkc-upper"
+          ]
+        },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "patterns"
+      ],
+      "additionalProperties": false
+    },
+    "sourceField.html": {
+      "type": "object",
+      "properties": {
+        "selector": {
+          "type": "string"
+        },
+        "extract": {
+          "type": "string",
+          "default": "text"
+        },
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "cardinality": {
+          "enum": [
+            "one",
+            "many"
+          ]
+        },
+        "resolveUrl": {
+          "type": "boolean"
+        },
+        "normalizeWith": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "selector"
+      ],
+      "additionalProperties": false
+    },
+    "sourceField.xml": {
+      "type": "object",
+      "properties": {
+        "selector": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "cardinality": {
+          "enum": [
+            "one",
+            "many"
+          ]
+        },
+        "resolveUrl": {
+          "type": "boolean"
+        },
+        "normalizeWith": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "selector"
+      ],
+      "additionalProperties": false
+    },
+    "sourceField.json": {
+      "type": "object",
+      "properties": {
+        "pointer": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "cardinality": {
+          "enum": [
+            "one",
+            "many"
+          ]
+        },
+        "resolveUrl": {
+          "type": "boolean"
+        },
+        "normalizeWith": {
+          "type": "string"
+        },
+        "structured": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pointer"
+      ],
+      "additionalProperties": false
+    },
+    "sourceField.text": {
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pattern"
+          },
+          "minItems": 1
+        },
+        "normalize": {
+          "enum": [
+            "nfkc-upper"
+          ]
+        },
+        "label": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "description": {
+          "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/text"
+        },
+        "cardinality": {
+          "enum": [
+            "one",
+            "many"
+          ]
+        },
+        "resolveUrl": {
+          "type": "boolean"
+        },
+        "normalizeWith": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "patterns"
+      ],
+      "additionalProperties": false
+    },
+    "executors.value.match@1": {
+      "type": "object",
+      "properties": {
+        "cases": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "when": {
+                "$ref": "#/$defs/expression"
+              },
+              "value": {}
+            },
+            "required": [
+              "id",
+              "when",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "cases"
+      ],
+      "additionalProperties": false
+    },
+    "sourceBrowser": {
+      "type": "object",
+      "properties": {
+        "allowedHosts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "readySelector": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "pageTimeoutSeconds": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60,
+          "default": 20
+        },
+        "verificationTimeoutSeconds": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 300,
+          "default": 120
+        }
+      },
+      "required": [
+        "allowedHosts",
+        "readySelector"
+      ],
+      "additionalProperties": false
+    },
+    "layoutControl": {
+      "oneOf": [
+        {
+          "const": "library.search",
+          "x-label": {
+            "zh-CN": "搜索影片",
+            "en": "Search films"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        },
+        {
+          "const": "library.sort",
+          "x-label": {
+            "zh-CN": "排序方式",
+            "en": "Sort by"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        },
+        {
+          "const": "library.direction",
+          "x-label": {
+            "zh-CN": "排列方向",
+            "en": "Sort direction"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        },
+        {
+          "const": "library.poster-size",
+          "x-label": {
+            "zh-CN": "海报高度",
+            "en": "Poster height"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        },
+        {
+          "const": "library.view",
+          "x-label": {
+            "zh-CN": "显示方式",
+            "en": "View mode"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        },
+        {
+          "const": "library.selection",
+          "x-label": {
+            "zh-CN": "选择范围",
+            "en": "Selection scope"
+          },
+          "x-surfaces": [
+            "library.actions"
+          ]
+        }
+      ]
+    },
+    "activityFeed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tabs",
+        "sources"
+      ],
+      "properties": {
+        "tabs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "library",
+              "film",
+              "libraries",
+              "tags",
+              "duplicates",
+              "views",
+              "jobs",
+              "settings",
+              "agent",
+              "export"
+            ]
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "jobs",
+              "candidates"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "query": {
+    "schema": "query.schema.json",
+    "maxDepth": 24,
+    "maxNodes": 1000,
+    "maxLogicalArguments": 100,
+    "maxSetValues": 500,
+    "rangeConvention": "half-open",
+    "scopeQuantifiers": [
+      "any",
+      "all",
+      "none"
+    ],
+    "sortModes": [
+      "value",
+      "label",
+      "min",
+      "max"
+    ],
+    "groupModes": [
+      "value",
+      "member",
+      "facet"
+    ],
+    "maxPageSize": 10000
+  },
+  "facts": {
+    "catalog.libraryId": {
+      "type": "string",
+      "label": {
+        "zh-CN": "所属影片库标识",
+        "en": "Library identity"
+      }
+    },
+    "file.path": {
+      "type": "string",
+      "label": {
+        "zh-CN": "完整文件路径",
+        "en": "Full file path"
+      }
+    },
+    "file.baseName": {
+      "type": "string",
+      "label": {
+        "zh-CN": "文件名",
+        "en": "File name"
+      }
+    },
+    "file.relativePath": {
+      "type": "string",
+      "label": {
+        "zh-CN": "相对路径",
+        "en": "Relative path"
+      }
+    },
+    "file.size": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "文件大小（字节）",
+        "en": "File size (bytes)"
+      },
+      "unit": {
+        "base": "byte",
+        "choices": [
+          {
+            "key": "byte",
+            "factor": 1,
+            "label": {
+              "zh-CN": "字节",
+              "en": "bytes"
+            }
+          },
+          {
+            "key": "MiB",
+            "factor": 1048576,
+            "label": {
+              "zh-CN": "MiB",
+              "en": "MiB"
+            }
+          },
+          {
+            "key": "GiB",
+            "factor": 1073741824,
+            "label": {
+              "zh-CN": "GiB",
+              "en": "GiB"
+            }
+          }
+        ]
+      }
+    },
+    "file.added": {
+      "type": "string",
+      "label": {
+        "zh-CN": "添加时间",
+        "en": "Date added"
+      }
+    },
+    "file.modified": {
+      "type": "string",
+      "label": {
+        "zh-CN": "修改时间",
+        "en": "Last modified"
+      }
+    },
+    "probe.duration": {
+      "type": "number",
+      "label": {
+        "zh-CN": "时长（秒）",
+        "en": "Duration (seconds)"
+      },
+      "availableAfter": "media.probed",
+      "unit": {
+        "base": "second",
+        "choices": [
+          {
+            "key": "second",
+            "factor": 1,
+            "label": {
+              "zh-CN": "秒",
+              "en": "seconds"
+            }
+          },
+          {
+            "key": "minute",
+            "factor": 60,
+            "label": {
+              "zh-CN": "分钟",
+              "en": "minutes"
+            }
+          },
+          {
+            "key": "hour",
+            "factor": 3600,
+            "label": {
+              "zh-CN": "小时",
+              "en": "hours"
+            }
+          }
+        ]
+      }
+    },
+    "probe.video.width": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "画面宽度",
+        "en": "Video width"
+      },
+      "availableAfter": "media.probed"
+    },
+    "probe.video.height": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "画面高度",
+        "en": "Video height"
+      },
+      "availableAfter": "media.probed"
+    },
+    "probe.video.frameRate": {
+      "type": "number",
+      "label": {
+        "zh-CN": "帧率",
+        "en": "Frame rate"
+      },
+      "availableAfter": "media.probed"
+    },
+    "probe.video.codec": {
+      "type": "string",
+      "label": {
+        "zh-CN": "视频编码",
+        "en": "Video codec"
+      },
+      "availableAfter": "media.probed"
+    },
+    "probe.audio.codec": {
+      "type": "string",
+      "label": {
+        "zh-CN": "音频编码",
+        "en": "Audio codec"
+      },
+      "availableAfter": "media.probed"
+    },
+    "playback.position": {
+      "type": "number",
+      "label": {
+        "zh-CN": "播放位置（秒）",
+        "en": "Playback position (seconds)"
+      }
+    },
+    "entity.id": {
+      "type": "string",
+      "label": {
+        "en": "Value entity ID",
+        "zh-CN": "值实体 ID"
+      }
+    },
+    "entity.label": {
+      "type": "string",
+      "label": {
+        "en": "Value entity name",
+        "zh-CN": "值实体名称"
+      }
+    },
+    "entity.aliases": {
+      "type": "array",
+      "label": {
+        "en": "Value entity aliases",
+        "zh-CN": "值实体别名"
+      }
+    },
+    "entity.vocabularies": {
+      "type": "array",
+      "label": {
+        "en": "Value entity collections",
+        "zh-CN": "值实体所属集合"
+      }
+    },
+    "source.value": {
+      "type": "any",
+      "label": {
+        "en": "Raw source field",
+        "zh-CN": "来源字段原值"
+      }
+    },
+    "source.fields": {
+      "type": "object",
+      "label": {
+        "en": "Parsed source fields",
+        "zh-CN": "来源解析结果"
+      }
+    }
+  },
+  "valueTypes": {
+    "text": {
+      "label": {
+        "zh-CN": "文本",
+        "en": "Text"
+      },
+      "schema": {
+        "type": "string"
+      },
+      "cardinality": "one",
+      "recommendedInput": "text@1",
+      "icon": "Text"
+    },
+    "integer": {
+      "label": {
+        "zh-CN": "整数",
+        "en": "Integer"
+      },
+      "schema": {
+        "type": "integer"
+      },
+      "cardinality": "one",
+      "recommendedInput": "number@1",
+      "icon": "Number"
+    },
+    "number": {
+      "label": {
+        "zh-CN": "小数",
+        "en": "Decimal"
+      },
+      "schema": {
+        "type": "number"
+      },
+      "cardinality": "one",
+      "recommendedInput": "number@1",
+      "icon": "Number"
+    },
+    "boolean": {
+      "label": {
+        "zh-CN": "是 / 否",
+        "en": "Boolean"
+      },
+      "schema": {
+        "type": "boolean"
+      },
+      "cardinality": "one",
+      "recommendedInput": "toggle@1",
+      "icon": "Toggle"
+    },
+    "date": {
+      "label": {
+        "zh-CN": "日期",
+        "en": "Date"
+      },
+      "schema": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "cardinality": "one",
+      "recommendedInput": "date@1",
+      "icon": "Calendar"
+    },
+    "term": {
+      "label": {
+        "zh-CN": "单个标签值",
+        "en": "Single value entity"
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "term"
+        ],
+        "additionalProperties": false
+      },
+      "cardinality": "one",
+      "recommendedInput": "select@1",
+      "icon": "Tag"
+    },
+    "terms": {
+      "label": {
+        "zh-CN": "多个标签值",
+        "en": "Multiple value entities"
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "term"
+        ],
+        "additionalProperties": false
+      },
+      "cardinality": "many",
+      "recommendedInput": "multi-select@1",
+      "icon": "List"
+    }
+  },
+  "valueTypePolicy": {
+    "source": "value.schema",
+    "cardinalitySource": "value.cardinality",
+    "componentSelection": "compatible-only",
+    "description": {
+      "zh-CN": "先声明值类型与约束，再从兼容组件中选择录入方式。切换组件不改变取值规则。",
+      "en": "Define value type and constraints first, then choose a compatible input. Changing a component never changes the value contract."
+    }
+  },
+  "eventLabels": {
+    "film.discovered": {
+      "zh-CN": "发现影片",
+      "en": "Film discovered"
+    },
+    "media.probed": {
+      "zh-CN": "媒体属性读取完成",
+      "en": "Media probed"
+    },
+    "annotation.changed": {
+      "zh-CN": "标注修改后",
+      "en": "Annotation changed"
+    },
+    "annotation.cleared": {
+      "zh-CN": "标注清除后",
+      "en": "Annotation cleared"
+    },
+    "source.result-ready": {
+      "zh-CN": "资料查询完成",
+      "en": "Metadata ready"
+    },
+    "candidate.accepted": {
+      "zh-CN": "接受补全建议",
+      "en": "Suggestion accepted"
+    },
+    "candidate.rejected": {
+      "zh-CN": "拒绝补全建议",
+      "en": "Suggestion rejected"
+    },
+    "playback.started": {
+      "zh-CN": "开始播放",
+      "en": "Playback started"
+    },
+    "playback.paused": {
+      "zh-CN": "暂停播放",
+      "en": "Playback paused"
+    },
+    "playback.seeked": {
+      "zh-CN": "跳转播放位置",
+      "en": "Playback seeked"
+    },
+    "playback.ended": {
+      "zh-CN": "播放结束",
+      "en": "Playback ended"
+    },
+    "playback.position-saved": {
+      "zh-CN": "保存播放位置",
+      "en": "Playback position saved"
+    }
+  },
+  "eventFacts": {
+    "event.tagKey": {
+      "type": "string",
+      "events": [
+        "annotation.changed",
+        "annotation.cleared"
+      ],
+      "label": {
+        "zh-CN": "事件：变更的标签标识",
+        "en": "Event: changed tag key"
+      }
+    },
+    "event.oldRevision": {
+      "type": "integer",
+      "events": [
+        "annotation.changed",
+        "annotation.cleared"
+      ],
+      "label": {
+        "zh-CN": "事件：修改前版本",
+        "en": "Event: previous revision"
+      }
+    },
+    "event.newRevision": {
+      "type": "integer",
+      "events": [
+        "annotation.changed",
+        "annotation.cleared"
+      ],
+      "label": {
+        "zh-CN": "事件：修改后版本",
+        "en": "Event: new revision"
+      }
+    },
+    "event.origin": {
+      "type": "string",
+      "events": [
+        "annotation.changed",
+        "annotation.cleared"
+      ],
+      "label": {
+        "zh-CN": "事件：操作来源",
+        "en": "Event: origin"
+      }
+    },
+    "event.scope.kind": {
+      "type": "string",
+      "events": [
+        "annotation.changed",
+        "annotation.cleared"
+      ],
+      "label": {
+        "zh-CN": "事件：标注范围",
+        "en": "Event: scope kind"
+      }
+    },
+    "event.subject.id": {
+      "type": "string",
+      "events": [
+        "film.discovered",
+        "media.probed",
+        "annotation.changed",
+        "annotation.cleared",
+        "source.result-ready",
+        "candidate.accepted",
+        "candidate.rejected",
+        "playback.started",
+        "playback.paused",
+        "playback.seeked",
+        "playback.ended",
+        "playback.position-saved"
+      ],
+      "label": {
+        "zh-CN": "事件：影片标识",
+        "en": "Event: film ID"
+      }
+    }
+  },
+  "imagePresentations": {
+    "image@1": {
+      "label": {
+        "zh-CN": "完整图片",
+        "en": "Whole image"
+      },
+      "description": {
+        "zh-CN": "按图片自身的宽高比完整展示；列表中各卡片高度相同，宽度随图片比例变化。",
+        "en": "Shows the whole image at its own aspect ratio; list cards share one height and take their width from the image."
+      },
+      "parameters": {
+        "$ref": "#/$defs/imagePresentations.image@1"
+      }
+    },
+    "disc-case@1": {
+      "label": {
+        "zh-CN": "影碟包装盒",
+        "en": "Disc case"
+      },
+      "description": {
+        "zh-CN": "把图片当作从左到右为“封底 | 中脊 | 封面”的包装盒展开图，展示为立体包装盒，或只平面展示封面、封底。",
+        "en": "Treats the image as an unfolded case laid out back | spine | front from left to right, shown as a 3D case or as one flat cover."
+      },
+      "parameters": {
+        "$ref": "#/$defs/imagePresentations.disc-case@1"
+      }
+    }
+  },
+  "primaryImageFacts": {
+    "image.width": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "主图宽度（像素）",
+        "en": "Primary image width (pixels)"
+      }
+    },
+    "image.height": {
+      "type": "integer",
+      "label": {
+        "zh-CN": "主图高度（像素）",
+        "en": "Primary image height (pixels)"
+      }
+    },
+    "image.aspectRatio": {
+      "type": "number",
+      "label": {
+        "zh-CN": "主图宽高比（宽 ÷ 高）",
+        "en": "Primary image aspect ratio (width ÷ height)"
+      }
+    }
+  },
+  "clientApiVersion": 15,
+  "operations": {
+    "eq": {
+      "label": {
+        "en": "Equals",
+        "zh-CN": "等于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "scalar",
+      "sql": "="
+    },
+    "ne": {
+      "label": {
+        "en": "Not equal",
+        "zh-CN": "不等于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "scalar",
+      "sql": "<>"
+    },
+    "is": {
+      "label": {
+        "en": "Same including null",
+        "zh-CN": "相同（含空值）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "scalar",
+      "sql": "IS"
+    },
+    "is-not": {
+      "label": {
+        "en": "Distinct including null",
+        "zh-CN": "不同（含空值）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "scalar",
+      "sql": "IS NOT"
+    },
+    "lt": {
+      "label": {
+        "en": "Less than",
+        "zh-CN": "小于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "scalar",
+      "sql": "<"
+    },
+    "lte": {
+      "label": {
+        "en": "At most",
+        "zh-CN": "小于等于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "scalar",
+      "sql": "<="
+    },
+    "gt": {
+      "label": {
+        "en": "Greater than",
+        "zh-CN": "大于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "scalar",
+      "sql": ">"
+    },
+    "gte": {
+      "label": {
+        "en": "At least",
+        "zh-CN": "大于等于"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "scalar",
+      "sql": ">="
+    },
+    "between": {
+      "label": {
+        "en": "Between (inclusive)",
+        "zh-CN": "介于（含边界）"
+      },
+      "minArgs": 3,
+      "maxArgs": 3,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "range",
+      "sql": "BETWEEN"
+    },
+    "not-between": {
+      "label": {
+        "en": "Not between",
+        "zh-CN": "不在区间内"
+      },
+      "minArgs": 3,
+      "maxArgs": 3,
+      "types": [
+        "string",
+        "number",
+        "integer"
+      ],
+      "shape": "range",
+      "sql": "NOT-BETWEEN"
+    },
+    "in": {
+      "label": {
+        "en": "In",
+        "zh-CN": "属于任一值"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "list",
+      "sql": "IN"
+    },
+    "not-in": {
+      "label": {
+        "en": "Not in",
+        "zh-CN": "不属于任一值"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "list",
+      "sql": "NOT-IN"
+    },
+    "contains": {
+      "label": {
+        "en": "Contains text",
+        "zh-CN": "包含文本"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "CONTAINS"
+    },
+    "starts-with": {
+      "label": {
+        "en": "Starts with",
+        "zh-CN": "以此开头"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "STARTS-WITH"
+    },
+    "ends-with": {
+      "label": {
+        "en": "Ends with",
+        "zh-CN": "以此结尾"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "ENDS-WITH"
+    },
+    "like": {
+      "label": {
+        "en": "Matches pattern (LIKE)",
+        "zh-CN": "匹配通配符（LIKE）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "LIKE"
+    },
+    "not-like": {
+      "label": {
+        "en": "Does not match (LIKE)",
+        "zh-CN": "不匹配通配符（LIKE）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "NOT-LIKE"
+    },
+    "glob": {
+      "label": {
+        "en": "Matches case-sensitive pattern (GLOB)",
+        "zh-CN": "匹配大小写通配符（GLOB）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "GLOB"
+    },
+    "not-glob": {
+      "label": {
+        "en": "Does not match (GLOB)",
+        "zh-CN": "不匹配大小写通配符（GLOB）"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "string"
+      ],
+      "shape": "scalar",
+      "sql": "NOT-GLOB"
+    },
+    "exists": {
+      "label": {
+        "en": "Has value (not NULL)",
+        "zh-CN": "已填写（非 NULL）"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "none",
+      "sql": "EXISTS"
+    },
+    "missing": {
+      "label": {
+        "en": "Missing (NULL)",
+        "zh-CN": "未填写（NULL）"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "types": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array"
+      ],
+      "shape": "none",
+      "sql": "MISSING"
+    },
+    "has": {
+      "label": {
+        "en": "Contains member",
+        "zh-CN": "包含选项"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "types": [
+        "array"
+      ],
+      "shape": "scalar",
+      "sql": "HAS"
+    },
+    "and": {
+      "label": {
+        "en": "All true",
+        "zh-CN": "全部满足"
+      },
+      "minArgs": 0,
+      "maxArgs": 100
+    },
+    "or": {
+      "label": {
+        "en": "Any true",
+        "zh-CN": "任一满足"
+      },
+      "minArgs": 0,
+      "maxArgs": 100
+    },
+    "not": {
+      "label": {
+        "en": "Not",
+        "zh-CN": "排除"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "first-valid": {
+      "label": {
+        "en": "First nonempty",
+        "zh-CN": "首个非空内容"
+      },
+      "minArgs": 1,
+      "maxArgs": 100
+    },
+    "coalesce": {
+      "label": {
+        "en": "Coalesce",
+        "zh-CN": "首个非 NULL 值"
+      },
+      "minArgs": 1,
+      "maxArgs": 100
+    },
+    "nullif": {
+      "label": {
+        "en": "Null if equal",
+        "zh-CN": "相同时返回空值"
+      },
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "case": {
+      "label": {
+        "en": "Case",
+        "zh-CN": "条件分支"
+      },
+      "minArgs": 3,
+      "maxArgs": 99
+    },
+    "add": {
+      "label": {
+        "en": "Add",
+        "zh-CN": "相加"
+      },
+      "minArgs": 2,
+      "maxArgs": 100
+    },
+    "subtract": {
+      "label": {
+        "en": "Subtract",
+        "zh-CN": "相减"
+      },
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "multiply": {
+      "label": {
+        "en": "Multiply",
+        "zh-CN": "相乘"
+      },
+      "minArgs": 2,
+      "maxArgs": 100
+    },
+    "divide": {
+      "label": {
+        "en": "Divide",
+        "zh-CN": "相除"
+      },
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "modulo": {
+      "label": {
+        "en": "Integer remainder",
+        "zh-CN": "整数取余"
+      },
+      "minArgs": 2,
+      "maxArgs": 2
+    },
+    "negate": {
+      "label": {
+        "en": "Negate",
+        "zh-CN": "取负数"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "count": {
+      "label": {
+        "en": "Member count",
+        "zh-CN": "元素数量"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "concat": {
+      "label": {
+        "en": "Concatenate",
+        "zh-CN": "连接文本"
+      },
+      "minArgs": 1,
+      "maxArgs": 100
+    },
+    "length": {
+      "label": {
+        "en": "Text length",
+        "zh-CN": "文本长度"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "lower": {
+      "label": {
+        "en": "Lowercase",
+        "zh-CN": "转小写"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "upper": {
+      "label": {
+        "en": "Uppercase",
+        "zh-CN": "转大写"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "trim": {
+      "label": {
+        "en": "Trim",
+        "zh-CN": "去除首尾空格"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "abs": {
+      "label": {
+        "en": "Absolute value",
+        "zh-CN": "绝对值"
+      },
+      "minArgs": 1,
+      "maxArgs": 1
+    },
+    "round": {
+      "label": {
+        "en": "Round",
+        "zh-CN": "四舍五入"
+      },
+      "minArgs": 1,
+      "maxArgs": 2
+    },
+    "object-get": {
+      "label": {
+        "en": "Read object property",
+        "zh-CN": "读取对象属性"
+      },
+      "minArgs": 2,
+      "maxArgs": 2,
+      "resultType": "any",
+      "argumentTypes": [
+        "object",
+        "string"
+      ],
+      "argumentRoles": [
+        "readValue",
+        "property"
+      ]
+    },
+    "parse-number": {
+      "label": {
+        "en": "Parse number",
+        "zh-CN": "解析数值"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "resultType": "number",
+      "argumentTypes": [
+        "string"
+      ],
+      "argumentRoles": [
+        "text"
+      ]
+    },
+    "array-distinct": {
+      "label": {
+        "en": "Unique list",
+        "zh-CN": "列表去重"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "resultType": "array",
+      "argumentTypes": [
+        "array"
+      ],
+      "argumentRoles": [
+        "list"
+      ]
+    },
+    "array-union": {
+      "label": {
+        "en": "Union of lists",
+        "zh-CN": "列表并集"
+      },
+      "minArgs": 2,
+      "maxArgs": 100,
+      "resultType": "array",
+      "argumentTypes": [
+        "array"
+      ],
+      "argumentRoles": [
+        "list"
+      ]
+    },
+    "array-intersect": {
+      "label": {
+        "en": "Intersection of lists",
+        "zh-CN": "列表交集"
+      },
+      "minArgs": 2,
+      "maxArgs": 100,
+      "resultType": "array",
+      "argumentTypes": [
+        "array"
+      ],
+      "argumentRoles": [
+        "list"
+      ]
+    },
+    "url-encode": {
+      "label": {
+        "en": "Encode URL parameter",
+        "zh-CN": "编码 URL 参数"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "resultType": "string",
+      "argumentTypes": [
+        "string"
+      ],
+      "argumentRoles": [
+        "text"
+      ]
+    },
+    "date-only": {
+      "label": {
+        "en": "Extract ISO date",
+        "zh-CN": "提取 ISO 日期"
+      },
+      "minArgs": 1,
+      "maxArgs": 1,
+      "resultType": "string",
+      "argumentTypes": [
+        "string"
+      ],
+      "argumentRoles": [
+        "text"
+      ]
+    }
+  },
+  "icons": {
+    "Star": {
+      "zh-CN": "星形",
+      "en": "Star"
+    },
+    "StarFilled": {
+      "zh-CN": "实心星形",
+      "en": "Filled star"
+    },
+    "Heart": {
+      "zh-CN": "空心爱心",
+      "en": "Heart"
+    },
+    "HeartFilled": {
+      "zh-CN": "实心爱心",
+      "en": "Filled heart"
+    },
+    "Clock": {
+      "zh-CN": "时钟",
+      "en": "Clock"
+    },
+    "Tag": {
+      "zh-CN": "标签",
+      "en": "Tag"
+    },
+    "Folder": {
+      "zh-CN": "文件夹",
+      "en": "Folder"
+    },
+    "Play": {
+      "zh-CN": "播放",
+      "en": "Play"
+    },
+    "Info": {
+      "zh-CN": "信息",
+      "en": "Information"
+    },
+    "Save": {
+      "zh-CN": "保存",
+      "en": "Save"
+    },
+    "Close": {
+      "zh-CN": "关闭",
+      "en": "Close"
+    },
+    "Undo": {
+      "zh-CN": "撤销",
+      "en": "Undo"
+    },
+    "Redo": {
+      "zh-CN": "重做",
+      "en": "Redo"
+    },
+    "Bookmark": {
+      "zh-CN": "书签",
+      "en": "Bookmark"
+    },
+    "Video": {
+      "zh-CN": "视频",
+      "en": "Video"
+    },
+    "Camera": {
+      "zh-CN": "相机",
+      "en": "Camera"
+    },
+    "Collection": {
+      "zh-CN": "集合",
+      "en": "Collection"
+    },
+    "Filter": {
+      "zh-CN": "筛选",
+      "en": "Filter"
+    },
+    "List": {
+      "zh-CN": "列表",
+      "en": "List"
+    },
+    "Grid": {
+      "zh-CN": "网格",
+      "en": "Grid"
+    },
+    "Checkmark": {
+      "zh-CN": "对勾",
+      "en": "Checkmark"
+    },
+    "Edit": {
+      "zh-CN": "编辑",
+      "en": "Edit"
+    },
+    "Settings": {
+      "zh-CN": "设置",
+      "en": "Settings"
+    },
+    "Search": {
+      "zh-CN": "搜索",
+      "en": "Search"
+    },
+    "Refresh": {
+      "zh-CN": "刷新",
+      "en": "Refresh"
+    },
+    "Translate": {
+      "zh-CN": "翻译",
+      "en": "Translate"
+    },
+    "TimePoint": {
+      "zh-CN": "时间点",
+      "en": "Time point"
+    },
+    "TimeRange": {
+      "zh-CN": "时间区间",
+      "en": "Time range"
+    },
+    "Text": {
+      "zh-CN": "文本",
+      "en": "Text"
+    },
+    "TextAlignLeft": {
+      "zh-CN": "段落",
+      "en": "Paragraph"
+    },
+    "Number": {
+      "zh-CN": "数字",
+      "en": "Number"
+    },
+    "Slider": {
+      "zh-CN": "滑块",
+      "en": "Slider"
+    },
+    "Toggle": {
+      "zh-CN": "开关",
+      "en": "Toggle"
+    },
+    "Image": {
+      "zh-CN": "图片",
+      "en": "Image"
+    },
+    "Calendar": {
+      "zh-CN": "日期",
+      "en": "Calendar"
+    }
+  },
+  "originLabels": {
+    "manual": {
+      "zh-CN": "手动填写",
+      "en": "Manual entry"
+    },
+    "agent": {
+      "zh-CN": "助手填写",
+      "en": "Assistant"
+    },
+    "metadata": {
+      "zh-CN": "资料补全",
+      "en": "Metadata lookup"
+    },
+    "path": {
+      "zh-CN": "导入与标注规则",
+      "en": "Import and annotation rules"
+    },
+    "probe": {
+      "zh-CN": "媒体信息",
+      "en": "Media information"
+    },
+    "event": {
+      "zh-CN": "播放事件",
+      "en": "Playback events"
+    },
+    "import": {
+      "zh-CN": "导入的标注",
+      "en": "Imported annotations"
+    }
+  },
+  "surfaceCapabilities": {
+    "term.details": {
+      "nodes": [
+        "stack",
+        "grid",
+        "section",
+        "field-set",
+        "action-bar",
+        "candidates"
+      ],
+      "commands": [
+        "metadata.enrich"
+      ]
+    },
+    "annotation.row": {
+      "nodes": [
+        "stack",
+        "grid",
+        "section",
+        "value",
+        "provenance",
+        "action-bar",
+        "menu"
+      ],
+      "commands": [
+        "annotation.seek",
+        "annotation.edit",
+        "annotation.clear"
+      ]
+    },
+    "library.actions": {
+      "nodes": [
+        "action-bar",
+        "ribbon",
+        "ribbon-tab",
+        "ribbon-group",
+        "control"
+      ],
+      "commands": [
+        "annotations.bulk",
+        "automation.bulk",
+        "metadata.enrich",
+        "library.import",
+        "library.play",
+        "library.query",
+        "library.save-view",
+        "library.select",
+        "library.copy",
+        "library.scan",
+        "library.export",
+        "library.remove"
+      ],
+      "conditions": false
+    },
+    "workspace.sidebar": {
+      "nodes": [
+        "activity-feed"
+      ],
+      "commands": [],
+      "conditions": false
+    }
+  },
+  "mediaStructure": {
+    "schema": "media-resources.schema.json",
+    "identitySchema": "media-identity.schema.json",
+    "levels": [
+      "work",
+      "version",
+      "part"
+    ],
+    "attachmentOwners": [
+      "work",
+      "version",
+      "part"
+    ],
+    "clock": "part",
+    "fingerprint": "sha256",
+    "relink": "preview-and-verified-commit"
+  },
+  "network": {
+    "modes": [
+      "system",
+      "direct",
+      "custom"
+    ],
+    "proxySchemes": [
+      "http",
+      "https",
+      "socks4",
+      "socks5"
+    ],
+    "authenticatedProxy": false,
+    "recoveryKinds": [
+      "metadata.enrich",
+      "sources.subscription"
+    ],
+    "recoveryStatuses": [
+      "connection-failed",
+      "timeout",
+      "browser-disconnected"
+    ]
+  },
+  "ribbonSurfaces": [
+    "film.details",
+    "library.actions"
+  ],
+  "uiCommandSurfaces": {
+    "library.import": [
+      "library.actions"
+    ],
+    "library.play": [
+      "library.actions"
+    ],
+    "library.query": [
+      "library.actions"
+    ],
+    "library.save-view": [
+      "library.actions"
+    ],
+    "library.select": [
+      "library.actions"
+    ],
+    "library.copy": [
+      "library.actions"
+    ],
+    "library.scan": [
+      "library.actions"
+    ],
+    "library.export": [
+      "library.actions"
+    ],
+    "library.remove": [
+      "library.actions"
+    ]
+  }
+}

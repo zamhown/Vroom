@@ -1,0 +1,24 @@
+name: Bug report / 缺陷报告
+description: Report a reproducible problem / 报告可复现的问题
+body:
+  - type: textarea
+    attributes:
+      label: Environment / 环境
+      description: Commit or version, OS, desktop or Web / 提交或版本、系统、桌面或 Web
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction / 复现步骤
+      description: Use synthetic data; do not attach private media or catalogs / 请用合成数据，不上传私人媒体或资料库
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected and actual behavior / 预期与实际行为
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sanitized logs or screenshots / 脱敏日志或截图
+      description: Remove paths, tokens and private data / 移除个人路径、令牌与隐私数据

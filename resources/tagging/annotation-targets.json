@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "targets": [
+    {
+      "id": "film-whole",
+      "subject": "film",
+      "scope": "whole",
+      "icon": "Video",
+      "label": {
+        "zh-CN": "影片",
+        "en": "Film"
+      }
+    },
+    {
+      "id": "term-whole",
+      "subject": "term",
+      "scope": "whole",
+      "icon": "Tag",
+      "label": {
+        "zh-CN": "标签值",
+        "en": "Value"
+      }
+    },
+    {
+      "id": "film-point",
+      "subject": "film",
+      "scope": "point",
+      "icon": "TimePoint",
+      "label": {
+        "zh-CN": "影片时间点",
+        "en": "Film time point"
+      }
+    },
+    {
+      "id": "film-interval",
+      "subject": "film",
+      "scope": "interval",
+      "icon": "TimeRange",
+      "label": {
+        "zh-CN": "影片区间",
+        "en": "Film interval"
+      }
+    }
+  ]
+}

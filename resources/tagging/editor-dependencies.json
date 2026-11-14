@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "description": {
+    "zh-CN": "配置表单的依赖规则、可用参数和联动导航。已有但当前不适用的设置保留并标明原因。",
+    "en": "Editor dependencies, available parameters and related settings. Inactive existing settings are retained with an explanation."
+  },
+  "conditions": [
+    {
+      "kind": "definition",
+      "path": "subjectVocabularies",
+      "controller": "targets",
+      "includes": "term-whole",
+      "reason": {
+        "zh-CN": "选择“标签值”后，可以限定适用的值集合。",
+        "en": "Select Value to restrict subject vocabularies."
+      }
+    },
+    {
+      "kind": "definition",
+      "path": "initialization",
+      "controller": "targets",
+      "includes": "film-whole",
+      "reason": {
+        "zh-CN": "当前自动任务面向整部影片；选择“影片”后可配置。",
+        "en": "Current automatic tasks annotate whole films; select Film to configure them."
+      }
+    },
+    {
+      "kind": "definition",
+      "path": "automation",
+      "controller": "targets",
+      "includes": "film-whole",
+      "reason": {
+        "zh-CN": "当前自动任务面向整部影片；选择“影片”后可配置。",
+        "en": "Current automatic tasks annotate whole films; select Film to configure them."
+      }
+    },
+    {
+      "kind": "definition",
+      "path": "enrichment",
+      "controller": "targets",
+      "includes": "film-whole",
+      "reason": {
+        "zh-CN": "当前自动任务面向整部影片；选择“影片”后可配置。",
+        "en": "Current automatic tasks annotate whole films; select Film to configure them."
+      }
+    },
+    {
+      "kind": "definition",
+      "path": "writes.manualClearBlocksAutomatic",
+      "controller": "writes.manual",
+      "notEquals": false,
+      "reason": {
+        "zh-CN": "允许手动修改后，才能配置手动清空的行为。",
+        "en": "Enable manual editing to configure manual clearing."
+      }
+    },
+    {
+      "kind": "sources",
+      "path": "request",
+      "controller": "transport",
+      "equals": "http",
+      "reason": {
+        "zh-CN": "网络来源使用请求设置。",
+        "en": "Request settings apply to network sources."
+      }
+    },
+    {
+      "kind": "sources",
+      "path": "limits",
+      "controller": "transport",
+      "equals": "http",
+      "reason": {
+        "zh-CN": "网络来源使用请求限额。",
+        "en": "Request limits apply to network sources."
+      }
+    },
+    {
+      "kind": "sources",
+      "path": "extension",
+      "controller": "transport",
+      "equals": "sidecar",
+      "reason": {
+        "zh-CN": "本地伴随文件来源使用文件扩展名。",
+        "en": "Extensions apply to local sidecar sources."
+      }
+    }
+  ],
+  "messages": {
+    "componentParameter": {
+      "zh-CN": "此参数不适用于当前组件。切回支持它的组件后可继续编辑。",
+      "en": "This parameter does not apply to the selected component. Its value is retained for switching back."
+    },
+    "executorParameter": {
+      "zh-CN": "此参数不适用于当前执行方式，原值已保留。",
+      "en": "This parameter does not apply to the selected executor; its value is retained."
+    },
+    "constraintType": {
+      "zh-CN": "此约束不适用于当前数据类型，原值已保留。",
+      "en": "This constraint does not apply to the current data type; its value is retained."
+    },
+    "referenceRule": {
+      "zh-CN": "已选择规则引用；内联表达式不参与执行。",
+      "en": "A referenced rule is selected; inline patterns are not used."
+    },
+    "sourcePriority": {
+      "zh-CN": "仅在某条规则使用“按来源优先级”时生效。",
+      "en": "Applies when a rule uses Prefer source priority."
+    },
+    "createOptions": {
+      "zh-CN": "需要允许新增选项，并将写入方式设为“仅建议”。",
+      "en": "Requires option creation and the Suggest only write policy."
+    },
+    "sourceFormat": {
+      "zh-CN": "此字段设置不适用于当前解析格式，原值已保留。",
+      "en": "This field setting does not apply to the current parsing format; its value is retained."
+    },
+    "valueConstraint": {
+      "zh-CN": "取值规则中的约束优先；此控件默认值暂不生效。",
+      "en": "The value constraint takes precedence over this control default."
+    },
+    "validation1": {
+      "zh-CN": "当前录入组件与取值类型或数量不匹配，请调整关联的取值规则。",
+      "en": "The input control does not match the value type or cardinality. Adjust its value contract."
+    },
+    "validation2": {
+      "zh-CN": "选择类组件需要指定可枚举值集合。",
+      "en": "Selection controls require a vocabulary."
+    },
+    "validation3": {
+      "zh-CN": "多值必须使用列表类型；单值不能使用列表类型。",
+      "en": "Multiple values require an array schema; a single value must not use an array schema."
+    },
+    "validation4": {
+      "zh-CN": "实体引用需要包含 term 字段的对象约束。",
+      "en": "Entity references require an object schema with a term property."
+    }
+  }
+}

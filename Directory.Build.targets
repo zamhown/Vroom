@@ -1,0 +1,16 @@
+<Project>
+  <!-- The CPU package contains one DLL set per instruction set. RID publishing
+       normally flattens native assets; preserve the layout used by LLamaSharp's
+       CPU feature detection so the variants cannot overwrite each other. -->
+  <Target
+    Name="PreserveLlamaNativeLayout"
+    AfterTargets="ComputeResolvedFilesToPublishList"
+    BeforeTargets="_HandleFileConflictsForPublish"
+  >
+    <ItemGroup>
+      <ResolvedFileToPublish Condition="$([System.String]::Copy('%(ResolvedFileToPublish.Identity)').Contains('llamasharp.backend.cpu'))">
+        <RelativePath>$([System.Text.RegularExpressions.Regex]::Replace('%(ResolvedFileToPublish.Identity)', '^.*[/\\](runtimes[/\\].*)$', '$1'))</RelativePath>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

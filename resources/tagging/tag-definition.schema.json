@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vroom:schema:tag-definition:3",
+  "$ref": "urn:vroom:schema:tag-definitions:3#/$defs/definition"
+}

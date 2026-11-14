@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vroom.local/schemas/language-pack.schema.json",
+  "type": "object",
+  "required": ["formatVersion", "locale", "displayName", "direction", "messages"],
+  "additionalProperties": false,
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "locale": { "type": "string", "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$", "maxLength": 80 },
+    "displayName": { "type": "string", "minLength": 1 },
+    "direction": { "enum": ["ltr", "rtl"] },
+    "messages": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } }
+  }
+}

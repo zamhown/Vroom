@@ -1,0 +1,19 @@
+{
+  "name": "vroom-workspace",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "setup:runtime": "node scripts/setup-runtime.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "format": "node scripts/format.mjs",
+    "start": "node scripts/run.mjs",
+    "start:web": "node scripts/run.mjs --web",
+    "test:scripts": "node scripts/test-scripts.mjs",
+    "test:e2e": "node scripts/e2e-web.mjs"
+  }
+}

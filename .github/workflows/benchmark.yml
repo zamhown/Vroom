@@ -1,0 +1,21 @@
+name: benchmark
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  tag-benchmark:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Tag query benchmark
+        run: dotnet run --project tools/Vroom.Smoke -c Release -- --tag-benchmark | Tee-Object -FilePath benchmark.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tag-benchmark
+          path: benchmark.txt

@@ -1,0 +1,4951 @@
+{
+  "$schema": "urn:vroom:schema:tag-definitions:3",
+  "formatVersion": 3,
+  "kind": "tag-definitions",
+  "package": {
+    "id": "vroom.core",
+    "version": "3.12.2",
+    "requires": {
+      "definitionLanguage": 3,
+      "features": [
+        "layout-tree@1",
+        "localized-text@1",
+        "event-rules@1",
+        "term-entities@2",
+        "term-dag@2",
+        "typed-query@1",
+        "capability-contract@1",
+        "media-structure@1",
+        "source-consensus@1",
+        "source-entities@1",
+        "source-subscriptions@1",
+        "ribbon-layout@1"
+      ]
+    }
+  },
+  "definitions": [
+    {
+      "key": "core.rating",
+      "revision": 2,
+      "enabled": true,
+      "label": {
+        "zh-CN": "评价",
+        "en": "Rating"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "semanticVersion": 1,
+        "unit": "score"
+      },
+      "input": {
+        "component": "rating@1",
+        "props": {
+          "maxSymbols": 5
+        },
+        "compact": {
+          "maxSymbols": 5
+        }
+      },
+      "display": {
+        "default": {
+          "component": "rating-display@1",
+          "props": {
+            "maxSymbols": 10,
+            "showValue": true
+          }
+        },
+        "compact": {
+          "component": "rating-display@1",
+          "props": {
+            "maxSymbols": 5
+          },
+          "label": {
+            "zh-CN": "紧凑展示",
+            "en": "Compact display"
+          }
+        }
+      },
+      "facets": {
+        "quality": {
+          "kind": "numeric-bands",
+          "bands": [
+            {
+              "id": "general",
+              "label": {
+                "zh-CN": "一般",
+                "en": "Basic"
+              },
+              "matchAliases": [
+                "一般"
+              ],
+              "gte": 1,
+              "lte": 2,
+              "representative": 2
+            },
+            {
+              "id": "selected",
+              "label": {
+                "zh-CN": "精选",
+                "en": "Selected"
+              },
+              "matchAliases": [
+                "精选"
+              ],
+              "gte": 3,
+              "lte": 4,
+              "representative": 4
+            },
+            {
+              "id": "premium",
+              "label": {
+                "zh-CN": "精品",
+                "en": "Premium"
+              },
+              "matchAliases": [
+                "精品"
+              ],
+              "gte": 5,
+              "lte": 6,
+              "representative": 6
+            },
+            {
+              "id": "top",
+              "label": {
+                "zh-CN": "顶尖",
+                "en": "Top"
+              },
+              "matchAliases": [
+                "顶尖"
+              ],
+              "gte": 7,
+              "lte": 8,
+              "representative": 8
+            },
+            {
+              "id": "classic",
+              "label": {
+                "zh-CN": "经典",
+                "en": "Classic"
+              },
+              "matchAliases": [
+                "经典"
+              ],
+              "gte": 9,
+              "lte": 10,
+              "representative": 10
+            }
+          ],
+          "missing": {
+            "id": "unrated",
+            "label": {
+              "zh-CN": "未评分",
+              "en": "Unrated"
+            }
+          },
+          "label": {
+            "zh-CN": "评价分档",
+            "en": "Rating bands"
+          }
+        }
+      },
+      "navigation": {
+        "component": "rating-band-navigation@1",
+        "props": {
+          "facet": "quality",
+          "symbols": 5,
+          "selection": "exact-band",
+          "showMissingInMenu": true
+        },
+        "open": {
+          "kind": "query",
+          "filter": {
+            "op": "facet",
+            "tag": "$self",
+            "facet": "quality",
+            "selection": "$selection"
+          },
+          "title": {
+            "message": "core.navigation.rating-band",
+            "args": {
+              "tagLabel": {
+                "from": "tag.label"
+              },
+              "selectionLabel": {
+                "from": "selection.label"
+              }
+            }
+          }
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.primary",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player",
+          "slot": "player.annotations.primary",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "card",
+          "slot": "film.card.meta.trailing",
+          "view": "display.compact",
+          "mode": "display"
+        },
+        {
+          "id": "table",
+          "slot": "film.table.columns",
+          "view": "display.compact",
+          "mode": "display"
+        },
+        {
+          "id": "nav",
+          "slot": "nav.after-all-films",
+          "view": "navigation",
+          "mode": "navigate"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value",
+          "facet"
+        ],
+        "deduplicate": false
+      },
+      "initialization": [
+        {
+          "id": "path-rating",
+          "event": "film.discovered",
+          "executor": "path.facet-alias-match@1",
+          "args": {
+            "facet": "quality",
+            "inputs": [
+              "file.relativePath"
+            ]
+          },
+          "apply": "if-unset"
+        }
+      ],
+      "enrichment": [],
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "description": {
+        "zh-CN": "个人评分，1–10 分。1–2 一般，3–4 精选，5–6 精品，7–8 顶尖，9–10 经典；五颗星显示时半星代表 1 分。",
+        "en": "Personal score from 1 to 10. Bands are 1–2 Basic, 3–4 Selected, 5–6 Premium, 7–8 Top and 9–10 Classic. In the five-star display, half a star equals one point."
+      },
+      "group": "core.personal"
+    },
+    {
+      "key": "core.favorite",
+      "revision": 2,
+      "enabled": true,
+      "label": {
+        "zh-CN": "收藏",
+        "en": "Favorite"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "boolean"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "literal": false
+        }
+      },
+      "input": {
+        "component": "toggle@1",
+        "props": {
+          "trueLabel": {
+            "zh-CN": "已收藏",
+            "en": "Favorited"
+          },
+          "falseLabel": {
+            "zh-CN": "收藏",
+            "en": "Favorite"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "boolean-label@1",
+          "props": {
+            "trueLabel": {
+              "zh-CN": "已收藏",
+              "en": "Favorited"
+            },
+            "falseLabel": {
+              "zh-CN": "未收藏",
+              "en": "Not favorited"
+            }
+          }
+        },
+        "overlay": {
+          "component": "icon-toggle@1",
+          "props": {
+            "trueIcon": "HeartFilled",
+            "falseIcon": "Heart",
+            "trueLabel": {
+              "zh-CN": "取消收藏",
+              "en": "Remove from favorites"
+            },
+            "falseLabel": {
+              "zh-CN": "收藏",
+              "en": "Favorite"
+            }
+          },
+          "label": {
+            "zh-CN": "海报图标",
+            "en": "Poster icon"
+          }
+        }
+      },
+      "navigation": {
+        "component": "filter-link@1",
+        "props": {
+          "label": {
+            "zh-CN": "收藏",
+            "en": "Favorite"
+          },
+          "icon": "Heart"
+        },
+        "open": {
+          "kind": "query",
+          "filter": {
+            "op": "eq",
+            "tag": "$self",
+            "value": true
+          }
+        }
+      },
+      "placements": [
+        {
+          "id": "nav",
+          "slot": "nav.after-all-films",
+          "view": "navigation",
+          "mode": "navigate"
+        },
+        {
+          "id": "card",
+          "slot": "film.card.overlay.top-right",
+          "view": "display.overlay",
+          "mode": "edit"
+        },
+        {
+          "id": "queue",
+          "slot": "player.queue.item.trailing",
+          "view": "display.overlay",
+          "mode": "edit"
+        },
+        {
+          "id": "details",
+          "slot": "film.details.primary",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "initialization": [],
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "description": {
+        "zh-CN": "标记希望快速找回的影片，可从导航入口筛选，也可在卡片上直接切换。",
+        "en": "Marks films for quick access through navigation and the card toggle."
+      },
+      "group": "core.personal"
+    },
+    {
+      "key": "core.watched",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "已看过",
+        "en": "Watched"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "boolean"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "literal": false
+        }
+      },
+      "input": {
+        "component": "toggle@1",
+        "props": {
+          "trueLabel": {
+            "zh-CN": "已看过",
+            "en": "Watched"
+          },
+          "falseLabel": {
+            "zh-CN": "未看过",
+            "en": "Unwatched"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "nav",
+          "slot": "nav.after-all-films",
+          "view": "navigation",
+          "mode": "navigate"
+        },
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.primary",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [],
+      "navigation": {
+        "component": "filter-link@1",
+        "props": {
+          "label": {
+            "zh-CN": "未看过",
+            "en": "Unwatched"
+          },
+          "icon": "Clock"
+        },
+        "open": {
+          "kind": "query",
+          "filter": {
+            "op": "eq",
+            "tag": "$self",
+            "value": false
+          }
+        }
+      },
+      "automation": [
+        {
+          "id": "played",
+          "event": "playback.ended",
+          "executor": "value.constant@1",
+          "args": {
+            "value": true
+          },
+          "apply": "unless-locked"
+        }
+      ],
+      "description": {
+        "zh-CN": "表示影片已经看完。播放结束时自动标为已看过；手动锁定时保留人工选择。",
+        "en": "Indicates a film has been watched to the end. Set automatically when playback ends unless the value is manually locked."
+      },
+      "group": "core.personal"
+    },
+    {
+      "key": "core.title",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "标题",
+        "en": "Title"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "file.baseName"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {
+          "layout": {
+            "span": "full"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": true
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "sourcePriority": [
+          "manual",
+          "agent",
+          "metadata",
+          "path"
+        ]
+      },
+      "initialization": [],
+      "enrichment": [
+        {
+          "id": "nfo-title",
+          "source": "core.sources.nfo",
+          "field": "title",
+          "apply": "prefer-source"
+        },
+        {
+          "id": "catalog-title",
+          "source": "core.sources.catalog",
+          "field": "title",
+          "apply": "prefer-source"
+        }
+      ],
+      "description": {
+        "zh-CN": "影片的显示标题；优先使用补全资料中的正式标题，也可以手动修改。",
+        "en": "The display title, initialized from available metadata and editable manually."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.code",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "番号",
+        "en": "Catalog code"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "film-card-meta-leading",
+          "slot": "film.card.meta.leading",
+          "view": "display.default",
+          "mode": "display"
+        },
+        {
+          "id": "film-table-columns",
+          "slot": "film.table.columns",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": true
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [
+        {
+          "id": "extract-catalog-code",
+          "event": "film.discovered",
+          "executor": "regex.extract@1",
+          "args": {
+            "rule": "core.rules.catalog-code",
+            "inputs": [
+              "file.baseName",
+              "file.relativePath"
+            ]
+          },
+          "apply": "if-unset"
+        }
+      ],
+      "enrichment": [
+        {
+          "id": "nfo-code",
+          "source": "core.sources.nfo",
+          "field": "code",
+          "apply": "if-unset"
+        },
+        {
+          "id": "catalog-code",
+          "source": "core.sources.catalog",
+          "field": "code",
+          "apply": "if-unset"
+        }
+      ],
+      "description": {
+        "zh-CN": "从路径或资料源提取并标准化的影片识别码，可用于搜索和查重。",
+        "en": "A normalized identifier extracted from the file path or metadata, usable for search and duplicate matching."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.description",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "简介",
+        "en": "Description"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "textarea@1",
+        "props": {
+          "layout": {
+            "span": "full"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [],
+      "enrichment": [
+        {
+          "id": "nfo-description",
+          "source": "core.sources.nfo",
+          "field": "description",
+          "apply": "if-unset"
+        }
+      ],
+      "description": {
+        "zh-CN": "影片的简介或补充说明，支持手动录入及资料源补全。",
+        "en": "A film synopsis or additional description, entered manually or enriched from metadata."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.poster",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "海报",
+        "en": "Poster"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "asset@1",
+        "props": {
+          "layout": {
+            "span": "full"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": false,
+        "sort": false,
+        "groupBy": [],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [],
+      "enrichment": [
+        {
+          "id": "nfo-poster",
+          "source": "core.sources.nfo",
+          "field": "poster",
+          "apply": "if-unset"
+        },
+        {
+          "id": "catalog-poster",
+          "source": "core.sources.catalog",
+          "field": "poster",
+          "apply": "if-unset"
+        }
+      ],
+      "description": {
+        "zh-CN": "影片的主展示图片。可选择本地图片，或采用资料源提供的海报。",
+        "en": "The primary image, imported locally or obtained from a configured metadata source."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.poster.presentation",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "海报展示方式",
+        "en": "Poster display"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.poster.presentations"
+      },
+      "input": {
+        "component": "select@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [],
+      "enrichment": [],
+      "description": {
+        "zh-CN": "影片列表中海报的展示方式。未设置时自动判断：宽高比接近 3:2 的海报视为影碟包装盒展开图（左侧 47.5% 为封底、中间 5% 为中脊、右侧 47.5% 为封面），以影碟-3D 展示；其他海报完整展示。",
+        "en": "How the poster is shown in film lists. When unset, a poster close to 3:2 is treated as an unfolded disc case (left 47.5% back cover, middle 5% spine, right 47.5% front cover) and shown as a 3D disc case; other posters are shown whole."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.visibility",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "显示状态",
+        "en": "Visibility"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "default": {
+          "literal": {
+            "term": "core.visibility.options.visible"
+          }
+        },
+        "vocabulary": "core.visibility.options"
+      },
+      "input": {
+        "component": "select@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "控制影片是否进入默认列表。隐藏只影响索引展示，不删除原文件。",
+        "en": "Controls inclusion in the default catalog. Hiding a film never deletes its media file."
+      },
+      "group": "core.personal"
+    },
+    {
+      "key": "core.cast",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "主演",
+        "en": "Cast"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole",
+        "film-point",
+        "film-interval"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.people"
+      },
+      "input": {
+        "component": "multi-select@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player-annotations-fields",
+          "slot": "player.annotations.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player-annotation-value",
+          "slot": "player.annotation.value",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "initialization": [
+        {
+          "id": "match-people",
+          "event": "film.discovered",
+          "executor": "dictionary.match@1",
+          "args": {
+            "inputs": [
+              "file.relativePath"
+            ],
+            "vocabulary": "core.people"
+          },
+          "apply": "if-unset"
+        },
+        {
+          "id": "extract-names",
+          "event": "film.discovered",
+          "executor": "regex.extract@1",
+          "args": {
+            "patterns": [
+              {
+                "pattern": "\\b[A-Z][a-z]{1,20} [A-Z][a-z]{1,20}\\b",
+                "template": "{0}"
+              },
+              {
+                "pattern": "[\\p{IsCJKUnifiedIdeographs}]{1,4}[\\p{IsHiragana}\\p{IsKatakana}]{1,5}|[\\p{IsHiragana}\\p{IsKatakana}]{1,4}[\\p{IsCJKUnifiedIdeographs}]{1,4}",
+                "template": "{0}"
+              },
+              {
+                "pattern": "(?:actor|actress|主演|演员|女優|出演)\\s*[:=：]\\s*([^/\\\\\\[\\]（）()]+)",
+                "template": "{1}"
+              }
+            ],
+            "inputs": [
+              "file.baseName"
+            ],
+            "createOptions": true
+          },
+          "apply": "suggest-only"
+        }
+      ],
+      "enrichment": [
+        {
+          "id": "nfo-cast",
+          "source": "core.sources.nfo",
+          "field": "cast",
+          "apply": "suggest-only"
+        },
+        {
+          "id": "catalog-cast",
+          "source": "core.sources.catalog",
+          "field": "cast",
+          "apply": "suggest-only"
+        }
+      ],
+      "description": {
+        "zh-CN": "引用具体人物；可选择或新建多个人物。性别、出生日期等资料记录在人物值实体上。",
+        "en": "References individual people. Select or create people; gender and date of birth belong to each person value."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.studio",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "厂牌",
+        "en": "Studio"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.studios"
+      },
+      "input": {
+        "component": "multi-select@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "initialization": [
+        {
+          "id": "match-studios",
+          "event": "film.discovered",
+          "executor": "dictionary.match@1",
+          "args": {
+            "inputs": [
+              "file.relativePath"
+            ],
+            "vocabulary": "core.studios"
+          },
+          "apply": "if-unset"
+        }
+      ],
+      "description": {
+        "zh-CN": "影片的制作或发行机构，支持选择多个标签及创建新选项。",
+        "en": "Production or distribution organizations, with multiple selection and option creation."
+      },
+      "group": "core.metadata",
+      "enrichment": [
+        {
+          "id": "nfo-studio",
+          "source": "core.sources.nfo",
+          "field": "studio",
+          "apply": "suggest-only"
+        }
+      ]
+    },
+    {
+      "key": "core.labels",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "关键词",
+        "en": "Keywords"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole",
+        "term-whole",
+        "film-point",
+        "film-interval"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.topics"
+      },
+      "input": {
+        "component": "multi-select@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-fields",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player-annotations-fields",
+          "slot": "player.annotations.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player-annotation-value",
+          "slot": "player.annotation.value",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "initialization": [
+        {
+          "id": "match-topics",
+          "event": "film.discovered",
+          "executor": "dictionary.match@1",
+          "args": {
+            "inputs": [
+              "file.relativePath"
+            ],
+            "vocabulary": "core.topics"
+          },
+          "apply": "if-unset"
+        }
+      ],
+      "enrichment": [
+        {
+          "id": "nfo-labels",
+          "source": "core.sources.nfo",
+          "field": "labels",
+          "apply": "suggest-only"
+        },
+        {
+          "id": "catalog-labels",
+          "source": "core.sources.catalog",
+          "field": "labels",
+          "apply": "suggest-only"
+        }
+      ],
+      "description": {
+        "zh-CN": "用于影片、时间点、区间或标签值的主题分类。每个选项都有独立身份；引用其他标签值形成的关系不能包含环。",
+        "en": "Topic classification for films, points, intervals and values. Each option has stable identity; value references must remain acyclic."
+      },
+      "group": "core.metadata"
+    },
+    {
+      "key": "core.file.path",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "文件路径",
+        "en": "File path"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "file.path"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "媒体文件的实际位置。此处用于展示，文件访问始终以宿主记录的真实路径为准。",
+        "en": "The actual media file location. File access always uses the host-owned path."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.file.size",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "文件大小",
+        "en": "File size"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semanticVersion": 1,
+        "unit": "bytes",
+        "default": {
+          "fact": "file.size"
+        }
+      },
+      "input": {
+        "component": "number@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        },
+        {
+          "id": "film-table-columns",
+          "slot": "film.table.columns",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": true
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "文件占用的字节数，展示时自动换算为 KiB、MiB 或 GiB。",
+        "en": "The file size in bytes, formatted automatically as KiB, MiB or GiB."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.added",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "添加时间",
+        "en": "Added"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "unit": "datetime",
+        "default": {
+          "fact": "file.added"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "影片首次加入本地影片库的时间。",
+        "en": "When the film was first added to the local catalog."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.modified",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "修改时间",
+        "en": "Modified"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "unit": "datetime",
+        "default": {
+          "fact": "file.modified"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "文件系统记录的最后修改时间，用于识别媒体文件变化。",
+        "en": "The file modification time, used to detect media changes."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.duration",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "时长",
+        "en": "Duration"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "number",
+          "minimum": 0
+        },
+        "semanticVersion": 1,
+        "unit": "seconds",
+        "default": {
+          "fact": "probe.duration"
+        }
+      },
+      "input": {
+        "component": "number@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        },
+        {
+          "id": "film-table-columns",
+          "slot": "film.table.columns",
+          "view": "display.default",
+          "mode": "display"
+        },
+        {
+          "id": "film-card-overlay-bottom",
+          "slot": "film.card.overlay.bottom",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": true
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "媒体探测得到的总时长，以原始影片时间轴为准。",
+        "en": "Total duration reported by the media probe on the original timeline."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.video.width",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "画面宽度",
+        "en": "Frame width"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semanticVersion": 1,
+        "unit": "px",
+        "default": {
+          "fact": "probe.video.width"
+        }
+      },
+      "input": {
+        "component": "number@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "视频画面的水平像素数。",
+        "en": "Horizontal pixel count of the video frame."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.video.height",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "画面高度",
+        "en": "Frame height"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semanticVersion": 1,
+        "unit": "px",
+        "default": {
+          "fact": "probe.video.height"
+        }
+      },
+      "input": {
+        "component": "number@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "number-text@1",
+          "props": {
+            "suffix": {
+              "zh-CN": "p",
+              "en": "p"
+            }
+          }
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        },
+        {
+          "id": "film-card-overlay-top-left",
+          "slot": "film.card.overlay.top-left",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "视频画面的垂直像素数，用于展示清晰度及比较版本。",
+        "en": "Vertical pixel count, used to display resolution and compare versions."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.video.fps",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "帧率",
+        "en": "Frame rate"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "number",
+          "minimum": 0
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "probe.video.frameRate"
+        }
+      },
+      "input": {
+        "component": "number@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "媒体探测得到的每秒帧数，也用于逐帧播放的时间步进。",
+        "en": "Frames per second reported by the media probe, also used for frame stepping."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.video.codec",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "视频编码",
+        "en": "Video codec"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "probe.video.codec"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "视频流使用的编码格式，例如 H.264 或 HEVC。",
+        "en": "The video codec, such as H.264 or HEVC."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.audio.codec",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "音频编码",
+        "en": "Audio codec"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "probe.audio.codec"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "音频流使用的编码格式；没有音轨时可能为空。",
+        "en": "The audio codec. It may be absent when the file has no audio track."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.library",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "所属影片库",
+        "en": "Library"
+      },
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1,
+        "default": {
+          "fact": "catalog.libraryId"
+        }
+      },
+      "input": {
+        "component": "text@1",
+        "props": {}
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1",
+          "props": {}
+        }
+      },
+      "placements": [
+        {
+          "id": "film-details-facts",
+          "slot": "film.details.facts",
+          "view": "display.default",
+          "mode": "display"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": false
+      },
+      "initialization": [],
+      "description": {
+        "zh-CN": "影片所属的本地影片库，用于跨库查询与分组。",
+        "en": "The catalog library containing the film, usable for queries and grouping."
+      },
+      "group": "core.technical"
+    },
+    {
+      "key": "core.person.gender",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "性别",
+        "en": "Gender"
+      },
+      "description": {
+        "zh-CN": "具体人物的性别，未设置时保持未知。",
+        "en": "Gender of an individual person; unset remains unknown."
+      },
+      "group": "core.people",
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.person.gender.options"
+      },
+      "input": {
+        "component": "select@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false,
+        "groupBy": [
+          "value"
+        ]
+      },
+      "writes": {
+        "manual": true
+      }
+    },
+    {
+      "key": "core.person.birthdate",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "出生日期",
+        "en": "Date of birth"
+      },
+      "description": {
+        "zh-CN": "人物的出生日期，使用 YYYY-MM-DD。未知时留空，不另外维护会随时间变化的年龄。",
+        "en": "Date of birth in YYYY-MM-DD. Leave unknown dates unset; age is not stored separately."
+      },
+      "group": "core.people",
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "date@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      },
+      "enrichment": [
+        {
+          "id": "profile-birthdate",
+          "source": "core.sources.wikidata.entity",
+          "field": "birthdate",
+          "apply": "if-unset",
+          "transform": {
+            "op": "date-only",
+            "args": [
+              {
+                "fact": "source.value"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "core.release-date",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "发行日期",
+        "en": "Release date"
+      },
+      "description": {
+        "zh-CN": "影片的正式发行日期；可从本地资料文件读取，未知时留空。",
+        "en": "Official release date, optionally read from a local sidecar. Leave unknown dates unset."
+      },
+      "group": "core.metadata",
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "date@1"
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1"
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "groupBy": [
+          "value"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      },
+      "enrichment": [
+        {
+          "id": "nfo-releaseDate",
+          "source": "core.sources.nfo",
+          "field": "releaseDate",
+          "apply": "if-unset"
+        }
+      ]
+    },
+    {
+      "key": "core.director",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "导演",
+        "en": "Director"
+      },
+      "description": {
+        "zh-CN": "影片导演，引用人物集合中的具体人物。",
+        "en": "Directors of the film, referencing individuals in the people collection."
+      },
+      "group": "core.metadata",
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.people"
+      },
+      "input": {
+        "component": "multi-select@1"
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1"
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "enrichment": [
+        {
+          "id": "nfo-director",
+          "source": "core.sources.nfo",
+          "field": "director",
+          "apply": "suggest-only"
+        }
+      ]
+    },
+    {
+      "key": "core.series",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "系列",
+        "en": "Series"
+      },
+      "description": {
+        "zh-CN": "影片所属系列；系列拥有独立身份，不以文件夹名称作为身份。",
+        "en": "Series membership with independent identities rather than folder names."
+      },
+      "group": "core.metadata",
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.series.values"
+      },
+      "input": {
+        "component": "multi-select@1"
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1"
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "enrichment": [
+        {
+          "id": "nfo-series",
+          "source": "core.sources.nfo",
+          "field": "series",
+          "apply": "suggest-only"
+        }
+      ]
+    },
+    {
+      "key": "core.languages",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "语言",
+        "en": "Languages"
+      },
+      "description": {
+        "zh-CN": "影片的语言信息，可包含多种语言。未知时不作推断。",
+        "en": "Languages used in the film; multiple values are allowed. Unknown languages are not inferred."
+      },
+      "group": "core.metadata",
+      "parents": [],
+      "targets": [
+        "film-whole"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.languages.values"
+      },
+      "input": {
+        "component": "multi-select@1"
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1"
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [
+          "value",
+          "member"
+        ],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "enrichment": [
+        {
+          "id": "nfo-languages",
+          "source": "core.sources.nfo",
+          "field": "languages",
+          "apply": "suggest-only"
+        }
+      ]
+    },
+    {
+      "key": "core.notes",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "笔记",
+        "en": "Notes"
+      },
+      "description": {
+        "zh-CN": "个人笔记，可记录整部影片、时间点或区间；自动补全不会覆盖笔记。",
+        "en": "Personal notes for a film, point or interval. Enrichment does not overwrite notes."
+      },
+      "group": "core.personal",
+      "parents": [],
+      "targets": [
+        "film-whole",
+        "film-point",
+        "film-interval"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "maxLength": 16000
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "textarea@1",
+        "props": {
+          "rows": 3,
+          "layout": {
+            "span": "full"
+          }
+        }
+      },
+      "display": {
+        "default": {
+          "component": "text-display@1"
+        }
+      },
+      "placements": [
+        {
+          "id": "details",
+          "slot": "film.details.fields",
+          "view": "input",
+          "mode": "edit"
+        },
+        {
+          "id": "player",
+          "slot": "player.annotations.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "groupBy": [],
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      }
+    },
+    {
+      "key": "core.entity.wikidata-id",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "Wikidata 实体 ID",
+        "en": "Wikidata entity ID"
+      },
+      "description": {
+        "zh-CN": "手动核对后填写 Q 开头的 Wikidata 标识。相同姓名不代表同一实体；补全仅使用此明确标识。",
+        "en": "Enter a verified Wikidata Q ID. Equal names do not establish identity; enrichment uses this explicit identifier."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "pattern": "^Q[1-9][0-9]*$"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "text@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      }
+    },
+    {
+      "key": "core.entity.summary",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "资料摘要",
+        "en": "Profile summary"
+      },
+      "description": {
+        "zh-CN": "该人物或厂牌的资料摘要；原始来源和核对记录保存在字段信息中。",
+        "en": "A profile summary of this person or organization. Source evidence is retained in field information."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "textarea@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      },
+      "enrichment": [
+        {
+          "id": "profile-description",
+          "source": "core.sources.wikidata.entity",
+          "field": "description",
+          "apply": "if-unset"
+        }
+      ]
+    },
+    {
+      "key": "core.entity.website",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "官方网站",
+        "en": "Official website"
+      },
+      "description": {
+        "zh-CN": "该人物或厂牌的公开官方网站地址。",
+        "en": "The public official website of this person or organization."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "text@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      },
+      "enrichment": [
+        {
+          "id": "profile-website",
+          "source": "core.sources.wikidata.entity",
+          "field": "website",
+          "apply": "if-unset"
+        }
+      ]
+    },
+    {
+      "key": "core.entity.image",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "资料图片",
+        "en": "Profile image"
+      },
+      "description": {
+        "zh-CN": "人物肖像或厂牌标志。下载到本机资源存储，保留来源证据。",
+        "en": "A portrait or organization logo, stored locally with source evidence."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "asset@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      },
+      "enrichment": [
+        {
+          "id": "profile-image",
+          "source": "core.sources.wikidata.entity",
+          "field": "image",
+          "apply": "if-unset",
+          "transform": {
+            "op": "concat",
+            "args": [
+              {
+                "literal": "https://commons.wikimedia.org/wiki/Special:FilePath/"
+              },
+              {
+                "op": "url-encode",
+                "args": [
+                  {
+                    "fact": "source.value"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "core.organization.inception",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "成立日期",
+        "en": "Date established"
+      },
+      "description": {
+        "zh-CN": "厂牌或组织的成立日期，未知时留空。",
+        "en": "The date the organization was established; leave unknown dates unset."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "date@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true
+      },
+      "enrichment": [
+        {
+          "id": "profile-inception",
+          "source": "core.sources.wikidata.entity",
+          "field": "inception",
+          "apply": "if-unset",
+          "transform": {
+            "op": "date-only",
+            "args": [
+              {
+                "fact": "source.value"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "core.entity.follow",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "订阅资料与发现",
+        "en": "Follow profile and discoveries"
+      },
+      "description": {
+        "zh-CN": "开启后按资料源声明的周期刷新，默认每天检查人物或厂牌资料及相关作品。新发现保留为待确认候选；仅应用运行且允许联网时执行。",
+        "en": "Refreshes profiles and related works on the source schedule (daily by default). Discoveries remain reviewable candidates. Runs while the app is open and online access is enabled."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "boolean"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "toggle@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      }
+    },
+    {
+      "key": "core.discovery.reference",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "来源链接",
+        "en": "Source link"
+      },
+      "description": {
+        "zh-CN": "作品在公开资料源中的稳定地址，可用于核对身份。",
+        "en": "Stable public source address for verifying this work."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.discoveries"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "text@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      }
+    },
+    {
+      "key": "core.discovery.release-date",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "发行日期",
+        "en": "Release date"
+      },
+      "description": {
+        "zh-CN": "公开来源提供的发行日期。未知的月日保持未填写。",
+        "en": "Release date reported by the public source. Unknown month or day remains unset."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.discoveries"
+      ],
+      "value": {
+        "cardinality": "one",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "semanticVersion": 1
+      },
+      "input": {
+        "component": "date@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": true,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true
+      }
+    },
+    {
+      "key": "core.entity.discoveries",
+      "revision": 1,
+      "enabled": true,
+      "label": {
+        "zh-CN": "相关作品发现",
+        "en": "Related works"
+      },
+      "description": {
+        "zh-CN": "由订阅或手动补全发现的作品。接受候选后保存为独立值实体，并保留来源链接和发行日期。",
+        "en": "Works found through subscriptions or manual enrichment. Accept candidates to save independent entities with source links and release dates."
+      },
+      "parents": [],
+      "targets": [
+        "term-whole"
+      ],
+      "subjectVocabularies": [
+        "core.people",
+        "core.studios"
+      ],
+      "value": {
+        "cardinality": "many",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "term": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "additionalProperties": false
+        },
+        "semanticVersion": 1,
+        "vocabulary": "core.discoveries"
+      },
+      "input": {
+        "component": "multi-select@1"
+      },
+      "placements": [
+        {
+          "id": "term",
+          "slot": "term.details.fields",
+          "view": "input",
+          "mode": "edit"
+        }
+      ],
+      "query": {
+        "filter": true,
+        "sort": false,
+        "deduplicate": false
+      },
+      "writes": {
+        "manual": true,
+        "manualClearBlocksAutomatic": true,
+        "createTerms": {
+          "namespace": "user.term"
+        }
+      },
+      "enrichment": [
+        {
+          "id": "related-works",
+          "source": "core.sources.wikidata.related",
+          "field": "records",
+          "apply": "suggest-only",
+          "entities": {
+            "namespace": "wikidata-entity",
+            "identity": {
+              "op": "object-get",
+              "args": [
+                {
+                  "op": "object-get",
+                  "args": [
+                    {
+                      "fact": "source.value"
+                    },
+                    {
+                      "literal": "item"
+                    }
+                  ]
+                },
+                {
+                  "literal": "value"
+                }
+              ]
+            },
+            "label": {
+              "op": "object-get",
+              "args": [
+                {
+                  "op": "object-get",
+                  "args": [
+                    {
+                      "fact": "source.value"
+                    },
+                    {
+                      "literal": "itemLabel"
+                    }
+                  ]
+                },
+                {
+                  "literal": "value"
+                }
+              ]
+            },
+            "annotations": {
+              "core.discovery.reference": {
+                "op": "object-get",
+                "args": [
+                  {
+                    "op": "object-get",
+                    "args": [
+                      {
+                        "fact": "source.value"
+                      },
+                      {
+                        "literal": "item"
+                      }
+                    ]
+                  },
+                  {
+                    "literal": "value"
+                  }
+                ]
+              },
+              "core.discovery.release-date": {
+                "op": "date-only",
+                "args": [
+                  {
+                    "op": "object-get",
+                    "args": [
+                      {
+                        "op": "object-get",
+                        "args": [
+                          {
+                            "fact": "source.value"
+                          },
+                          {
+                            "literal": "date"
+                          }
+                        ]
+                      },
+                      {
+                        "literal": "value"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "core.rules.catalog-code": {
+      "normalize": "nfkc-upper",
+      "patterns": [
+        {
+          "pattern": "(?<![A-Z0-9])FC2[-_ ]*(?:PPV[-_ ]*)?(\\d{5,9})(?!\\d)",
+          "template": "FC2-PPV-{1}",
+          "groups": {
+            "1": {
+              "trimLeadingZeros": true
+            }
+          }
+        },
+        {
+          "pattern": "(?<!\\d)(\\d{6})([-_])(\\d{2,3})(?!\\d)",
+          "template": "{1}{2}{3}"
+        },
+        {
+          "pattern": "(?<![A-Z0-9])N[-_ ]?(\\d{4})(?!\\d)",
+          "template": "N{1}"
+        },
+        {
+          "pattern": "(?<![A-Z])(?:H_\\d{2,4})?(?:\\d{1,3})?([A-Z]{2,10})[-_ ]*0*(\\d{2,6})(?!\\d)",
+          "template": "{1}-{2}",
+          "groups": {
+            "1": {
+              "exclude": [
+                "H",
+                "X",
+                "HEVC",
+                "H264",
+                "H265",
+                "AVC",
+                "MP",
+                "AAC",
+                "UTF",
+                "FPS",
+                "CD",
+                "DVD",
+                "DISC",
+                "PART",
+                "CH",
+                "VOL",
+                "WEB",
+                "HD",
+                "FHD",
+                "UHD"
+              ]
+            },
+            "2": {
+              "trimLeadingZeros": true,
+              "padLeft": 3
+            }
+          }
+        }
+      ],
+      "label": {
+        "zh-CN": "影片番号标准化",
+        "en": "Catalog-code normalization"
+      },
+      "description": {
+        "zh-CN": "从路径文本提取番号，统一字母、分隔符和数字位数。",
+        "en": "Extract a catalog code and normalize letters, separators and numeric padding."
+      }
+    }
+  },
+  "sources": {
+    "core.sources.nfo": {
+      "transport": "sidecar",
+      "extension": ".nfo",
+      "parse": {
+        "format": "xml",
+        "fields": {
+          "title": {
+            "selector": "title",
+            "label": {
+              "zh-CN": "标题",
+              "en": "Title"
+            }
+          },
+          "code": {
+            "selector": "num|id|uniqueid",
+            "label": {
+              "zh-CN": "标识",
+              "en": "Identifier"
+            }
+          },
+          "description": {
+            "selector": "plot",
+            "label": {
+              "zh-CN": "简介",
+              "en": "Description"
+            }
+          },
+          "cast": {
+            "selector": "actor/name",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "出演者",
+              "en": "Cast"
+            }
+          },
+          "labels": {
+            "selector": "tag|genre",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "分类",
+              "en": "Categories"
+            }
+          },
+          "poster": {
+            "selector": "thumb",
+            "label": {
+              "zh-CN": "封面图片",
+              "en": "Cover image"
+            }
+          },
+          "studio": {
+            "selector": "studio",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "制作方",
+              "en": "Studio"
+            }
+          },
+          "director": {
+            "selector": "director",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "导演",
+              "en": "Director"
+            }
+          },
+          "series": {
+            "selector": "set/name",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "系列",
+              "en": "Series"
+            }
+          },
+          "releaseDate": {
+            "selector": "premiered|releasedate",
+            "label": {
+              "zh-CN": "发行日期",
+              "en": "Release date"
+            }
+          },
+          "languages": {
+            "selector": "language|languages/language",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "语言",
+              "en": "Languages"
+            }
+          }
+        }
+      },
+      "match": [
+        {
+          "field": "code",
+          "tag": "core.code",
+          "normalizeWith": "core.rules.catalog-code",
+          "optional": true
+        }
+      ],
+      "label": {
+        "zh-CN": "本地 NFO",
+        "en": "Local NFO"
+      },
+      "evidenceGroup": "local-sidecar"
+    },
+    "core.sources.catalog": {
+      "transport": "http",
+      "request": {
+        "method": "GET",
+        "urlTemplate": "https://www.javbus.com/{code}",
+        "parameters": {
+          "code": {
+            "tag": "core.code"
+          }
+        },
+        "mode": "auto",
+        "browser": {
+          "allowedHosts": [
+            "www.javbus.com",
+            "javbus.com",
+            "challenges.cloudflare.com"
+          ],
+          "readySelector": ".movie .info",
+          "pageTimeoutSeconds": 15,
+          "verificationTimeoutSeconds": 120
+        }
+      },
+      "parse": {
+        "format": "html",
+        "fields": {
+          "code": {
+            "selector": ".info",
+            "extract": "text",
+            "normalizeWith": "core.rules.catalog-code",
+            "label": {
+              "zh-CN": "标识",
+              "en": "Identifier"
+            }
+          },
+          "title": {
+            "selector": "h3",
+            "extract": "text",
+            "label": {
+              "zh-CN": "标题",
+              "en": "Title"
+            }
+          },
+          "cast": {
+            "selector": ".star-name a, .info a[href*='/star/']",
+            "extract": "text",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "出演者",
+              "en": "Cast"
+            }
+          },
+          "labels": {
+            "selector": ".genre a[href*='/genre/']",
+            "extract": "text",
+            "cardinality": "many",
+            "label": {
+              "zh-CN": "分类",
+              "en": "Categories"
+            }
+          },
+          "poster": {
+            "selector": ".bigImage img",
+            "extract": "attribute:src",
+            "resolveUrl": true,
+            "label": {
+              "zh-CN": "封面图片",
+              "en": "Cover image"
+            }
+          }
+        }
+      },
+      "match": [
+        {
+          "field": "code",
+          "tag": "core.code",
+          "normalizeWith": "core.rules.catalog-code"
+        }
+      ],
+      "limits": {
+        "maxResponseBytes": 4194304,
+        "minIntervalMs": 2000
+      },
+      "label": {
+        "zh-CN": "资料网站",
+        "en": "Catalog website"
+      },
+      "evidenceGroup": "javbus"
+    },
+    "core.sources.wikidata.entity": {
+      "label": {
+        "zh-CN": "Wikidata 人物与厂牌资料",
+        "en": "Wikidata person and organization profiles"
+      },
+      "description": {
+        "zh-CN": "使用已核对的实体 ID 补全公开资料。未填写 ID 时跳过；不按相同姓名自动合并实体。",
+        "en": "Enrich public profiles using a verified entity ID. Skips subjects without an ID and never merges entities by name."
+      },
+      "transport": "http",
+      "evidenceGroup": "wikidata",
+      "request": {
+        "method": "GET",
+        "urlTemplate": "https://www.wikidata.org/wiki/Special:EntityData/{entity}.json",
+        "parameters": {
+          "entity": {
+            "tag": "core.entity.wikidata-id"
+          }
+        }
+      },
+      "parse": {
+        "format": "json",
+        "fields": {
+          "id": {
+            "pointer": "/entities/{entity}/id",
+            "label": {
+              "zh-CN": "实体 ID",
+              "en": "Entity ID"
+            }
+          },
+          "description": {
+            "pointer": "/entities/{entity}/descriptions/en/value",
+            "label": {
+              "zh-CN": "英文资料摘要",
+              "en": "English summary"
+            }
+          },
+          "birthdate": {
+            "pointer": "/entities/{entity}/claims/P569/0/mainsnak/datavalue/value/time",
+            "label": {
+              "zh-CN": "出生日期",
+              "en": "Date of birth"
+            }
+          },
+          "inception": {
+            "pointer": "/entities/{entity}/claims/P571/0/mainsnak/datavalue/value/time",
+            "label": {
+              "zh-CN": "成立日期",
+              "en": "Date established"
+            }
+          },
+          "website": {
+            "pointer": "/entities/{entity}/claims/P856/0/mainsnak/datavalue/value",
+            "label": {
+              "zh-CN": "官方网站",
+              "en": "Official website"
+            }
+          },
+          "image": {
+            "pointer": "/entities/{entity}/claims/P18/0/mainsnak/datavalue/value",
+            "label": {
+              "zh-CN": "图片文件名",
+              "en": "Image filename"
+            }
+          }
+        }
+      },
+      "match": [
+        {
+          "tag": "core.entity.wikidata-id",
+          "field": "id"
+        }
+      ],
+      "limits": {
+        "maxResponseBytes": 4194304,
+        "minIntervalMs": 1000,
+        "cacheTtlSeconds": 86400
+      },
+      "subscription": {
+        "enabledTag": "core.entity.follow",
+        "intervalMinutes": 1440
+      }
+    },
+    "core.sources.wikidata.related": {
+      "label": {
+        "zh-CN": "Wikidata 相关作品发现",
+        "en": "Wikidata related work discovery"
+      },
+      "description": {
+        "zh-CN": "使用已核对的 Wikidata ID 查询出演、执导或制作的作品，最多返回按发行日期排序的 100 项。候选只在确认后进入值实体集合，不创建本地影片或下载媒体。",
+        "en": "Uses a verified Wikidata ID to find up to 100 works, ordered by release date, credited to this person or organization. Candidates enter the value collection only after review; no local films are created and no media is downloaded."
+      },
+      "transport": "http",
+      "evidenceGroup": "wikidata",
+      "request": {
+        "method": "GET",
+        "urlTemplate": "https://query.wikidata.org/sparql?format=json&query={query}",
+        "parameters": {
+          "query": {
+            "op": "concat",
+            "args": [
+              {
+                "literal": "SELECT ?item ?itemLabel (MIN(?release) AS ?date) WHERE { { ?item wdt:P161 wd:"
+              },
+              {
+                "tag": "core.entity.wikidata-id"
+              },
+              {
+                "literal": " } UNION { ?item wdt:P57 wd:"
+              },
+              {
+                "tag": "core.entity.wikidata-id"
+              },
+              {
+                "literal": " } UNION { ?item wdt:P272 wd:"
+              },
+              {
+                "tag": "core.entity.wikidata-id"
+              },
+              {
+                "literal": " } OPTIONAL { ?item wdt:P577 ?release } SERVICE wikibase:label { bd:serviceParam wikibase:language \"zh,en\". } } GROUP BY ?item ?itemLabel ORDER BY DESC(?date) LIMIT 100"
+              }
+            ]
+          }
+        }
+      },
+      "parse": {
+        "format": "json",
+        "fields": {
+          "records": {
+            "pointer": "/results/bindings",
+            "structured": true,
+            "label": {
+              "zh-CN": "作品记录",
+              "en": "Work records"
+            }
+          }
+        }
+      },
+      "limits": {
+        "minIntervalMs": 5000,
+        "cacheTtlSeconds": 86400,
+        "maxResponseBytes": 4194304
+      },
+      "subscription": {
+        "enabledTag": "core.entity.follow",
+        "intervalMinutes": 1440
+      }
+    }
+  },
+  "catalogPolicy": {
+    "defaultQuery": {
+      "where": {
+        "op": "eq",
+        "tag": "core.visibility",
+        "value": {
+          "term": "core.visibility.options.visible"
+        }
+      }
+    },
+    "search": {
+      "fields": [
+        {
+          "tag": "core.title",
+          "match": "contains"
+        },
+        {
+          "tag": "core.code",
+          "match": "contains"
+        },
+        {
+          "tag": "core.cast",
+          "match": "contains"
+        },
+        {
+          "tag": "core.labels",
+          "match": "contains"
+        }
+      ]
+    },
+    "defaultSort": {
+      "tag": "core.added",
+      "direction": "desc",
+      "nulls": "last"
+    },
+    "dedup": {
+      "keys": [
+        {
+          "tag": "core.code",
+          "match": "exact",
+          "required": true
+        }
+      ],
+      "preferredOrder": [
+        {
+          "tag": "core.video.height",
+          "direction": "desc"
+        },
+        {
+          "tag": "core.file.size",
+          "direction": "desc"
+        }
+      ],
+      "excludedValue": {
+        "tag": "core.visibility",
+        "value": {
+          "term": "core.visibility.options.hidden"
+        }
+      },
+      "keptValue": {
+        "tag": "core.visibility",
+        "value": {
+          "term": "core.visibility.options.visible"
+        }
+      }
+    }
+  },
+  "ui": {
+    "layouts": {
+      "core.layouts.film-details": {
+        "surface": "film.details",
+        "subjectKind": "film",
+        "root": {
+          "id": "details-root",
+          "type": "stack",
+          "gap": "section",
+          "children": [
+            {
+              "id": "film-ribbon",
+              "type": "ribbon",
+              "title": {
+                "zh-CN": "影片工具栏",
+                "en": "Film ribbon"
+              },
+              "binding": "core.identity.film",
+              "children": [
+                {
+                  "id": "film",
+                  "type": "ribbon-tab",
+                  "title": {
+                    "zh-CN": "影片",
+                    "en": "Film"
+                  },
+                  "children": [
+                    {
+                      "id": "playback",
+                      "type": "ribbon-group",
+                      "title": {
+                        "zh-CN": "播放",
+                        "en": "Playback"
+                      },
+                      "children": [
+                        {
+                          "id": "playback-commands",
+                          "type": "action-bar",
+                          "actions": [
+                            "core.actions.play",
+                            "core.actions.external"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "file",
+                      "type": "ribbon-group",
+                      "title": {
+                        "zh-CN": "文件与资源",
+                        "en": "Files & resources"
+                      },
+                      "children": [
+                        {
+                          "id": "file-commands",
+                          "type": "action-bar",
+                          "actions": [
+                            "core.actions.film-menu",
+                            "core.actions.resources",
+                            "core.actions.export"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "information",
+                  "type": "ribbon-tab",
+                  "title": {
+                    "zh-CN": "资料",
+                    "en": "Information"
+                  },
+                  "children": [
+                    {
+                      "id": "enrichment",
+                      "type": "ribbon-group",
+                      "title": {
+                        "zh-CN": "补全与读取",
+                        "en": "Enrichment"
+                      },
+                      "children": [
+                        {
+                          "id": "enrichment-commands",
+                          "type": "action-bar",
+                          "actions": [
+                            "core.actions.enrich",
+                            "core.actions.probe"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "editing",
+                      "type": "ribbon-group",
+                      "title": {
+                        "zh-CN": "编辑记录",
+                        "en": "Edit history"
+                      },
+                      "children": [
+                        {
+                          "id": "edit-commands",
+                          "type": "action-bar",
+                          "actions": [
+                            "core.actions.undo",
+                            "core.actions.redo"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "primary",
+              "type": "field-set",
+              "region": "film.details.primary",
+              "scope": "whole",
+              "commitMode": "immediate"
+            },
+            {
+              "id": "columns",
+              "type": "grid",
+              "tracks": {
+                "regular": [
+                  2,
+                  1
+                ],
+                "compact": [
+                  1
+                ]
+              },
+              "children": [
+                {
+                  "id": "overview",
+                  "type": "section",
+                  "title": {
+                    "message": "core.ui.film-details"
+                  },
+                  "children": [
+                    {
+                      "id": "metadata",
+                      "type": "form",
+                      "region": "film.details.fields",
+                      "scope": "whole",
+                      "fieldPicker": {
+                        "source": "applicable-definitions",
+                        "excludeBound": true
+                      },
+                      "commitMode": "auto"
+                    }
+                  ]
+                },
+                {
+                  "id": "facts",
+                  "type": "field-set",
+                  "region": "film.details.facts",
+                  "scope": "whole",
+                  "mode": "display",
+                  "title": {
+                    "message": "core.ui.media-information"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "candidates",
+              "type": "candidates",
+              "region": "film.details.candidates",
+              "source": "candidates",
+              "empty": "collapse"
+            },
+            {
+              "id": "annotations",
+              "type": "annotation-list",
+              "region": "film.details.annotations",
+              "source": "annotations",
+              "itemLayout": "core.layouts.annotation-row"
+            }
+          ]
+        }
+      },
+      "core.layouts.inspector": {
+        "surface": "player.inspector",
+        "title": {
+          "message": "core.ui.annotations"
+        },
+        "root": {
+          "id": "annotation-inspector",
+          "type": "stack",
+          "gap": "compact",
+          "children": [
+            {
+              "id": "whole-primary",
+              "type": "field-set",
+              "region": "player.annotations.primary",
+              "scope": "whole",
+              "commitMode": "immediate",
+              "actionsPlacement": "inline-end",
+              "actions": [
+                "core.actions.undo",
+                "core.actions.redo"
+              ]
+            },
+            {
+              "id": "scope",
+              "type": "scope-picker",
+              "region": "player.annotations.scope",
+              "modes": [
+                "whole",
+                "point",
+                "interval"
+              ],
+              "stateKey": "scope-drafts"
+            },
+            {
+              "id": "locator",
+              "type": "time-range",
+              "scope": {
+                "from": "selection.scope"
+              },
+              "capture": "explicit"
+            },
+            {
+              "id": "values",
+              "type": "form",
+              "region": [
+                "player.annotations.fields",
+                "player.annotation.value"
+              ],
+              "scope": {
+                "from": "selection.scope"
+              },
+              "fieldPicker": {
+                "source": "applicable-definitions",
+                "excludeBound": true
+              },
+              "commitMode": "auto"
+            },
+            {
+              "id": "history",
+              "type": "annotation-list",
+              "region": "player.annotations.history",
+              "source": "annotations",
+              "itemLayout": "core.layouts.annotation-row"
+            }
+          ]
+        }
+      },
+      "core.layouts.annotation-row": {
+        "surface": "annotation.row",
+        "root": {
+          "id": "row",
+          "type": "grid",
+          "tracks": {
+            "regular": [
+              3,
+              2
+            ]
+          },
+          "children": [
+            {
+              "id": "summary",
+              "type": "stack",
+              "gap": "compact",
+              "children": [
+                {
+                  "id": "label",
+                  "type": "value",
+                  "binding": "annotation.label"
+                },
+                {
+                  "id": "value",
+                  "type": "value",
+                  "binding": "annotation.value"
+                },
+                {
+                  "id": "range",
+                  "type": "value",
+                  "binding": "annotation.range"
+                },
+                {
+                  "id": "note",
+                  "type": "value",
+                  "binding": "annotation.note"
+                }
+              ]
+            },
+            {
+              "id": "actions",
+              "type": "action-bar",
+              "actions": [
+                "core.actions.annotation-seek",
+                "core.actions.annotation-edit",
+                "core.actions.annotation-clear"
+              ]
+            }
+          ]
+        }
+      },
+      "core.layouts.term-details": {
+        "surface": "term.details",
+        "subjectKind": "term",
+        "title": {
+          "zh-CN": "标签值资料",
+          "en": "Value details"
+        },
+        "root": {
+          "id": "term-profile",
+          "type": "stack",
+          "gap": "section",
+          "children": [
+            {
+              "id": "term-actions",
+              "type": "action-bar",
+              "actions": [
+                "core.actions.enrich"
+              ]
+            },
+            {
+              "id": "term-root",
+              "type": "field-set",
+              "region": "term.details.fields",
+              "commitMode": "auto"
+            },
+            {
+              "id": "term-candidates",
+              "type": "candidates",
+              "empty": "collapse"
+            }
+          ]
+        }
+      },
+      "core.layouts.library-actions": {
+        "surface": "library.actions",
+        "root": {
+          "id": "library-ribbon",
+          "type": "ribbon",
+          "title": {
+            "zh-CN": "影片集工具栏",
+            "en": "Collection ribbon"
+          },
+          "children": [
+            {
+              "id": "browse",
+              "type": "ribbon-tab",
+              "title": {
+                "zh-CN": "浏览",
+                "en": "Browse"
+              },
+              "children": [
+                {
+                  "id": "films",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "添加与播放",
+                    "en": "Add & play"
+                  },
+                  "children": [
+                    {
+                      "id": "film-commands",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.library-import",
+                        "core.actions.library-play"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "find",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "搜索与查询",
+                    "en": "Search & query"
+                  },
+                  "children": [
+                    {
+                      "id": "control-search",
+                      "type": "control",
+                      "binding": "library.search"
+                    },
+                    {
+                      "id": "query-command",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.library-query"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "sort",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "排序",
+                    "en": "Sort order"
+                  },
+                  "children": [
+                    {
+                      "id": "control-sort",
+                      "type": "control",
+                      "binding": "library.sort"
+                    },
+                    {
+                      "id": "control-direction",
+                      "type": "control",
+                      "binding": "library.direction"
+                    }
+                  ]
+                },
+                {
+                  "id": "view",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "视图",
+                    "en": "View"
+                  },
+                  "children": [
+                    {
+                      "id": "control-view",
+                      "type": "control",
+                      "binding": "library.view"
+                    },
+                    {
+                      "id": "control-poster-size",
+                      "type": "control",
+                      "binding": "library.poster-size"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "organize",
+              "type": "ribbon-tab",
+              "title": {
+                "zh-CN": "整理",
+                "en": "Organize"
+              },
+              "children": [
+                {
+                  "id": "selection",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "选择范围",
+                    "en": "Selection"
+                  },
+                  "children": [
+                    {
+                      "id": "select-command",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.library-select"
+                      ]
+                    },
+                    {
+                      "id": "control-selection",
+                      "type": "control",
+                      "binding": "library.selection"
+                    }
+                  ]
+                },
+                {
+                  "id": "bulk",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "批量处理",
+                    "en": "Batch"
+                  },
+                  "children": [
+                    {
+                      "id": "batch-commands",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.bulk-annotate",
+                        "core.actions.enrich",
+                        "core.actions.bulk-rules"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "views",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "列表",
+                    "en": "Lists"
+                  },
+                  "children": [
+                    {
+                      "id": "view-commands",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.library-save-view",
+                        "core.actions.library-copy"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "manage",
+                  "type": "ribbon-group",
+                  "title": {
+                    "zh-CN": "管理",
+                    "en": "Manage"
+                  },
+                  "children": [
+                    {
+                      "id": "management-commands",
+                      "type": "action-bar",
+                      "actions": [
+                        "core.actions.library-scan",
+                        "core.actions.library-export",
+                        "core.actions.library-remove"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "workspace.activity": {
+        "surface": "workspace.sidebar",
+        "root": {
+          "id": "activity",
+          "type": "activity-feed",
+          "title": {
+            "zh-CN": "消息中心",
+            "en": "Activity"
+          },
+          "activity": {
+            "tabs": [
+              "library",
+              "film",
+              "libraries",
+              "tags",
+              "duplicates",
+              "views",
+              "export"
+            ],
+            "sources": [
+              "jobs",
+              "candidates"
+            ]
+          }
+        }
+      }
+    },
+    "surfaceBindings": {
+      "film.details": "core.layouts.film-details",
+      "player.inspector": "core.layouts.inspector",
+      "term.details": "core.layouts.term-details",
+      "library.actions": "core.layouts.library-actions",
+      "workspace.sidebar": "workspace.activity"
+    },
+    "actions": {
+      "core.actions.undo": {
+        "command": "form.undo",
+        "label": {
+          "zh-CN": "撤销",
+          "en": "Undo"
+        },
+        "icon": "Undo",
+        "presentation": "icon",
+        "appearance": "quiet"
+      },
+      "core.actions.redo": {
+        "command": "form.redo",
+        "label": {
+          "zh-CN": "重做",
+          "en": "Redo"
+        },
+        "icon": "Redo",
+        "presentation": "icon",
+        "appearance": "quiet"
+      },
+      "core.actions.play": {
+        "command": "playback.open",
+        "label": {
+          "zh-CN": "播放",
+          "en": "Play"
+        },
+        "icon": "Play"
+      },
+      "core.actions.film-menu": {
+        "command": "platform.reveal",
+        "label": {
+          "zh-CN": "定位文件",
+          "en": "Reveal file"
+        },
+        "icon": "Folder"
+      },
+      "core.actions.save-form": {
+        "command": "form.submit",
+        "label": {
+          "zh-CN": "保存修改",
+          "en": "Save changes"
+        },
+        "icon": "Save"
+      },
+      "core.actions.save-annotation": {
+        "command": "form.submit",
+        "label": {
+          "zh-CN": "保存标注",
+          "en": "Save annotation"
+        },
+        "icon": "Save"
+      },
+      "core.actions.cancel-draft": {
+        "command": "form.cancel",
+        "label": {
+          "zh-CN": "取消编辑",
+          "en": "Cancel edit"
+        },
+        "icon": "Close"
+      },
+      "core.actions.probe": {
+        "command": "media.probe",
+        "label": {
+          "zh-CN": "读取媒体信息",
+          "en": "Read media facts"
+        },
+        "icon": "Info"
+      },
+      "core.actions.enrich": {
+        "command": "metadata.enrich",
+        "label": {
+          "zh-CN": "补全资料",
+          "en": "Enrich metadata"
+        },
+        "icon": "Info"
+      },
+      "core.actions.export": {
+        "label": {
+          "en": "Convert & export",
+          "zh-CN": "转换与导出"
+        },
+        "command": "export.open"
+      },
+      "core.actions.annotation-seek": {
+        "command": "annotation.seek",
+        "label": {
+          "zh-CN": "播放片段",
+          "en": "Play annotation"
+        }
+      },
+      "core.actions.annotation-edit": {
+        "command": "annotation.edit",
+        "label": {
+          "zh-CN": "编辑标注",
+          "en": "Edit annotation"
+        }
+      },
+      "core.actions.annotation-clear": {
+        "command": "annotation.clear",
+        "label": {
+          "zh-CN": "清空标注",
+          "en": "Clear annotation"
+        }
+      },
+      "core.actions.resources": {
+        "label": {
+          "zh-CN": "版本与文件",
+          "en": "Versions and files"
+        },
+        "command": "media.resources"
+      },
+      "core.actions.external": {
+        "command": "playback.external",
+        "label": {
+          "zh-CN": "外部播放器",
+          "en": "External player"
+        },
+        "icon": "Play"
+      },
+      "core.actions.bulk-annotate": {
+        "command": "annotations.bulk",
+        "label": {
+          "zh-CN": "批量标注",
+          "en": "Bulk annotation"
+        }
+      },
+      "core.actions.bulk-rules": {
+        "command": "automation.bulk",
+        "label": {
+          "zh-CN": "重算规则",
+          "en": "Recalculate rules"
+        }
+      },
+      "core.actions.library-import": {
+        "command": "library.import",
+        "label": {
+          "zh-CN": "添加影片",
+          "en": "Add films"
+        },
+        "icon": "Folder"
+      },
+      "core.actions.library-play": {
+        "command": "library.play",
+        "label": {
+          "zh-CN": "播放全部",
+          "en": "Play all"
+        },
+        "icon": "Play"
+      },
+      "core.actions.library-query": {
+        "command": "library.query",
+        "label": {
+          "zh-CN": "查询",
+          "en": "Query"
+        },
+        "icon": "Filter"
+      },
+      "core.actions.library-save-view": {
+        "command": "library.save-view",
+        "label": {
+          "zh-CN": "保存智能列表",
+          "en": "Save smart list"
+        },
+        "icon": "Save"
+      },
+      "core.actions.library-select": {
+        "command": "library.select",
+        "label": {
+          "zh-CN": "选择影片",
+          "en": "Select films"
+        },
+        "icon": "Checkmark"
+      },
+      "core.actions.library-copy": {
+        "command": "library.copy",
+        "label": {
+          "zh-CN": "复制标签页",
+          "en": "Duplicate tab"
+        },
+        "icon": "Collection"
+      },
+      "core.actions.library-scan": {
+        "command": "library.scan",
+        "label": {
+          "zh-CN": "查找新影片",
+          "en": "Find new films"
+        },
+        "icon": "Refresh"
+      },
+      "core.actions.library-export": {
+        "command": "library.export",
+        "label": {
+          "zh-CN": "转换与导出",
+          "en": "Convert & export"
+        },
+        "icon": "Video"
+      },
+      "core.actions.library-remove": {
+        "command": "library.remove",
+        "label": {
+          "zh-CN": "移除影片",
+          "en": "Remove films"
+        },
+        "icon": "Close"
+      }
+    },
+    "identity": {
+      "core.identity.film": {
+        "title": {
+          "op": "first-valid",
+          "args": [
+            {
+              "tag": "core.title"
+            },
+            {
+              "fact": "file.baseName"
+            }
+          ]
+        },
+        "tabTitle": {
+          "op": "first-valid",
+          "args": [
+            {
+              "tag": "core.code"
+            },
+            {
+              "tag": "core.title"
+            },
+            {
+              "fact": "file.baseName"
+            }
+          ]
+        },
+        "primaryImage": {
+          "tag": "core.poster"
+        },
+        "primaryImagePresentation": {
+          "op": "case",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "tag": "core.poster.presentation"
+                },
+                {
+                  "literal": {
+                    "term": "core.poster.presentations.whole"
+                  }
+                }
+              ]
+            },
+            {
+              "literal": {
+                "component": "image@1"
+              }
+            },
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "tag": "core.poster.presentation"
+                },
+                {
+                  "literal": {
+                    "term": "core.poster.presentations.disc-3d"
+                  }
+                }
+              ]
+            },
+            {
+              "literal": {
+                "component": "disc-case@1",
+                "props": {
+                  "view": "3d"
+                }
+              }
+            },
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "tag": "core.poster.presentation"
+                },
+                {
+                  "literal": {
+                    "term": "core.poster.presentations.disc-front"
+                  }
+                }
+              ]
+            },
+            {
+              "literal": {
+                "component": "disc-case@1",
+                "props": {
+                  "view": "front"
+                }
+              }
+            },
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "tag": "core.poster.presentation"
+                },
+                {
+                  "literal": {
+                    "term": "core.poster.presentations.disc-back"
+                  }
+                }
+              ]
+            },
+            {
+              "literal": {
+                "component": "disc-case@1",
+                "props": {
+                  "view": "back"
+                }
+              }
+            },
+            {
+              "op": "between",
+              "args": [
+                {
+                  "fact": "image.aspectRatio"
+                },
+                {
+                  "literal": 1.4
+                },
+                {
+                  "literal": 1.6
+                }
+              ]
+            },
+            {
+              "literal": {
+                "component": "disc-case@1",
+                "props": {
+                  "view": "3d"
+                }
+              }
+            },
+            {
+              "literal": {
+                "component": "image@1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "naming": {
+      "core.naming.snapshot": {
+        "base": {
+          "op": "first-valid",
+          "args": [
+            {
+              "tag": "core.code"
+            },
+            {
+              "fact": "file.baseName"
+            },
+            {
+              "literal": "frame"
+            }
+          ]
+        },
+        "append": [
+          "media-time-us"
+        ],
+        "extension": "png"
+      }
+    },
+    "agentHints": {
+      "core.hints.rating": {
+        "requiresTags": [
+          "core.rating"
+        ],
+        "text": {
+          "zh-CN": "按评价筛选影片",
+          "en": "Filter films by rating"
+        }
+      },
+      "core.hints.tagging": {
+        "requiresTags": [],
+        "text": {
+          "zh-CN": "为查询结果批量标注",
+          "en": "Annotate query results"
+        }
+      },
+      "core.hints.definitions": {
+        "requiresTags": [],
+        "text": {
+          "zh-CN": "配置一个新的标签字段",
+          "en": "Configure a new tag field"
+        }
+      }
+    },
+    "placementOrder": {
+      "film.card.meta.leading": [
+        "core.code"
+      ],
+      "film.card.meta.trailing": [
+        "core.rating"
+      ],
+      "film.card.overlay.bottom": [
+        "core.duration"
+      ],
+      "film.card.overlay.top-left": [
+        "core.video.height"
+      ],
+      "film.card.overlay.top-right": [
+        "core.favorite"
+      ],
+      "film.details.facts": [
+        "core.added",
+        "core.audio.codec",
+        "core.duration",
+        "core.file.path",
+        "core.file.size",
+        "core.library",
+        "core.modified",
+        "core.video.codec",
+        "core.video.fps",
+        "core.video.height",
+        "core.video.width"
+      ],
+      "film.details.fields": [
+        "core.title",
+        "core.code",
+        "core.visibility",
+        "core.labels",
+        "core.cast",
+        "core.director",
+        "core.studio",
+        "core.series",
+        "core.release-date",
+        "core.languages",
+        "core.description",
+        "core.notes",
+        "core.poster",
+        "core.poster.presentation"
+      ],
+      "film.details.primary": [
+        "core.rating",
+        "core.favorite",
+        "core.watched"
+      ],
+      "film.table.columns": [
+        "core.code",
+        "core.rating",
+        "core.duration",
+        "core.file.size"
+      ],
+      "nav.after-all-films": [
+        "core.rating",
+        "core.favorite",
+        "core.watched"
+      ],
+      "player.annotation.value": [
+        "core.labels",
+        "core.cast"
+      ],
+      "player.annotations.fields": [
+        "core.labels",
+        "core.cast",
+        "core.notes"
+      ],
+      "player.annotations.primary": [
+        "core.rating"
+      ],
+      "player.queue.item.trailing": [
+        "core.favorite"
+      ],
+      "term.details.fields": [
+        "core.entity.follow",
+        "core.entity.wikidata-id",
+        "core.discovery.reference",
+        "core.entity.image",
+        "core.discovery.release-date",
+        "core.person.gender",
+        "core.organization.inception",
+        "core.person.birthdate",
+        "core.entity.summary",
+        "core.entity.website",
+        "core.entity.discoveries",
+        "core.labels"
+      ]
+    }
+  },
+  "i18n": {
+    "defaultLocale": "zh-CN",
+    "messages": {
+      "core.ui.film-details": {
+        "params": {},
+        "values": {
+          "zh-CN": "影片资料",
+          "en": "Film details"
+        }
+      },
+      "core.ui.media-information": {
+        "params": {},
+        "values": {
+          "zh-CN": "媒体信息",
+          "en": "Media information"
+        }
+      },
+      "core.ui.annotations": {
+        "params": {},
+        "values": {
+          "zh-CN": "标注",
+          "en": "Annotations"
+        }
+      },
+      "core.navigation.rating-band": {
+        "params": {
+          "tagLabel": "text",
+          "selectionLabel": "text"
+        },
+        "values": {
+          "zh-CN": "{tagLabel} · {selectionLabel}",
+          "en": "{tagLabel}: {selectionLabel}"
+        }
+      }
+    }
+  },
+  "eventBindings": {},
+  "groups": {
+    "core.personal": {
+      "label": {
+        "zh-CN": "个人",
+        "en": "Personal"
+      },
+      "description": {
+        "zh-CN": "个人整理偏好的分类，可在其下声明其他个人属性。",
+        "en": "Groups personal organization preferences and user-defined properties."
+      }
+    },
+    "core.metadata": {
+      "label": {
+        "zh-CN": "资料",
+        "en": "Metadata"
+      },
+      "description": {
+        "zh-CN": "描述影片内容与出版信息的属性分类。",
+        "en": "Groups descriptive information about a film and its publication."
+      }
+    },
+    "core.technical": {
+      "label": {
+        "zh-CN": "媒体属性",
+        "en": "Media facts"
+      },
+      "description": {
+        "zh-CN": "从真实文件和媒体流读取的属性分类，展示值不会改变原文件。",
+        "en": "Groups facts read from media files. Display values do not change the original file."
+      }
+    },
+    "core.people": {
+      "label": {
+        "zh-CN": "人物",
+        "en": "People"
+      },
+      "description": {
+        "zh-CN": "人物标签的分类入口，子标签可以被主演等引用字段选用。",
+        "en": "Groups person tags that can be referenced by fields such as cast."
+      }
+    },
+    "core.studios": {
+      "label": {
+        "zh-CN": "厂牌",
+        "en": "Studios"
+      },
+      "description": {
+        "zh-CN": "制作或发行机构的分类入口，其子标签可以作为厂牌选项。",
+        "en": "Groups production and distribution organizations available as studio options."
+      }
+    },
+    "core.topics": {
+      "label": {
+        "zh-CN": "主题",
+        "en": "Topics"
+      },
+      "description": {
+        "zh-CN": "内容主题的分类入口，其子标签可作为影片的分类标签。",
+        "en": "Groups topic tags used to categorize films."
+      }
+    }
+  },
+  "vocabularies": {
+    "core.people": {
+      "label": {
+        "zh-CN": "人物",
+        "en": "People"
+      },
+      "description": {
+        "zh-CN": "独立的人物值实体，可由主演、导演等字段共同引用，并标注人物资料。",
+        "en": "Independent people shared by cast, director and other fields, with their own profile annotations."
+      },
+      "enabled": true,
+      "items": []
+    },
+    "core.studios": {
+      "label": {
+        "zh-CN": "厂牌",
+        "en": "Studios"
+      },
+      "description": {
+        "zh-CN": "独立的制作及发行机构值实体。",
+        "en": "Independent production and distribution organization values."
+      },
+      "enabled": true,
+      "items": []
+    },
+    "core.topics": {
+      "label": {
+        "zh-CN": "主题",
+        "en": "Topics"
+      },
+      "description": {
+        "zh-CN": "独立的主题值实体，供分类与值之间的无环关联使用。",
+        "en": "Independent topic values for classification and acyclic relationships between values."
+      },
+      "enabled": true,
+      "items": []
+    },
+    "core.visibility.options": {
+      "label": {
+        "zh-CN": "显示状态",
+        "en": "Visibility"
+      },
+      "description": {
+        "zh-CN": "控制影片是否进入默认列表。隐藏只影响索引展示，不删除原文件。",
+        "en": "Controls inclusion in the default catalog. Hiding a film never deletes its media file."
+      },
+      "enabled": true,
+      "items": [
+        {
+          "id": "core.visibility.options.visible",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "显示",
+            "en": "Visible"
+          },
+          "vocabularyIds": [
+            "core.visibility.options"
+          ]
+        },
+        {
+          "id": "core.visibility.options.hidden",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "隐藏",
+            "en": "Hidden"
+          },
+          "vocabularyIds": [
+            "core.visibility.options"
+          ]
+        }
+      ]
+    },
+    "core.poster.presentations": {
+      "label": {
+        "zh-CN": "海报展示方式",
+        "en": "Poster displays"
+      },
+      "description": {
+        "zh-CN": "影片列表中海报的展示方式。只改变展示，不修改海报图片。",
+        "en": "Ways to show a poster in film lists. They change only the display, never the poster image."
+      },
+      "enabled": true,
+      "items": [
+        {
+          "id": "core.poster.presentations.whole",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "完整海报",
+            "en": "Whole poster"
+          },
+          "description": {
+            "zh-CN": "不裁切，按海报自身的宽高比完整展示。",
+            "en": "Shows the whole poster at its own aspect ratio, without cropping."
+          },
+          "vocabularyIds": [
+            "core.poster.presentations"
+          ]
+        },
+        {
+          "id": "core.poster.presentations.disc-3d",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "影碟-3D",
+            "en": "Disc case (3D)"
+          },
+          "description": {
+            "zh-CN": "把海报当作影碟包装盒展开图，展示为略微侧转的立体包装盒，露出封面和少量中脊；鼠标悬停时转向封底。",
+            "en": "Treats the poster as an unfolded disc case and shows a slightly turned 3D case with the front cover and part of the spine; hovering turns it to the back cover."
+          },
+          "vocabularyIds": [
+            "core.poster.presentations"
+          ]
+        },
+        {
+          "id": "core.poster.presentations.disc-front",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "影碟-封面",
+            "en": "Disc case front"
+          },
+          "description": {
+            "zh-CN": "把海报当作影碟包装盒展开图，只平面展示右侧的封面。",
+            "en": "Treats the poster as an unfolded disc case and shows only its front cover (the right part) flat."
+          },
+          "vocabularyIds": [
+            "core.poster.presentations"
+          ]
+        },
+        {
+          "id": "core.poster.presentations.disc-back",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "影碟-封底",
+            "en": "Disc case back"
+          },
+          "description": {
+            "zh-CN": "把海报当作影碟包装盒展开图，只平面展示左侧的封底。",
+            "en": "Treats the poster as an unfolded disc case and shows only its back cover (the left part) flat."
+          },
+          "vocabularyIds": [
+            "core.poster.presentations"
+          ]
+        }
+      ]
+    },
+    "core.person.gender.options": {
+      "label": {
+        "zh-CN": "性别",
+        "en": "Gender"
+      },
+      "description": {
+        "zh-CN": "可用于人物资料的性别选项。未标注表示未知。",
+        "en": "Gender options for people. An unset annotation means unknown."
+      },
+      "enabled": true,
+      "items": [
+        {
+          "id": "core.person.gender.options.female",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "女",
+            "en": "Female"
+          },
+          "vocabularyIds": [
+            "core.person.gender.options"
+          ]
+        },
+        {
+          "id": "core.person.gender.options.male",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "男",
+            "en": "Male"
+          },
+          "vocabularyIds": [
+            "core.person.gender.options"
+          ]
+        },
+        {
+          "id": "core.person.gender.options.other",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "其他",
+            "en": "Other"
+          },
+          "vocabularyIds": [
+            "core.person.gender.options"
+          ]
+        }
+      ]
+    },
+    "core.series.values": {
+      "label": {
+        "zh-CN": "系列",
+        "en": "Series"
+      },
+      "description": {
+        "zh-CN": "具有稳定身份的影片系列。",
+        "en": "Film series with stable identities."
+      },
+      "enabled": true,
+      "items": []
+    },
+    "core.languages.values": {
+      "label": {
+        "zh-CN": "语言",
+        "en": "Languages"
+      },
+      "description": {
+        "zh-CN": "影片语言选项；可以扩充。",
+        "en": "Extensible film language options."
+      },
+      "enabled": true,
+      "items": [
+        {
+          "id": "core.language.zh",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "中文",
+            "en": "Chinese"
+          },
+          "aliases": [
+            "zh"
+          ],
+          "vocabularyIds": [
+            "core.languages.values"
+          ]
+        },
+        {
+          "id": "core.language.en",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "英语",
+            "en": "English"
+          },
+          "aliases": [
+            "en"
+          ],
+          "vocabularyIds": [
+            "core.languages.values"
+          ]
+        },
+        {
+          "id": "core.language.ja",
+          "revision": 1,
+          "enabled": true,
+          "label": {
+            "zh-CN": "日语",
+            "en": "Japanese"
+          },
+          "aliases": [
+            "ja"
+          ],
+          "vocabularyIds": [
+            "core.languages.values"
+          ]
+        }
+      ]
+    },
+    "core.discoveries": {
+      "enabled": true,
+      "label": {
+        "zh-CN": "发现的作品",
+        "en": "Discovered works"
+      },
+      "description": {
+        "zh-CN": "资料源返回的独立作品实体，使用外部稳定标识保持身份，不按同名合并，也不代表已拥有媒体文件。",
+        "en": "Independent works returned by sources, identified by stable external IDs rather than names. These do not imply ownership of media files."
+      },
+      "items": []
+    }
+  }
+}

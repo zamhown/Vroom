@@ -1,0 +1,16 @@
+[
+  {"op":"parse-number","args":[" -1.2e3 "],"expected":-1200},
+  {"op":"parse-number","args":["0x10"],"expected":null},
+  {"op":"parse-number","args":["1e999"],"expected":null},
+  {"op":"parse-number","args":[""],"expected":null},
+  {"op":"object-get","args":[{"unknown":{"term":"value-7"}},"unknown"],"expected":{"term":"value-7"}},
+  {"op":"object-get","args":[{},"constructor"],"expected":null},
+  {"op":"date-only","args":["+2000-02-29T00:00:00Z"],"expected":"2000-02-29"},
+  {"op":"date-only","args":["2001-02-29"],"expected":null},
+  {"op":"date-only","args":["2000-00-00"],"expected":null},
+  {"op":"date-only","args":["++2000-01-01"],"expected":null},
+  {"op":"url-encode","args":["A / 图片 (1).jpg!"],"expected":"A%20%2F%20%E5%9B%BE%E7%89%87%20%281%29.jpg%21"},
+  {"op":"array-union","args":[[{"term":"a"}],[{"term":"a"},{"term":"b"}]],"expected":[{"term":"a"},{"term":"b"}]},
+  {"op":"array-intersect","args":[[{"term":"a"},{"term":"b"}],[{"term":"b"}]],"expected":[{"term":"b"}]},
+  {"op":"array-distinct","args":[[{"x":1,"y":2},{"y":2,"x":1},null,null]],"expected":[{"x":1,"y":2},null]}
+]

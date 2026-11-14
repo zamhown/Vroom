@@ -1,0 +1,335 @@
+[
+  {
+    "name": "knowledge.list",
+    "description": {
+      "zh-CN": "列出公共 schema 与知识",
+      "en": "knowledge.list"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "knowledge.read",
+    "description": {
+      "zh-CN": "分段读取公共资源",
+      "en": "knowledge.read"
+    },
+    "arguments": "{resource:string,offset?:number,limit?:number}",
+    "mutates": false
+  },
+  {
+    "name": "schema.get",
+    "description": {
+      "zh-CN": "读取 JSON Schema",
+      "en": "Read the authoritative JSON Schema or editor fragment"
+    },
+    "arguments": "{kind?:\"definition\"|\"term\"|\"query\"|string}",
+    "mutates": false
+  },
+  {
+    "name": "capabilities.describe",
+    "description": {
+      "zh-CN": "查询可用能力",
+      "en": "capabilities.describe"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "definitions.snapshot",
+    "description": {
+      "zh-CN": "读取有效声明与版本",
+      "en": "definitions.snapshot"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "definitions.get",
+    "description": {
+      "zh-CN": "读取单个声明及用户覆盖",
+      "en": "definitions.get"
+    },
+    "arguments": "{key:string,kind?:\"definition\"}",
+    "mutates": false
+  },
+  {
+    "name": "config.get",
+    "description": {
+      "zh-CN": "读取配置对象",
+      "en": "config.get"
+    },
+    "arguments": "{kind:string,key:string}; global text language: {kind:\"i18n\",key:\"defaultLocale\"}",
+    "mutates": false
+  },
+  {
+    "name": "config.preview",
+    "description": {
+      "zh-CN": "预览用户层声明变更与影响",
+      "en": "config.preview"
+    },
+    "arguments": "{layer:\"user\",expectedGeneration:number,changes:[{kind:string,key:string,value:object|string,restore?:boolean}]}; global text language uses kind i18n, key defaultLocale and a locale string value",
+    "mutates": false
+  },
+  {
+    "name": "annotations.get",
+    "description": {
+      "zh-CN": "读取有效标注",
+      "en": "annotations.get"
+    },
+    "arguments": "{subject:{kind:\"film\"|\"term\",id:string},scope?:object}",
+    "mutates": false
+  },
+  {
+    "name": "annotations.history",
+    "description": {
+      "zh-CN": "读取原始标注历史（诊断）",
+      "en": "annotations.history"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "annotations.bulk.preview",
+    "description": {
+      "zh-CN": "预览并固定批量标注目标",
+      "en": "annotations.bulk.preview"
+    },
+    "arguments": "{subjectKind?:\"film\"|\"term\",expectedGeneration?:number,subjectIds?:string[],query?:object,changes:[{tagKey:string,operation:\"set\"|\"add\"|\"remove\"|\"clear\",value?:any}]}",
+    "mutates": false
+  },
+  {
+    "name": "annotations.bulk.status",
+    "description": {
+      "zh-CN": "读取批量标注结果",
+      "en": "annotations.bulk.status"
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": false
+  },
+  {
+    "name": "tag.options.query",
+    "description": {
+      "zh-CN": "查询可选值",
+      "en": "tag.options.query"
+    },
+    "arguments": "{tagKey:string,search?:string,offset?:number}",
+    "mutates": false
+  },
+  {
+    "name": "issues.list",
+    "description": {
+      "zh-CN": "读取失效数据诊断",
+      "en": "issues.list"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "events.subscribe",
+    "description": {
+      "zh-CN": "读取持久事件",
+      "en": "events.subscribe"
+    },
+    "arguments": "{}",
+    "mutates": false
+  },
+  {
+    "name": "exchange.export",
+    "description": {
+      "zh-CN": "导出定义或标注",
+      "en": "exchange.export"
+    },
+    "arguments": "{kind:\"definitions\"|\"annotations\"|\"bundle\",archive?:boolean}",
+    "mutates": false
+  },
+  {
+    "name": "exchange.preview",
+    "description": {
+      "zh-CN": "预览导入与身份冲突",
+      "en": "exchange.preview"
+    },
+    "arguments": "{document:object,mediaMappings?:object,conflictPolicy?:\"keep-local\"|\"replace\"}",
+    "mutates": false
+  },
+  {
+    "name": "films.query",
+    "description": {
+      "zh-CN": "按声明查询影片",
+      "en": "Query films with the shared typed predicate contract"
+    },
+    "arguments": "query.schema.json: {where?:Predicate,search?:string,orderBy?:[{tag:string,direction?:\"asc\"|\"desc\",mode?:\"value\"|\"label\"|\"min\"|\"max\",nulls?:\"first\"|\"last\"}],groupBy?:[{tag:string,mode?:\"value\"|\"member\"|\"facet\",facet?:string}],locale?:string,libraryId?:string,offset?:number,limit?:number,ignoreDefaultQuery?:boolean}",
+    "mutates": false
+  },
+  {
+    "name": "duplicates.query",
+    "description": {
+      "zh-CN": "按声明查重",
+      "en": "duplicates.query"
+    },
+    "arguments": "{keys?:string[],libraryId?:string}",
+    "mutates": false
+  },
+  {
+    "name": "config.apply",
+    "description": {
+      "zh-CN": "发布已预览的用户配置",
+      "en": "config.apply"
+    },
+    "arguments": "{previewToken:string,expectedGeneration:number}",
+    "mutates": true
+  },
+  {
+    "name": "annotations.batch",
+    "description": {
+      "zh-CN": "事务提交标注",
+      "en": "annotations.batch"
+    },
+    "arguments": "{expectedGeneration:number,idempotencyKey:string,writes:[{subject:{kind:string,id:string},scope:{kind:\"whole\"|\"point\"|\"interval\",scopeId?:string,startUs?:string,endUs?:string,mediaRevision?:string},tagKey:string,value?:any,operation:\"set\"|\"add\"|\"remove\"|\"clear\",expectedRevision:number,note?:string,locked?:boolean}]}",
+    "mutates": true
+  },
+  {
+    "name": "annotations.bulk.commit",
+    "description": {
+      "zh-CN": "执行已预览的批量标注",
+      "en": "annotations.bulk.commit"
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": true
+  },
+  {
+    "name": "tag.options.create",
+    "description": {
+      "zh-CN": "创建允许新增的选项",
+      "en": "tag.options.create"
+    },
+    "arguments": "{tagKey:string,name:string,expectedGeneration:number,write?:object}",
+    "mutates": true
+  },
+  {
+    "name": "candidates.resolve",
+    "description": {
+      "zh-CN": "接受或拒绝候选",
+      "en": "candidates.resolve"
+    },
+    "arguments": "{id:string,accept:boolean,expectedGeneration:number,expectedRevision:number}",
+    "mutates": true
+  },
+  {
+    "name": "exchange.commit",
+    "description": {
+      "zh-CN": "提交已预览的导入",
+      "en": "exchange.commit"
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": true
+  },
+  {
+    "name": "duplicates.apply",
+    "description": {
+      "zh-CN": "保留版本并建立影片组",
+      "en": "duplicates.apply"
+    },
+    "arguments": "{candidateIds:string[],keepIds:string[],expectedGeneration:number,expectedRevisions:object,name?:string}",
+    "mutates": true
+  },
+  {
+    "name": "terms.query",
+    "description": {
+      "zh-CN": "搜索可枚举标签值与属性",
+      "en": "Search enumerable values and their attributes"
+    },
+    "arguments": "{vocabulary?:string,search?:string,where?:object,offset?:number,limit?:number,includeDisabled?:boolean}",
+    "mutates": false
+  },
+  {
+    "name": "terms.get",
+    "description": {
+      "zh-CN": "读取具体值的资料、属性与引用关系",
+      "en": "Read a value profile, annotations and references"
+    },
+    "arguments": "{id:string}",
+    "mutates": false
+  },
+  {
+    "name": "terms.put",
+    "description": {
+      "zh-CN": "创建或更新用户层值实体，保留稳定 ID",
+      "en": "Create or update a user value entity, preserving stable identity"
+    },
+    "arguments": "{term:object,expectedRevision:number,expectedGeneration:number}",
+    "mutates": true
+  },
+  {
+    "name": "automation.preview",
+    "description": {
+      "zh-CN": "试算条件规则；草稿仅预览，已发布规则可冻结批量更新。",
+      "en": "Try rules; drafts are read-only, published rules can freeze a batch."
+    },
+    "arguments": "{tagKey:string,expectedGeneration:number,changes?:object[],subjectIds?:string[],query?:Query,samples?:{facts:object,title?:string}[]}",
+    "mutates": false
+  },
+  {
+    "name": "automation.commit",
+    "description": {
+      "zh-CN": "执行已审核的自动标注预览。",
+      "en": "Apply a reviewed automatic annotation preview."
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": true
+  },
+  {
+    "name": "films.ids",
+    "description": {
+      "zh-CN": "固定查询命中的全部影片及其顺序。",
+      "en": "Capture all matching film IDs in query order."
+    },
+    "arguments": "{...Query}",
+    "mutates": false
+  },
+  {
+    "name": "automation.prepare",
+    "description": {
+      "zh-CN": "为规则试算读取缺少的媒体信息；冻结当前影片范围并创建可暂停任务。",
+      "en": "Read missing media facts for a rule trial in a persistent, pausable task with a frozen scope."
+    },
+    "arguments": "{tagKey:string,changes?:object[],subjectIds?:string[],query?:Query}",
+    "mutates": true
+  },
+  {
+    "name": "metadata.bulk.preview",
+    "description": {
+      "zh-CN": "预览手动批量补全的影片范围，冻结目标、配置代际和当前版本。",
+      "en": "Preview manual enrichment and freeze film IDs, definition generation and current revisions."
+    },
+    "arguments": "{expectedGeneration?:number,subjectIds?:string[],query?:Query}",
+    "mutates": false
+  },
+  {
+    "name": "metadata.bulk.commit",
+    "description": {
+      "zh-CN": "执行已预览的批量补全，创建可暂停、取消和重试的后台任务。",
+      "en": "Start a reviewed enrichment preview as a persistent, pausable, cancellable and retryable task."
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": true
+  },
+  {
+    "name": "metadata.bulk.status",
+    "description": {
+      "zh-CN": "读取批量补全进度、冲突和来源结果。",
+      "en": "Read batch enrichment progress, conflicts and source outcomes."
+    },
+    "arguments": "{previewToken:string}",
+    "mutates": false
+  },
+  {
+    "name": "activity.list",
+    "description": {
+      "zh-CN": "按更新时间倒序读取任务和待审核建议；before 使用返回的 next。先用 annotations.get 对比当前有效值，再用 candidates.resolve 审核。",
+      "en": "Read durable tasks and pending proposals newest first. Use next as before. Read effective values with annotations.get before review through candidates.resolve."
+    },
+    "arguments": "{sources:(\"jobs\"|\"candidates\")[],filter?:\"all\"|\"attention\",limit?:number,before?:{id:string,updated:string}}",
+    "mutates": false
+  }
+]

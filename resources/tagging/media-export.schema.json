@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vroom.local/schemas/media-export.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targets",
+    "presetName",
+    "options"
+  ],
+  "properties": {
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "$ref": "#/$defs/target"
+      }
+    },
+    "presetName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preset": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "options": {
+      "type": "object",
+      "maxProperties": 256,
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 8192
+      }
+    },
+    "schedule": {
+      "$ref": "#/$defs/schedule"
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outputPath"
+      ],
+      "properties": {
+        "filmId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outputPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "partId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "filmId"
+          ],
+          "not": {
+            "required": [
+              "sourcePath"
+            ]
+          }
+        },
+        {
+          "required": [
+            "sourcePath"
+          ],
+          "not": {
+            "required": [
+              "filmId"
+            ]
+          }
+        }
+      ],
+      "dependentRequired": {
+        "partId": [
+          "filmId"
+        ]
+      }
+    },
+    "schedule": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "priority": {
+          "type": "integer",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "notBefore": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "commit": {
+      "type": "object",
+      "required": [
+        "previewToken"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "previewToken": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
+      }
+    }
+  }
+}

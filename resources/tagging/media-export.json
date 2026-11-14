@@ -1,0 +1,1358 @@
+{
+  "protocolVersion": 1,
+  "surface": "media.export",
+  "schema": "media-export.schema.json",
+  "layout": [
+    {
+      "id": "source",
+      "component": "source-list@1"
+    },
+    {
+      "id": "preset",
+      "component": "preset-picker@1"
+    },
+    {
+      "id": "options",
+      "component": "handbrake-options@1"
+    },
+    {
+      "id": "destination",
+      "component": "export-destination@1"
+    },
+    {
+      "id": "review",
+      "component": "export-review@1"
+    },
+    {
+      "id": "plan",
+      "component": "export-plan@1"
+    }
+  ],
+  "groups": {
+    "General": {
+      "en": "General",
+      "zh-CN": "通用"
+    },
+    "Source": {
+      "en": "Source & range",
+      "zh-CN": "范围与标题"
+    },
+    "Destination": {
+      "en": "Container & chapters",
+      "zh-CN": "封装与章节"
+    },
+    "Video": {
+      "en": "Video",
+      "zh-CN": "视频"
+    },
+    "Audio": {
+      "en": "Audio & mixdown",
+      "zh-CN": "音轨与混音"
+    },
+    "Audio Filters": {
+      "en": "Audio filters",
+      "zh-CN": "音频滤镜"
+    },
+    "Picture": {
+      "en": "Dimensions & crop",
+      "zh-CN": "尺寸与裁剪"
+    },
+    "Filters": {
+      "en": "Video filters",
+      "zh-CN": "视频滤镜"
+    },
+    "Subtitles": {
+      "en": "Subtitles",
+      "zh-CN": "字幕"
+    }
+  },
+  "fields": {
+    "format": {
+      "en": "format",
+      "zh-CN": "容器格式"
+    },
+    "title": {
+      "en": "title",
+      "zh-CN": "标题编号"
+    },
+    "chapters": {
+      "en": "chapters",
+      "zh-CN": "章节范围"
+    },
+    "angle": {
+      "en": "angle",
+      "zh-CN": "角度"
+    },
+    "main-feature": {
+      "en": "main-feature",
+      "zh-CN": "主标题"
+    },
+    "min-duration": {
+      "en": "min-duration",
+      "zh-CN": "最短标题时长"
+    },
+    "max-duration": {
+      "en": "max-duration",
+      "zh-CN": "最长标题时长"
+    },
+    "start-at": {
+      "en": "start-at",
+      "zh-CN": "开始位置（单位:数值）"
+    },
+    "stop-at": {
+      "en": "stop-at",
+      "zh-CN": "导出长度（单位:数值）"
+    },
+    "encoder": {
+      "en": "Video codec",
+      "zh-CN": "视频编码器"
+    },
+    "encoder-preset": {
+      "en": "Encoding speed",
+      "zh-CN": "编码速度预设"
+    },
+    "encoder-tune": {
+      "en": "encoder-tune",
+      "zh-CN": "内容调优"
+    },
+    "encoder-profile": {
+      "en": "encoder-profile",
+      "zh-CN": "编码配置"
+    },
+    "encoder-level": {
+      "en": "encoder-level",
+      "zh-CN": "编码级别"
+    },
+    "quality": {
+      "en": "Constant quality",
+      "zh-CN": "恒定质量"
+    },
+    "vb": {
+      "en": "vb",
+      "zh-CN": "平均码率（kbps）"
+    },
+    "multi-pass": {
+      "en": "multi-pass",
+      "zh-CN": "多遍编码"
+    },
+    "turbo": {
+      "en": "turbo",
+      "zh-CN": "快速首遍"
+    },
+    "rate": {
+      "en": "rate",
+      "zh-CN": "帧率"
+    },
+    "vfr": {
+      "en": "vfr",
+      "zh-CN": "可变帧率"
+    },
+    "cfr": {
+      "en": "cfr",
+      "zh-CN": "恒定帧率"
+    },
+    "pfr": {
+      "en": "pfr",
+      "zh-CN": "峰值帧率"
+    },
+    "hdr-dynamic-metadata": {
+      "en": "hdr-dynamic-metadata",
+      "zh-CN": "HDR 动态元数据"
+    },
+    "enable-hw-decoding": {
+      "en": "enable-hw-decoding",
+      "zh-CN": "硬件解码"
+    },
+    "encopts": {
+      "en": "encopts",
+      "zh-CN": "编码器高级参数"
+    },
+    "audio": {
+      "en": "audio",
+      "zh-CN": "音轨编号（逗号分隔）"
+    },
+    "aencoder": {
+      "en": "aencoder",
+      "zh-CN": "音频编码器（逐轨）"
+    },
+    "ab": {
+      "en": "ab",
+      "zh-CN": "音频码率（逐轨）"
+    },
+    "aq": {
+      "en": "aq",
+      "zh-CN": "音频质量（逐轨）"
+    },
+    "ac": {
+      "en": "ac",
+      "zh-CN": "音频压缩级别"
+    },
+    "mixdown": {
+      "en": "mixdown",
+      "zh-CN": "混音方式（逐轨）"
+    },
+    "arate": {
+      "en": "arate",
+      "zh-CN": "采样率（kHz）"
+    },
+    "drc": {
+      "en": "drc",
+      "zh-CN": "动态范围压缩"
+    },
+    "gain": {
+      "en": "gain",
+      "zh-CN": "增益（dB）"
+    },
+    "aname": {
+      "en": "aname",
+      "zh-CN": "音轨名称"
+    },
+    "audio-lang-list": {
+      "en": "audio-lang-list",
+      "zh-CN": "首选音轨语言"
+    },
+    "all-audio": {
+      "en": "all-audio",
+      "zh-CN": "选择全部音轨"
+    },
+    "first-audio": {
+      "en": "first-audio",
+      "zh-CN": "选择首条音轨"
+    },
+    "audio-copy-mask": {
+      "en": "audio-copy-mask",
+      "zh-CN": "音频透传列表"
+    },
+    "audio-fallback": {
+      "en": "audio-fallback",
+      "zh-CN": "音频回退编码"
+    },
+    "normalize-mix": {
+      "en": "normalize-mix",
+      "zh-CN": "混音响度归一化"
+    },
+    "adither": {
+      "en": "adither",
+      "zh-CN": "抖动算法"
+    },
+    "width": {
+      "en": "width",
+      "zh-CN": "宽度（像素）"
+    },
+    "height": {
+      "en": "height",
+      "zh-CN": "高度（像素）"
+    },
+    "maxWidth": {
+      "en": "maxWidth",
+      "zh-CN": "最大宽度"
+    },
+    "maxHeight": {
+      "en": "maxHeight",
+      "zh-CN": "最大高度"
+    },
+    "crop": {
+      "en": "crop",
+      "zh-CN": "裁剪（上:下:左:右）"
+    },
+    "crop-mode": {
+      "en": "crop-mode",
+      "zh-CN": "裁剪模式"
+    },
+    "display-width": {
+      "en": "display-width",
+      "zh-CN": "显示宽度"
+    },
+    "pixel-aspect": {
+      "en": "pixel-aspect",
+      "zh-CN": "像素宽高比"
+    },
+    "non-anamorphic": {
+      "en": "non-anamorphic",
+      "zh-CN": "方形像素"
+    },
+    "auto-anamorphic": {
+      "en": "auto-anamorphic",
+      "zh-CN": "自动变形"
+    },
+    "loose-anamorphic": {
+      "en": "loose-anamorphic",
+      "zh-CN": "宽松变形"
+    },
+    "custom-anamorphic": {
+      "en": "custom-anamorphic",
+      "zh-CN": "自定义变形"
+    },
+    "modulus": {
+      "en": "modulus",
+      "zh-CN": "尺寸整除数"
+    },
+    "color-range": {
+      "en": "color-range",
+      "zh-CN": "颜色范围"
+    },
+    "color-matrix": {
+      "en": "color-matrix",
+      "zh-CN": "色彩矩阵"
+    },
+    "rotate": {
+      "en": "rotate",
+      "zh-CN": "旋转与翻转"
+    },
+    "pad": {
+      "en": "pad",
+      "zh-CN": "画面填充"
+    },
+    "comb-detect": {
+      "en": "comb-detect",
+      "zh-CN": "梳状检测"
+    },
+    "deinterlace": {
+      "en": "deinterlace",
+      "zh-CN": "去隔行（Yadif）"
+    },
+    "bwdif": {
+      "en": "bwdif",
+      "zh-CN": "去隔行（Bwdif）"
+    },
+    "decomb": {
+      "en": "decomb",
+      "zh-CN": "去梳状"
+    },
+    "detelecine": {
+      "en": "detelecine",
+      "zh-CN": "逆电视电影"
+    },
+    "hqdn3d": {
+      "en": "hqdn3d",
+      "zh-CN": "降噪（HQDN3D）"
+    },
+    "nlmeans": {
+      "en": "nlmeans",
+      "zh-CN": "降噪（NLMeans）"
+    },
+    "nlmeans-tune": {
+      "en": "nlmeans-tune",
+      "zh-CN": "降噪调优"
+    },
+    "chroma": {
+      "en": "chroma",
+      "zh-CN": "色度平滑"
+    },
+    "unsharp": {
+      "en": "unsharp",
+      "zh-CN": "非锐化遮罩"
+    },
+    "lapsharp": {
+      "en": "lapsharp",
+      "zh-CN": "拉普拉斯锐化"
+    },
+    "deblock": {
+      "en": "deblock",
+      "zh-CN": "去块效应"
+    },
+    "grayscale": {
+      "en": "grayscale",
+      "zh-CN": "灰度"
+    },
+    "colorspace": {
+      "en": "colorspace",
+      "zh-CN": "色彩空间转换"
+    },
+    "subtitle": {
+      "en": "subtitle",
+      "zh-CN": "字幕编号（逗号分隔）"
+    },
+    "subtitle-lang-list": {
+      "en": "subtitle-lang-list",
+      "zh-CN": "首选字幕语言"
+    },
+    "subtitle-forced": {
+      "en": "subtitle-forced",
+      "zh-CN": "仅强制字幕"
+    },
+    "subtitle-burned": {
+      "en": "subtitle-burned",
+      "zh-CN": "烧录字幕"
+    },
+    "subtitle-default": {
+      "en": "subtitle-default",
+      "zh-CN": "默认字幕"
+    },
+    "all-subtitles": {
+      "en": "all-subtitles",
+      "zh-CN": "全部字幕"
+    },
+    "srt-file": {
+      "en": "srt-file",
+      "zh-CN": "外部 SRT 文件（绝对路径）"
+    },
+    "ssa-file": {
+      "en": "ssa-file",
+      "zh-CN": "外部 SSA 文件（绝对路径）"
+    },
+    "srt-codeset": {
+      "en": "srt-codeset",
+      "zh-CN": "SRT 字符编码"
+    },
+    "srt-offset": {
+      "en": "srt-offset",
+      "zh-CN": "SRT 偏移（毫秒）"
+    },
+    "ssa-offset": {
+      "en": "ssa-offset",
+      "zh-CN": "SSA 偏移（毫秒）"
+    },
+    "srt-lang": {
+      "en": "srt-lang",
+      "zh-CN": "SRT 语言"
+    },
+    "ssa-lang": {
+      "en": "ssa-lang",
+      "zh-CN": "SSA 语言"
+    },
+    "srt-default": {
+      "en": "srt-default",
+      "zh-CN": "默认 SRT"
+    },
+    "ssa-default": {
+      "en": "ssa-default",
+      "zh-CN": "默认 SSA"
+    },
+    "srt-burn": {
+      "en": "srt-burn",
+      "zh-CN": "烧录 SRT"
+    },
+    "ssa-burn": {
+      "en": "ssa-burn",
+      "zh-CN": "烧录 SSA"
+    },
+    "subname": {
+      "en": "subname",
+      "zh-CN": "字幕名称"
+    },
+    "native-language": {
+      "en": "native-language",
+      "zh-CN": "本地语言"
+    },
+    "native-dub": {
+      "en": "native-dub",
+      "zh-CN": "优先本地配音"
+    },
+    "markers": {
+      "en": "markers",
+      "zh-CN": "章节标记"
+    },
+    "optimize": {
+      "en": "optimize",
+      "zh-CN": "网络快速开始"
+    },
+    "keep-metadata": {
+      "en": "keep-metadata",
+      "zh-CN": "保留源元数据"
+    },
+    "no-metadata": {
+      "en": "no-metadata",
+      "zh-CN": "移除元数据"
+    },
+    "align-av": {
+      "en": "align-av",
+      "zh-CN": "音视频起点对齐"
+    },
+    "inline-parameter-sets": {
+      "en": "inline-parameter-sets",
+      "zh-CN": "内联参数集"
+    },
+    "automatic-naming-behaviour": {
+      "en": "automatic-naming-behaviour",
+      "zh-CN": "音轨自动命名"
+    },
+    "denoise": {
+      "en": "denoise",
+      "zh-CN": "降噪"
+    },
+    "previews": {
+      "en": "previews",
+      "zh-CN": "预览帧数量与缓存"
+    },
+    "crop-threshold-frames": {
+      "en": "crop-threshold-frames",
+      "zh-CN": "裁剪帧数阈值"
+    },
+    "chroma-smooth": {
+      "en": "chroma-smooth",
+      "zh-CN": "色度平滑"
+    },
+    "deblock-tune": {
+      "en": "deblock-tune",
+      "zh-CN": "去块调优"
+    },
+    "first-subtitle": {
+      "en": "first-subtitle",
+      "zh-CN": "选择首条字幕"
+    },
+    "chroma-smooth-tune": {
+      "en": "chroma-smooth-tune",
+      "zh-CN": "色度平滑调优"
+    },
+    "itu-par": {
+      "en": "itu-par",
+      "zh-CN": "ITU 像素宽高比"
+    },
+    "ipod-atom": {
+      "en": "ipod-atom",
+      "zh-CN": "iPod 5G 兼容"
+    },
+    "lapsharp-tune": {
+      "en": "lapsharp-tune",
+      "zh-CN": "拉普拉斯锐化调优"
+    },
+    "keep-duplicate-titles": {
+      "en": "keep-duplicate-titles",
+      "zh-CN": "保留重复标题"
+    },
+    "verbose": {
+      "en": "verbose",
+      "zh-CN": "日志详细程度"
+    },
+    "keep-aname": {
+      "en": "keep-aname",
+      "zh-CN": "保留音轨名称"
+    },
+    "no-dvdnav": {
+      "en": "no-dvdnav",
+      "zh-CN": "禁用 DVD 导航"
+    },
+    "unsharp-tune": {
+      "en": "unsharp-tune",
+      "zh-CN": "非锐化调优"
+    },
+    "keep-subname": {
+      "en": "keep-subname",
+      "zh-CN": "保留字幕名称"
+    },
+    "start-at-preview": {
+      "en": "start-at-preview",
+      "zh-CN": "从预览位置开始"
+    },
+    "disable-hw-decoding": {
+      "en": "disable-hw-decoding",
+      "zh-CN": "禁用硬件解码"
+    },
+    "keep-display-aspect": {
+      "en": "keep-display-aspect",
+      "zh-CN": "保持显示宽高比"
+    },
+    "crop-threshold-pixels": {
+      "en": "crop-threshold-pixels",
+      "zh-CN": "裁剪像素阈值"
+    },
+    "no-markers": {
+      "en": "Disable markers",
+      "zh-CN": "禁用 章节标记"
+    },
+    "no-optimize": {
+      "en": "Disable optimize",
+      "zh-CN": "禁用 网络快速开始"
+    },
+    "no-ipod-atom": {
+      "en": "Disable ipod-atom",
+      "zh-CN": "禁用 iPod 5G 兼容"
+    },
+    "no-multi-pass": {
+      "en": "Disable multi-pass",
+      "zh-CN": "禁用 多遍编码"
+    },
+    "no-turbo": {
+      "en": "Disable turbo",
+      "zh-CN": "禁用 快速首遍"
+    },
+    "no-hdr-dynamic-metadata": {
+      "en": "Disable hdr-dynamic-metadata",
+      "zh-CN": "禁用 HDR 动态元数据"
+    },
+    "no-keep-aname": {
+      "en": "Disable keep-aname",
+      "zh-CN": "禁用 保留音轨名称"
+    },
+    "no-keep-display-aspect": {
+      "en": "Disable keep-display-aspect",
+      "zh-CN": "禁用 保持显示宽高比"
+    },
+    "no-itu-par": {
+      "en": "Disable itu-par",
+      "zh-CN": "禁用 ITU 像素宽高比"
+    },
+    "no-comb-detect": {
+      "en": "Disable comb-detect",
+      "zh-CN": "禁用 梳状检测"
+    },
+    "no-deinterlace": {
+      "en": "Disable deinterlace",
+      "zh-CN": "禁用 去隔行（Yadif）"
+    },
+    "no-bwdif": {
+      "en": "Disable bwdif",
+      "zh-CN": "禁用 去隔行（Bwdif）"
+    },
+    "no-decomb": {
+      "en": "Disable decomb",
+      "zh-CN": "禁用 去梳状"
+    },
+    "no-detelecine": {
+      "en": "Disable detelecine",
+      "zh-CN": "禁用 逆电视电影"
+    },
+    "no-hqdn3d": {
+      "en": "Disable hqdn3d",
+      "zh-CN": "禁用 降噪（HQDN3D）"
+    },
+    "no-nlmeans": {
+      "en": "Disable nlmeans",
+      "zh-CN": "禁用 降噪（NLMeans）"
+    },
+    "no-chroma-smooth": {
+      "en": "Disable chroma-smooth",
+      "zh-CN": "禁用 色度平滑"
+    },
+    "no-unsharp": {
+      "en": "Disable unsharp",
+      "zh-CN": "禁用 非锐化遮罩"
+    },
+    "no-lapsharp": {
+      "en": "Disable lapsharp",
+      "zh-CN": "禁用 拉普拉斯锐化"
+    },
+    "no-deblock": {
+      "en": "Disable deblock",
+      "zh-CN": "禁用 去块效应"
+    },
+    "no-grayscale": {
+      "en": "Disable grayscale",
+      "zh-CN": "禁用 灰度"
+    },
+    "no-keep-subname": {
+      "en": "Disable keep-subname",
+      "zh-CN": "禁用 保留字幕名称"
+    }
+  },
+  "copy": {
+    "title": {
+      "en": "Convert & export",
+      "zh-CN": "转换与导出"
+    },
+    "description": {
+      "en": "Create standalone video files.",
+      "zh-CN": "创建独立视频文件。"
+    },
+    "source": {
+      "en": "Source",
+      "zh-CN": "源媒体"
+    },
+    "preset": {
+      "en": "Preset",
+      "zh-CN": "预设"
+    },
+    "options": {
+      "en": "Encoding settings",
+      "zh-CN": "编码设置"
+    },
+    "destination": {
+      "en": "Destination",
+      "zh-CN": "导出位置"
+    },
+    "review": {
+      "en": "Review & queue",
+      "zh-CN": "审阅与提交"
+    },
+    "sourcePath": {
+      "en": "Full path to a video file or disc directory",
+      "zh-CN": "视频文件或光盘目录的完整路径"
+    },
+    "addSource": {
+      "en": "Add source",
+      "zh-CN": "添加源文件"
+    },
+    "sources": {
+      "en": "Selected sources",
+      "zh-CN": "待导出源媒体"
+    },
+    "library": {
+      "en": "Choose from catalog",
+      "zh-CN": "从影片库选择"
+    },
+    "search": {
+      "en": "Search catalog",
+      "zh-CN": "搜索影片"
+    },
+    "searchOptions": {
+      "en": "Search all encoding options",
+      "zh-CN": "搜索全部编码选项"
+    },
+    "scan": {
+      "en": "Scan titles & tracks",
+      "zh-CN": "扫描标题与轨道"
+    },
+    "scanHint": {
+      "en": "Use scanned track and chapter indexes in the encoding controls.",
+      "zh-CN": "扫描结果中的音轨、字幕和章节编号可用于编码设置。"
+    },
+    "refresh": {
+      "en": "Refresh engine capabilities",
+      "zh-CN": "刷新引擎能力"
+    },
+    "settings": {
+      "en": "Runtime settings",
+      "zh-CN": "运行时设置"
+    },
+    "unavailable": {
+      "en": "Encoder unavailable. Check its path in Settings.",
+      "zh-CN": "编码器不可用，请在设置中检查程序路径。"
+    },
+    "builtin": {
+      "en": "Built-in presets",
+      "zh-CN": "内置预设"
+    },
+    "user": {
+      "en": "My presets",
+      "zh-CN": "我的预设"
+    },
+    "inherit": {
+      "en": "Use preset",
+      "zh-CN": "沿用预设"
+    },
+    "enabled": {
+      "en": "Override preset",
+      "zh-CN": "覆盖预设"
+    },
+    "remove": {
+      "en": "Remove",
+      "zh-CN": "移除"
+    },
+    "importPreset": {
+      "en": "Import preset",
+      "zh-CN": "导入预设"
+    },
+    "exportPreset": {
+      "en": "Download current preset",
+      "zh-CN": "下载当前预设"
+    },
+    "savePreset": {
+      "en": "Save to my presets",
+      "zh-CN": "保存到我的预设"
+    },
+    "presetName": {
+      "en": "Preset name",
+      "zh-CN": "预设名称"
+    },
+    "deletePreset": {
+      "en": "Delete my preset",
+      "zh-CN": "删除我的预设"
+    },
+    "outputDirectory": {
+      "en": "Destination folder",
+      "zh-CN": "目标文件夹"
+    },
+    "suffix": {
+      "en": "Filename suffix",
+      "zh-CN": "文件名后缀"
+    },
+    "format": {
+      "en": "Container",
+      "zh-CN": "输出容器"
+    },
+    "outputPath": {
+      "en": "Full output path",
+      "zh-CN": "完整输出路径"
+    },
+    "browse": {
+      "en": "Choose folder",
+      "zh-CN": "选择文件夹"
+    },
+    "preview": {
+      "en": "Preview export",
+      "zh-CN": "预览并导出"
+    },
+    "submit": {
+      "en": "Add to queue",
+      "zh-CN": "加入任务队列"
+    },
+    "jobs": {
+      "en": "Open task center",
+      "zh-CN": "打开任务中心"
+    },
+    "priority": {
+      "en": "Priority",
+      "zh-CN": "优先级"
+    },
+    "scheduled": {
+      "en": "Not before (local time, optional)",
+      "zh-CN": "最早开始时间（本地时间，可留空）"
+    },
+    "safety": {
+      "en": "Destinations must not exist. Output is published only after validation; source files are preserved.",
+      "zh-CN": "目标文件必须尚不存在。完成编码并验证后才发布输出；取消与失败保留源文件。"
+    },
+    "pauseHint": {
+      "en": "Pause stops the current encode; resume re-encodes that file. Completed exports are retained.",
+      "zh-CN": "暂停会停止当前编码，恢复时重新编码该文件。已完成的导出不会重复执行。"
+    },
+    "frozen": {
+      "en": "Preview freezes sources, engine, preset, options and destinations. Changes require a new preview.",
+      "zh-CN": "预览已冻结源文件、引擎、预设、参数与目标路径。修改设置后需重新预览。"
+    },
+    "selected": {
+      "en": "Selected sources",
+      "zh-CN": "已选来源"
+    },
+    "count": {
+      "en": "export jobs",
+      "zh-CN": "个导出任务"
+    },
+    "conflicts": {
+      "en": "These destinations were not queued. Resolve conflicts and preview again.",
+      "zh-CN": "以下目标未入队；修正冲突后重新预览。"
+    },
+    "help": {
+      "en": "Option help",
+      "zh-CN": "参数说明"
+    },
+    "noSources": {
+      "en": "Add sources or select catalog entries.",
+      "zh-CN": "添加视频文件，或从影片库选择影片。"
+    },
+    "useTitle": {
+      "en": "Use this title",
+      "zh-CN": "使用此标题"
+    },
+    "audio": {
+      "en": "Audio tracks",
+      "zh-CN": "音轨"
+    },
+    "subtitles": {
+      "en": "Subtitles",
+      "zh-CN": "字幕"
+    },
+    "chapters": {
+      "en": "Chapters",
+      "zh-CN": "章节"
+    },
+    "dimensions": {
+      "en": "Picture",
+      "zh-CN": "画面"
+    },
+    "command": {
+      "en": "Frozen encoding options",
+      "zh-CN": "已冻结的编码参数"
+    },
+    "bytes": {
+      "en": "Source size",
+      "zh-CN": "源文件大小"
+    },
+    "busy": {
+      "en": "Working…",
+      "zh-CN": "正在处理…"
+    },
+    "presetHelp": {
+      "en": "Settings inherit the preset. Enable an override to adjust a value.",
+      "zh-CN": "参数默认沿用预设；开启开关可单独调整。"
+    },
+    "scheduler": {
+      "en": "Queue scheduling",
+      "zh-CN": "队列调度"
+    },
+    "workers": {
+      "en": "Background concurrency",
+      "zh-CN": "后台任务并发"
+    },
+    "encoders": {
+      "en": "Encode concurrency",
+      "zh-CN": "转码并发"
+    },
+    "queueState": {
+      "en": "Queue state",
+      "zh-CN": "队列状态"
+    },
+    "queuePaused": {
+      "en": "Pause new starts",
+      "zh-CN": "暂停启动新任务"
+    },
+    "apply": {
+      "en": "Save scheduling",
+      "zh-CN": "保存调度设置"
+    },
+    "schedulerHint": {
+      "en": "Changing limits does not terminate running work. Pausing the queue lets current jobs finish.",
+      "zh-CN": "修改并发不终止正在运行的任务。暂停队列后，现有任务继续完成。"
+    },
+    "log": {
+      "en": "Encoding log",
+      "zh-CN": "编码日志"
+    },
+    "fps": {
+      "en": "fps",
+      "zh-CN": "帧/秒"
+    },
+    "eta": {
+      "en": "ETA",
+      "zh-CN": "剩余"
+    },
+    "pass": {
+      "en": "Pass",
+      "zh-CN": "编码遍数"
+    },
+    "queueHint": {
+      "en": "Higher priorities run first; equal priorities use submission order.",
+      "zh-CN": "优先级越高越早执行；同优先级按提交时间排序。"
+    },
+    "previous": {
+      "en": "Previous",
+      "zh-CN": "上一页"
+    },
+    "next": {
+      "en": "Next",
+      "zh-CN": "下一页"
+    },
+    "presetTooLarge": {
+      "en": "Preset JSON exceeds 2 MB",
+      "zh-CN": "预设 JSON 不能超过 2 MB"
+    },
+    "pickFiles": {
+      "en": "Choose source files",
+      "zh-CN": "选择源文件"
+    },
+    "pickDisc": {
+      "en": "Choose disc directory",
+      "zh-CN": "选择光盘目录"
+    },
+    "reveal": {
+      "en": "Reveal exported file",
+      "zh-CN": "定位导出文件"
+    },
+    "pathFallback": {
+      "en": "In the browser, enter the full source path above.",
+      "zh-CN": "在浏览器中，请在上方输入完整源文件路径。"
+    },
+    "noOptions": {
+      "en": "No matching settings",
+      "zh-CN": "没有匹配的参数"
+    },
+    "outputSettings": {
+      "en": "File naming & scheduling",
+      "zh-CN": "文件命名与任务安排"
+    },
+    "done": {
+      "en": "Done",
+      "zh-CN": "完成"
+    },
+    "backToSettings": {
+      "en": "Back to settings",
+      "zh-CN": "返回设置"
+    },
+    "folderFallback": {
+      "en": "Enter a local directory in the destination folder field.",
+      "zh-CN": "请在目标文件夹输入框中填写本地目录。"
+    }
+  },
+  "tools": [
+    {
+      "name": "export.capabilities",
+      "description": {
+        "en": "Discover supported options and presets before constructing values.",
+        "zh-CN": "读取引擎支持的参数与预设，构造参数前必须调用。"
+      },
+      "arguments": "{refresh?:boolean}",
+      "mutates": false
+    },
+    {
+      "name": "export.scan",
+      "description": {
+        "en": "Scan source titles, tracks and chapters; returns a job ID.",
+        "zh-CN": "扫描标题、轨道和章节，返回任务 ID。"
+      },
+      "arguments": "{filmId?:string,partId?:string,sourcePath?:string}",
+      "mutates": false
+    },
+    {
+      "name": "export.preview",
+      "description": {
+        "en": "Freeze export inputs. Read media-export.schema.json first.",
+        "zh-CN": "验证并冻结导出目标和设置。"
+      },
+      "arguments": "ExportRequest (media-export.schema.json)",
+      "mutates": false
+    },
+    {
+      "name": "export.commit",
+      "description": {
+        "en": "Queue an exact reviewed export preview.",
+        "zh-CN": "提交已审阅的原始导出预览。"
+      },
+      "arguments": "{previewToken:string}",
+      "mutates": true
+    },
+    {
+      "name": "export.preset.resolve",
+      "description": {
+        "en": "Resolve the effective preset with overrides using the same validation as export.",
+        "zh-CN": "读取预设叠加参数后的实际配置；参数与导出共用验证。"
+      },
+      "arguments": "{presetName:string,preset?:object,options?:Record<string,string|null>}",
+      "mutates": false
+    }
+  ],
+  "defaults": {
+    "format": "av_mp4",
+    "preset": "Fast 1080p30",
+    "profile": "balanced"
+  },
+  "presetBindings": {
+    "height": "PictureHeight",
+    "encoder-profile": "VideoProfile",
+    "vb": "VideoAvgBitrate",
+    "format": "FileFormat",
+    "quality": "VideoQualitySlider",
+    "encoder": "VideoEncoder",
+    "encoder-preset": "VideoPreset",
+    "encoder-level": "VideoLevel",
+    "encoder-tune": "VideoTune",
+    "rate": "VideoFramerate",
+    "width": "PictureWidth"
+  },
+  "profiles": [
+    {
+      "id": "quality",
+      "label": {
+        "en": "Quality first",
+        "zh-CN": "画质优先"
+      },
+      "options": {
+        "encoder": "x264",
+        "quality": "20",
+        "encoder-preset": "medium"
+      },
+      "preset": "Fast 1080p30",
+      "description": {
+        "en": "Retain more detail, usually with larger files.",
+        "zh-CN": "保留更多细节，文件通常较大。"
+      }
+    },
+    {
+      "id": "balanced",
+      "label": {
+        "en": "Balanced",
+        "zh-CN": "均衡"
+      },
+      "options": {
+        "encoder": "x264",
+        "quality": "23",
+        "encoder-preset": "medium"
+      },
+      "preset": "Fast 1080p30",
+      "description": {
+        "en": "Balance picture quality and size for everyday exports.",
+        "zh-CN": "兼顾画质与体积，适合日常导出。"
+      }
+    },
+    {
+      "id": "small",
+      "label": {
+        "en": "Smaller files",
+        "zh-CN": "体积优先"
+      },
+      "options": {
+        "encoder": "x264",
+        "quality": "28",
+        "encoder-preset": "medium"
+      },
+      "preset": "Fast 1080p30",
+      "description": {
+        "en": "Reduce size further, with more visible loss of detail.",
+        "zh-CN": "进一步减小体积，细节损失更明显。"
+      }
+    }
+  ],
+  "summary": [
+    {
+      "id": "container",
+      "label": {
+        "en": "Container",
+        "zh-CN": "文件格式"
+      },
+      "paths": [
+        "FileFormat"
+      ],
+      "values": {
+        "av_mp4": {
+          "en": "MP4",
+          "zh-CN": "MP4"
+        },
+        "av_mkv": {
+          "en": "MKV",
+          "zh-CN": "MKV"
+        },
+        "av_mov": {
+          "en": "MOV",
+          "zh-CN": "MOV"
+        },
+        "av_webm": {
+          "en": "WebM",
+          "zh-CN": "WebM"
+        }
+      }
+    },
+    {
+      "id": "video",
+      "label": {
+        "en": "Video codec",
+        "zh-CN": "视频编码"
+      },
+      "paths": [
+        "VideoEncoder"
+      ],
+      "values": {
+        "x264": {
+          "en": "H.264 (x264)",
+          "zh-CN": "H.264 (x264)"
+        }
+      }
+    },
+    {
+      "id": "quality",
+      "label": {
+        "en": "Constant quality (lower is better)",
+        "zh-CN": "恒定质量（数值越低画质越高）"
+      },
+      "paths": [
+        "VideoQualitySlider"
+      ],
+      "when": {
+        "path": "VideoQualityType",
+        "value": 2
+      }
+    },
+    {
+      "id": "bitrate",
+      "label": {
+        "en": "Video bitrate (kbps)",
+        "zh-CN": "视频码率（kbps）"
+      },
+      "paths": [
+        "VideoAvgBitrate"
+      ],
+      "when": {
+        "path": "VideoQualityType",
+        "value": 1
+      }
+    },
+    {
+      "id": "dimensions",
+      "label": {
+        "en": "Resolution limit (width × height)",
+        "zh-CN": "分辨率上限（宽 × 高）"
+      },
+      "paths": [
+        "PictureWidth",
+        "PictureHeight"
+      ],
+      "separator": " × ",
+      "values": {
+        "0": {
+          "en": "Unrestricted",
+          "zh-CN": "不限"
+        }
+      }
+    },
+    {
+      "id": "rate",
+      "label": {
+        "en": "Frame rate / mode",
+        "zh-CN": "帧率 / 模式"
+      },
+      "paths": [
+        "VideoFramerate",
+        "VideoFramerateMode"
+      ],
+      "separator": " / ",
+      "values": {
+        "auto": {
+          "en": "Same as source",
+          "zh-CN": "跟随源文件"
+        },
+        "pfr": {
+          "en": "Peak limit",
+          "zh-CN": "峰值上限"
+        },
+        "cfr": {
+          "en": "Constant",
+          "zh-CN": "固定"
+        },
+        "vfr": {
+          "en": "Variable",
+          "zh-CN": "可变"
+        }
+      }
+    },
+    {
+      "id": "speed",
+      "label": {
+        "en": "Encoding speed",
+        "zh-CN": "编码速度"
+      },
+      "paths": [
+        "VideoPreset"
+      ],
+      "values": {
+        "ultrafast": {
+          "en": "Ultrafast",
+          "zh-CN": "极快"
+        },
+        "veryfast": {
+          "en": "Very fast",
+          "zh-CN": "很快"
+        },
+        "fast": {
+          "en": "Fast",
+          "zh-CN": "快"
+        },
+        "medium": {
+          "en": "Medium",
+          "zh-CN": "中等"
+        },
+        "slow": {
+          "en": "Slow",
+          "zh-CN": "慢"
+        },
+        "slower": {
+          "en": "Slower",
+          "zh-CN": "更慢"
+        },
+        "veryslow": {
+          "en": "Very slow",
+          "zh-CN": "很慢"
+        }
+      }
+    },
+    {
+      "id": "audio",
+      "label": {
+        "en": "Audio / kbps / mixdown",
+        "zh-CN": "音频 / kbps / 声道"
+      },
+      "paths": [
+        "AudioList.*.AudioEncoder",
+        "AudioList.*.AudioBitrate",
+        "AudioList.*.AudioMixdown"
+      ],
+      "values": {
+        "av_aac": {
+          "en": "AAC",
+          "zh-CN": "AAC"
+        },
+        "stereo": {
+          "en": "Stereo",
+          "zh-CN": "立体声"
+        }
+      }
+    },
+    {
+      "id": "subtitles",
+      "label": {
+        "en": "Subtitle selection / foreign search / burn-in",
+        "zh-CN": "字幕选择 / 外语搜索 / 烧录"
+      },
+      "paths": [
+        "SubtitleTrackSelectionBehavior",
+        "SubtitleAddForeignAudioSearch",
+        "SubtitleBurnBehavior"
+      ],
+      "separator": " / ",
+      "values": {
+        "none": {
+          "en": "None",
+          "zh-CN": "无"
+        },
+        "first": {
+          "en": "First",
+          "zh-CN": "首条"
+        },
+        "all": {
+          "en": "All",
+          "zh-CN": "全部"
+        },
+        "true": {
+          "en": "On",
+          "zh-CN": "开启"
+        },
+        "false": {
+          "en": "Off",
+          "zh-CN": "关闭"
+        },
+        "foreign": {
+          "en": "Foreign subtitles",
+          "zh-CN": "外语字幕"
+        },
+        "foreign_first": {
+          "en": "Foreign or first",
+          "zh-CN": "外语或首条"
+        }
+      }
+    },
+    {
+      "id": "crop",
+      "label": {
+        "en": "Cropping",
+        "zh-CN": "裁剪方式"
+      },
+      "paths": [
+        "PictureCropMode"
+      ],
+      "values": {
+        "0": {
+          "en": "Automatic",
+          "zh-CN": "自动裁剪"
+        },
+        "1": {
+          "en": "Conservative",
+          "zh-CN": "保守裁剪"
+        },
+        "2": {
+          "en": "None",
+          "zh-CN": "不裁剪"
+        },
+        "3": {
+          "en": "Custom (see full preset)",
+          "zh-CN": "自定义（见完整预设）"
+        }
+      }
+    }
+  ],
+  "steps": [
+    {
+      "panel": "source",
+      "titleMessage": "ExportFlow.sourceStep"
+    },
+    {
+      "panel": "plan",
+      "titleMessage": "ExportFlow.planStep"
+    },
+    {
+      "panel": "destination",
+      "titleMessage": "ExportFlow.destinationStep"
+    }
+  ],
+  "optionValueLabels": {
+    "encoder": {
+      "x264": {
+        "en": "H.264",
+        "zh-CN": "H.264"
+      }
+    },
+    "encoder-preset": {
+      "medium": {
+        "en": "Medium",
+        "zh-CN": "中等"
+      }
+    }
+  }
+}
