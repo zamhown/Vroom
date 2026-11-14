@@ -2,7 +2,7 @@
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.9.0" />
     <PackageVersion Include="JsonSchema.Net" Version="7.3.1" />
-    <PackageVersion Include="LLamaSharp" Version="0.25.0" />
+    <PackageVersion Include="LLamaSharp" Version="0.30.0" />
     <PackageVersion Include="LLamaSharp.Backend.Cpu" Version="0.25.0" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.14" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
