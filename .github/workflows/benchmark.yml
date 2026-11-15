@@ -15,7 +15,7 @@ jobs:
           global-json-file: global.json
       - name: Tag query benchmark
         run: dotnet run --project tools/Vroom.Smoke -c Release -- --tag-benchmark | Tee-Object -FilePath benchmark.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: tag-benchmark
           path: benchmark.txt
