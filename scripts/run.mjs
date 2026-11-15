@@ -21,7 +21,13 @@ if (options.has('--web')) {
   });
   app.unref();
 } else if (process.platform === 'darwin') {
-  run('dotnet', ['build', 'src/Vroom.App', '-t:Run', '-p:VroomTargetFramework=net10.0-maccatalyst'], { env });
+  const framework = 'net10.0-maccatalyst';
+  const rid = `maccatalyst-${process.arch}`;
+  run('dotnet', ['build', 'src/Vroom.App', '-f', framework, '-r', rid], { env });
+  const bundle = path.join(root, 'src/Vroom.App/bin/Debug', framework, rid, 'Vroom.app');
+  const variables = Object.entries(env).filter(([key]) => key.startsWith('VROOM_'));
+  // LaunchServices does not inherit the environment of dotnet build's Run target.
+  run('/usr/bin/open', ['-n', bundle, ...variables.flatMap(([key, value]) => ['--env', `${key}=${value}`])]);
 } else {
   throw new Error('The desktop app targets Windows and macOS; on this platform use --web.');
 }

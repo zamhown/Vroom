@@ -19,8 +19,13 @@ internal static class DesktopWindowChrome
 
         window.HandlerChanged += (_, _) => ApplyNativeAppearance(window);
         window.Created += (_, _) => ApplyNativeAppearance(window);
+#if WINDOWS
         window.Activated += (_, _) => ApplyNativeAppearance(window);
         window.Deactivated += (_, _) => ApplyNativeAppearance(window);
+#elif MACCATALYST
+        // Keep Catalyst's titlebar stable while its scene changes Spaces/focus.
+        MacWindowPlacement.Attach(window);
+#endif
         titleBar.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(VisualElement.BackgroundColor))

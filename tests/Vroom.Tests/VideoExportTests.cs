@@ -12,15 +12,17 @@ internal static class ExportTestRuntime
 {
     internal static string HandBrake =>
         Environment.GetEnvironmentVariable("VROOM_TEST_HANDBRAKE")
-        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "handbrake", "HandBrakeCLI.exe");
+        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "handbrake", Executable("HandBrakeCLI"));
 
     internal static string Ffmpeg =>
         Environment.GetEnvironmentVariable("VROOM_TEST_FFMPEG")
-        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "ffmpeg", "ffmpeg.exe");
+        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "ffmpeg", Executable("ffmpeg"));
 
     internal static string Ffprobe =>
         Environment.GetEnvironmentVariable("VROOM_TEST_FFPROBE")
-        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "ffmpeg", "ffprobe.exe");
+        ?? Path.Combine(HandBrakeProtocolTests.Root(), "runtime", "ffmpeg", Executable("ffprobe"));
+
+    private static string Executable(string name) => OperatingSystem.IsWindows() ? name + ".exe" : name;
 }
 
 public sealed class HandBrakeFactAttribute : FactAttribute
@@ -28,8 +30,7 @@ public sealed class HandBrakeFactAttribute : FactAttribute
     public HandBrakeFactAttribute()
     {
         if (
-            !OperatingSystem.IsWindows()
-            || !File.Exists(ExportTestRuntime.HandBrake)
+            !File.Exists(ExportTestRuntime.HandBrake)
             || !File.Exists(ExportTestRuntime.Ffmpeg)
             || !File.Exists(ExportTestRuntime.Ffprobe)
         )
@@ -323,7 +324,8 @@ public sealed class VideoExportTests
                 if (format == "mp4")
                 {
                     Assert.Equal(work.PartId, preview.Targets[0].PartId);
-                    Assert.Equal(source, preview.Targets[0].Source.Path);
+                    Assert.NotNull(FileIdentity.Read(source));
+                    Assert.Equal(FileIdentity.Read(source), FileIdentity.Read(preview.Targets[0].Source.Path));
                     await repository.ChangeResourcesAsync(
                         work.Id,
                         structure.Revision,
@@ -376,7 +378,10 @@ public sealed class VideoExportTests
             var commit = JsonSerializer.Serialize(await exports.CommitAsync(conflict.PreviewToken));
             var rejected = JsonNode.Parse(commit)!["conflicts"]!.AsArray().Single()!;
             Assert.Equal("host.export.sourceChanged", rejected["error"]!.GetValue<string>());
-            Assert.Equal(source, rejected["errorArgs"]!["p0"]!.GetValue<string>());
+            Assert.Equal(
+                FileIdentity.Read(source),
+                FileIdentity.Read(rejected["errorArgs"]!["p0"]!.GetValue<string>())
+            );
             Assert.DoesNotContain(jobs.Jobs, j => j.Id == conflict.Targets[0].JobId);
         }
         finally

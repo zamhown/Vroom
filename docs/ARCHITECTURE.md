@@ -89,7 +89,7 @@ flowchart TD
 
 - `Vroom.Core`：不依赖 MAUI 的领域对象、SQLite、解析器、扫描、标签、去重、媒体、资料来源、模型与工具目录。
 - `Vroom.Client`：React / TypeScript、Spectrum 2、多标签工作台、原生视频与 hls.js 播放及标注；不会执行原始 SQL、shell 或任意模型代码。
-- `Vroom.App`：MAUI XAML 容器、平台启动、原生文件定位与 Windows 目录选择。
+- `Vroom.App`：MAUI XAML 容器、平台启动、原生文件定位与桌面文件/目录选择。
 - `Vroom.Web`：仅回环监听的开发/诊断宿主，拒绝非本机 Host、远端连接和跨源请求。
 - `Vroom.Tests`：纯领域和边界测试。
 - `Vroom.Smoke`：真实 FFmpeg、媒体流、NFO、数据库、GGUF 推理集成检查。
@@ -168,7 +168,7 @@ Windows 的共享 `Modal` 和 `Modal.confirm` 统一创建真正的 owned AppWin
 - `mode="exclusive"`：确认、导入审核和草稿编辑。先建立 owner 再启用 `OverlappedPresenter.IsModal`，操作系统阻止父窗口输入，后台播放/任务继续。嵌套编辑器以当前对话窗口为 owner，逐层恢复输入。
 - `mode="modeless"`：播放设置、截图、快捷键、任务详情、布局预览和不兼容标注详情。父窗口仍可操作；窗口可移动、调整大小，并随 owner 关闭。两类窗口的标题均只显示功能名称，不标注独占模式。
 - 系统关闭按钮先请求 React 执行现有取消逻辑；正在提交的确认窗口可暂缓关闭。内容卸载才关闭原生窗口。父文档重载、渲染器故障和宿主退出回收子窗口，并释放独占状态；未完成初始化的窗口超时回收。
-- 原生对话窗口持续跟随内容高度：客户端在**弹窗自身的 Window realm** 创建 ResizeObserver，观察正文、操作栏及容器尺寸，测量自然高度并合并发送；不能用 opener 的构造器，否则主文档不绘制时子窗口尺寸通知会停滞。宿主按窗口当前显示器的可用工作区、DPI 和 WebView 缩放限制高度，包含系统标题栏。内容减少时窗口同步缩短，达到屏幕高度后正文才滚动，操作栏保持可见；稳定滚动条槽位避免换行与尺寸反复变化。保留用户调整的宽度及位置，仅在越过工作区边缘时移动；最大化/最小化期间不自动改尺寸，恢复后重新适配。嵌套 Spectrum popover、右键菜单、焦点及诊断监听使用各自的文档；语言变化原位更新标题和内容，草稿不重建。网页宿主与当前 Mac Catalyst 仍使用页内对话框，尚不具备原生独占/非独占窗口交付能力。
+- 原生对话窗口持续跟随内容高度：客户端在**弹窗自身的 Window realm** 创建 ResizeObserver，观察正文、操作栏及容器尺寸，测量自然高度并合并发送；不能用 opener 的构造器，否则主文档不绘制时子窗口尺寸通知会停滞。宿主按窗口当前显示器的可用工作区、DPI 和 WebView 缩放限制高度，包含系统标题栏。内容减少时窗口同步缩短，达到屏幕高度后正文才滚动，操作栏保持可见；稳定滚动条槽位避免换行与尺寸反复变化。保留用户调整的宽度及位置，仅在越过工作区边缘时移动；最大化/最小化期间不自动改尺寸，恢复后重新适配。嵌套 Spectrum popover、右键菜单、焦点及诊断监听使用各自的文档；语言变化原位更新标题和内容，草稿不重建。网页宿主保留页内对话框；Mac Catalyst 的 WKWebView 子窗口实现见下节。以上操作系统模态关系和关闭拦截描述针对 Windows AppWindow。
 
 - 自动适配窗口时，正文默认隐藏纵向滚动条。宿主通过 `dialog-size-limit` 消息报告当前显示器/DPI/WebView 缩放下可容纳的最大客户区高度；最大化时改用实际客户区高度。只有自然内容超过此容量才允许纵向滚动，不把异步调整过程中尚未长高的临时 viewport 当成高度上限，也不使用定时隐藏/延迟显示。容量更新即使没有内容高度变化也会重算；已超限的内容再次变化时保留滚动条。继续使用 [`scrollbar-gutter: stable`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/scrollbar-gutter) 保留隐藏/可滚动状态间的相同正文宽度，避免换行反馈。
 - 浮层以所在文档的 viewport、边界元素和 DOM 构造器计算位置。`build/react-aria-owner-window.mjs` 修正当前 React Aria 的模块级主窗口引用，沿用其翻转、边距限制、最大高度、滚动与焦点锚点算法；选择框、搜索选择器和菜单共用这一边界行为。弹窗大小改变时重新定位，浮层滚动不关闭列表。Esc 先交给当前浮层处理，同一次按键不能同时取消外层草稿。适配同时用于开发服务和生产构建，依赖源码/模块变化时必须重新核对，不能静默跳过。
@@ -189,34 +189,21 @@ Windows 的共享 `Modal` 和 `Modal.confirm` 统一创建真正的 owned AppWin
 
 mpv 参数语义依据[官方手册](https://mpv.io/manual/stable/)；本次集成验证的是受控参数子集，不声称覆盖上述播放器全部功能。
 
-### macOS 与 Windows 播放体验一致性（2026-11-05 决策）
+### macOS 与 Windows 播放体验一致性（2026-11-14）
 
-目标是两端使用同一播放页、菜单、设置、队列和标注流程，并保持页内视频、鼠标/键盘操作、全屏、界面叠层及故障恢复的一致体验。平台快捷键可遵循系统惯例。独立 mpv 窗口不满足此目标。若实现难度、维护成本或性能代价明显上升，需要及时向用户说明具体原因和可选取舍，再决定后续投入；不能静默缩减为“可以打开视频”。
+目标是两端使用同一播放页、菜单、设置、队列和标注流程，并保持页内视频、输入、全屏、界面叠层及故障恢复的一致体验。用户已选择完整的跨进程 GPU 路线，保留 Mac Catalyst 宿主和共享 React 界面。
 
-Windows 已使用独立 mpv HWND 加 WebView GPU 合成；Mac Catalyst 的 `NativeVideoSurface` 返回 `Embedded=false`，自动模式选择浏览器播放，显式 mpv 模式走独立窗口。Windows Composition/AppWindow 不能直接复用于 Mac；Mac 的视频合成、WKWebView 子窗口和原生独占关系仍需平台宿主实现及 Apple Silicon 实机验证。非 Windows 的 Unix socket 代码不等于 macOS 页内播放已完成。`DecoderLifetime` 的宿主退出回收目前仅实现 Windows Job；前端 tab 仍共享 WebView 进程。这些差距均须计入一致性验收。
+`vroom-decoder` 是普通 macOS 辅助进程，使用 libmpv 的公开 OpenGL render API 向 IOSurface 渲染。Catalyst 中的 Metal 显示层位于透明 WKWebView 下方，直接采样共享表面；WebView 处理所有输入与浮层。Mach 消息传递表面权利、序号及尺寸反馈，校验协议版本、发送用户和尺寸上限。OpenGL 完成写入，Metal 命令完成读取后才确认复用，生产代码没有 CPU 逐帧读回。公开 `native.*` 合同、媒体授权、设置验证、字幕/截图路径及 Unix socket 会话规则不变。OpenGL 和 bootstrap 注册接口已被 Apple 标记 deprecated，仍是公开 API；更新 SDK 时必须重新编译和实测，不能推断存在 Metal 版 libmpv render API。
 
-成本判断来自当前代码边界和上游接口，尚不是 Mac 原型的性能结论：
+每个会话有独立解码器和 IPC 队列。macOS 的 `vroom-process-host` 使用 kqueue 观察真实宿主退出并回收所属进程组，覆盖 SIGKILL；Windows 继续使用 Job。FFmpeg、HandBrake 和来源浏览器复用此入口。解码隔离不等于所有前端 tab 有独立 WebView 进程；WebKit 内容进程退出时关闭其子窗口、停止失去所有者的播放会话，并重载持久化工作区。
 
-| 路线 | 代价与限制 | 当前判断 |
-| --- | --- | --- |
-| 独立 mpv 窗口与 JSON IPC | 改动较少，但视频离开播放页，叠层、焦点及全屏流程不同 | 不作为一致体验交付 |
-| 独立 mpv 子窗口与系统 GPU 合成 | 保留解码进程边界，界面 alpha 由系统合成；原生窗口层需分别实现 | Windows 已实现，Mac 尚未验证可用宿主组合 |
-| 主进程内 libmpv 渲染 | 能控制画面合成，但原生解码崩溃可能影响整个宿主 | 可用于验证渲染，不能据此宣称崩溃隔离完成 |
-| 独立解码进程与共享 GPU 画面 | 需平台图形互操作、帧同步、进程回收、异常重建及打包；成本高 | 当平台原生窗口合成不能满足需求时的候选，尚未实现 |
-| 直接更换整个 UI 框架 | 会扩大现有界面、输入、部署与回归范围，且不会自动提供解码隔离 | 渲染验证前不做整体迁移 |
+Mac 的共享 Modal 使用 WKUIDelegate 提供的配置创建真实子窗口，保留同源 opener、React portal 和主页面状态。只允许打包的对话文档。独占窗口阻止 owner WebView 输入，普通窗口保持可交互；关闭、加载失败、内容进程退出和初始化超时回收所属子窗口。高度按公开 Catalyst 几何接口换算并随内容调整，标题跟随文档语言。窗口生命周期由 Catalyst 管理；薄 AppKit delegate 将系统关闭请求转交共享取消与忙碌提交保护，并转发原 UIKit delegate 的其他回调，不重设 Catalyst 场景的 NSWindow 父子关系。全屏经薄 AppKit 模块调用公开 NSWindow API；业务界面仍属于 Catalyst / React。
 
-[mpv 官方示例](https://github.com/mpv-player/mpv-examples/blob/master/libmpv/README.md#methods-of-embedding-the-video-window) 明确区分原生窗口嵌入和 render API，并说明窗口嵌入的平台差异及渲染 API 对合成的优势。[IINA 的 MPVController](https://github.com/iina/iina/blob/develop/iina/MPVController.swift) 使用 libmpv 的 OpenGL 渲染上下文；这是 macOS 播放集成的参考，不是本项目已具备 Mac Catalyst 和跨进程渲染的证明。不能由 mpv 支持 macOS/Metal 推断所选版本的公开 render API 提供可直接嵌入的 Metal 后端。
+实机验证和发布边界：
 
-现有 Mac Catalyst 宿主先保留。是否需要薄 AppKit 宿主或原生辅助模块，必须由实际图形与 WebView 合成验证决定；业务服务和 React 界面应保持共享。[MAUI AppKit 后端](https://learn.microsoft.com/en-us/dotnet/maui/developer-tools/platform-backends/macos?view=net-maui-10.0) 当前标为实验性、非 Microsoft 正式支持，不能当作无成本替换方案。
+1. 页内视频、菜单透明合成、原生设置窗口、全屏与文件原路径导入在 Apple Silicon 实测。双解码器实验覆盖画面变化、方向与颜色、尺寸变化、挂起/崩溃隔离和 seek。
+2. 1080p/4K 的实际硬件路径、掉帧、CPU 和内存需保留与同机 mpv 对照的测量；HDR、不同显示器与 Intel 不从 Apple Silicon 的单屏测试外推。
+3. 语言/配置变化沿用同一共享界面生命周期；WebKit 进程崩溃恢复会重载持久化状态，不能保留尚未持久化的 JavaScript 内存。
+4. 发布包包含递归媒体依赖、修复后的 LLamaSharp 库、公共定义和许可证，并审计包外链接。最低系统版本取内置 Mach-O 的真实下限。ad-hoc 验证不等于 Developer ID 签名与 Apple 公证。
 
-Mac 实机原型的继续条件：
-
-1. 在实际播放页内渲染，菜单、弹框和工具提示覆盖时持续有画面；透明度与遮罩行为明确验证，不能仅检查播放时钟或截图接口。
-2. 真实鼠标单击、双击、右键、滚轮与键盘操作生效；验证全屏进出、窗口缩放、Retina/外接显示器切换及输入焦点。
-3. 同时运行两个播放会话，分别终止和挂起一个解码器；另一个和主界面继续响应，失败会话可重试；宿主退出后没有遗留解码进程。
-4. 使用有代表性的 1080p/4K 媒体，记录实际硬件解码路径、掉帧、CPU/GPU 占用和内存；与同一机器直接运行 mpv 对照，不能用持续 CPU 回读/复制帧掩盖性能差距。HDR 输出单独验收。
-5. 切换语言、修改配置和切换 tab 保持播放会话与草稿；运行包能在干净环境启动，不依赖开发机的 Homebrew 动态库路径，并验证签名、公证与依赖许可。
-
-若原型依赖私有系统 API、需要重写主界面、只有明显性能退化的方案，或只能取消故障隔离，则停止扩大该路线并提交具体测量结果和替代方案。用户已确认有 Apple Silicon Mac，并选择在 Mac 本地运行验证脚本；本会话仍在 Windows，尚无 macOS 构建、运行、性能或签名验证结果。不承诺交付日期或将此设计记为已实现功能。
-
-首轮入口为 `scripts/verify-macos.mjs`，步骤与反馈文件见 README。Mac Catalyst 补齐当前 MAUI 场景生命周期声明；Unix IPC 使用 `/tmp` 下随机私有目录，避免 macOS 长 `TMPDIR` 超出 Unix socket 的路径上限。真实解码测试在非 Windows 环境校验 socket 路径长度、权限及会话清理。上述改动是实机验证的准备，不构成渲染层原型或完整的跨平台隔离。
+工程入口、依赖来源、签名与正式发布流程见 [macOS 工程说明](MACOS.md)，实际测试及未覆盖项见 [验证记录](VALIDATION.md)。接口参考：[libmpv](https://github.com/mpv-player/mpv-examples/tree/master/libmpv)、[IOSurface](https://developer.apple.com/documentation/iosurface)、[WKWebView 子窗口](https://developer.apple.com/documentation/webkit/wkuidelegate)。

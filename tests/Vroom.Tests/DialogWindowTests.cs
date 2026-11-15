@@ -18,6 +18,15 @@ public class DialogWindowTests
         Assert.Equal(accepted, DialogWindowRequest.TryParse(uri + Query, out _));
 
     [Fact]
+    public void Catalyst_popups_use_only_the_packaged_app_origin()
+    {
+        Assert.True(DialogWindowRequest.TryParse("app://0.0.0.1/dialog.html" + Query, out _, "app"));
+        Assert.False(DialogWindowRequest.TryParse("https://0.0.0.1/dialog.html" + Query, out _, "app"));
+        Assert.False(DialogWindowRequest.TryParse("app://other/dialog.html" + Query, out _, "app"));
+        Assert.False(DialogWindowRequest.TryParse("app://0.0.0.1/dialog.html" + Query + "#ignored", out _, "app"));
+    }
+
+    [Fact]
     public void Modes_are_explicit_and_unknown_or_ambiguous_options_are_rejected()
     {
         var uri = "https://0.0.0.1/dialog.html" + Query;

@@ -50,6 +50,14 @@
       >10.0.17763.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <!-- Keep every assembly's reflected contracts and Objective-C entry points.
+         TrimMode=copy alone only selects the framework action on this Apple SDK. -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <MtouchLink>None</MtouchLink>
+    <CodesignEntitlements>Platforms/MacCatalyst/Entitlements.plist</CodesignEntitlements>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- App Icon -->
     <MauiIcon
@@ -80,7 +88,69 @@
     <ProjectReference Include="../Vroom.Core/Vroom.Core.csproj" />
     <PackageReference
       Include="LLamaSharp.Backend.Cpu"
+      GeneratePathProperty="true"
       Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'"
     />
   </ItemGroup>
+
+  <!-- NuGet has osx native assets, but Catalyst does not inherit that RID. Keep the
+       libraries and their sibling dependencies together, including the Metal source. -->
+  <Target
+    Name="PrepareMacNativeLibraries"
+    BeforeTargets="ProcessMauiAssets"
+    Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'"
+  >
+    <Exec Command="node &quot;$(MSBuildProjectDirectory)/../../scripts/prepare-llama-macos.mjs&quot; &quot;$(PkgLLamaSharp_Backend_Cpu)&quot; &quot;$(IntermediateOutputPath)llama&quot;" />
+    <ItemGroup>
+      <_VroomLlamaArm Include="$(IntermediateOutputPath)llama/arm64/*" />
+      <_VroomLlamaIntel Include="$(IntermediateOutputPath)llama/x64/*" />
+      <MauiAsset
+        Include="@(_VroomLlamaArm)"
+        LogicalName="runtime/llama/arm64/%(_VroomLlamaArm.Filename)%(_VroomLlamaArm.Extension)"
+      />
+      <MauiAsset
+        Include="@(_VroomLlamaIntel)"
+        LogicalName="runtime/llama/x64/%(_VroomLlamaIntel.Filename)%(_VroomLlamaIntel.Extension)"
+      />
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="BuildMacVideoPresenter"
+    BeforeTargets="PrepareForBuild;_SanitizeNativeReferences;ProcessMauiAssets"
+    Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'"
+  >
+    <PropertyGroup>
+      <VroomMacArchitecture Condition="'$(RuntimeIdentifier)' == 'maccatalyst-arm64'">arm64</VroomMacArchitecture>
+      <VroomMacArchitecture Condition="'$(VroomMacArchitecture)' == ''">x64</VroomMacArchitecture>
+      <VroomMacNativeDirectory>$(MSBuildProjectDirectory)/../../runtime/host/$(VroomMacArchitecture)</VroomMacNativeDirectory>
+    </PropertyGroup>
+    <Exec Command="node &quot;$(MSBuildProjectDirectory)/../../scripts/build-macos-native.mjs&quot; --arch=$(VroomMacArchitecture)" />
+    <ItemGroup>
+      <NativeReference
+        Include="$(VroomMacNativeDirectory)/libvroom-video.a"
+        Kind="Static"
+        ForceLoad="true"
+        SmartLink="false"
+        Frameworks="UIKit Foundation Metal QuartzCore IOSurface"
+      />
+      <MauiAsset
+        Include="$(VroomMacNativeDirectory)/libvroom-window.dylib"
+        LogicalName="runtime/host/libvroom-window.dylib"
+      />
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="LocateApplePublicResources"
+    BeforeTargets="_ComputePublishLocation"
+    Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'"
+  >
+    <!-- Metadata on Core's transitive Content items is not preserved by the SDK copy list. -->
+    <ItemGroup>
+      <ResolvedFileToPublish Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('resources/'))">
+        <PublishFolderType>Resource</PublishFolderType>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>

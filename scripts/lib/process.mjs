@@ -2,8 +2,10 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dotnetEnvironment } from './dotnet.mjs';
 
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+Object.assign(process.env, dotnetEnvironment(root));
 export const client = path.join(root, 'src/Vroom.Client');
 export const projectNode = path.join(
   client,
@@ -53,6 +55,7 @@ export function requireDependencies() {
 }
 
 export function configureTestRuntime(required = false) {
+  process.env.VROOM_RUNTIME ||= path.join(root, 'runtime');
   const suffix = process.platform === 'win32' ? '.exe' : '';
   for (const [key, relative] of Object.entries({
     VROOM_TEST_MPV: `mpv/mpv${suffix}`,
@@ -83,6 +86,7 @@ export const formatTargets = [
   'CONTRIBUTING.md',
   'SECURITY.md',
   'docs/DEVELOPMENT.md',
+  'docs/MACOS.md',
   'docs/BRANDING.md',
   'docs/REPOSITORY-MIGRATION.md',
 ];

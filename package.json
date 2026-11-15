@@ -13,6 +13,8 @@
     "format": "node scripts/format.mjs",
     "start": "node scripts/run.mjs",
     "start:web": "node scripts/run.mjs --web",
+    "publish:macos": "node scripts/publish-macos.mjs",
+    "verify:macos": "node scripts/verify-macos.mjs",
     "test:scripts": "node scripts/test-scripts.mjs",
     "test:e2e": "node scripts/e2e-web.mjs"
   }

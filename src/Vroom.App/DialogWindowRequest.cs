@@ -3,18 +3,19 @@ namespace Vroom.App;
 /// <summary>The private desktop window transport accepts only the packaged dialog document.</summary>
 internal sealed record DialogWindowRequest(string Id, bool Exclusive, int Width, int Height)
 {
-    public static bool IsDocument(string value) =>
+    public static bool IsDocument(string value, string scheme = "https") =>
         Uri.TryCreate(value, UriKind.Absolute, out var uri)
-        && uri.Scheme == "https"
+        && uri.Scheme == scheme
         && uri.Host == "0.0.0.1"
         && uri.IsDefaultPort
         && uri.UserInfo.Length == 0
-        && uri.AbsolutePath == "/dialog.html";
+        && uri.AbsolutePath == "/dialog.html"
+        && uri.Fragment.Length == 0;
 
-    public static bool TryParse(string value, out DialogWindowRequest request)
+    public static bool TryParse(string value, out DialogWindowRequest request, string scheme = "https")
     {
         request = null!;
-        if (!IsDocument(value))
+        if (!IsDocument(value, scheme))
             return false;
         var uri = new Uri(value);
         var pairs = uri.Query.TrimStart('?').Split('&').Select(p => p.Split('=', 2)).ToArray();

@@ -22,6 +22,10 @@ public sealed class NativeVideoSurface(Vroom.Core.Application.LocalDiagnostics d
         hostWindow.Changed += WindowChanged;
         UpdateFullscreen();
     }
+#elif MACCATALYST
+    private readonly MacVideoSurface mac = new(diagnostics);
+
+    public void Attach(HybridWebView client) => mac.Attach(client);
 #else
     // Native video composition is Windows-only; other platforms use the web player.
     public void Attach(HybridWebView client) => _ = diagnostics;
@@ -33,6 +37,8 @@ public sealed class NativeVideoSurface(Vroom.Core.Application.LocalDiagnostics d
         if (hostWindow is not null)
             hostWindow.Changed -= WindowChanged;
         windowThread.Dispose();
+#elif MACCATALYST
+        mac.Dispose();
 #endif
     }
 
@@ -195,6 +201,17 @@ public sealed class NativeVideoSurface(Vroom.Core.Application.LocalDiagnostics d
 
     [DllImport("user32.dll")]
     private static extern bool DestroyWindow(nint hwnd);
+#elif MACCATALYST
+    public bool Embedded => mac.Embedded;
+    public bool Fullscreen => mac.Fullscreen;
+
+    public Task<long> CreateAsync(string id) => mac.CreateAsync(id);
+
+    public Task UpdateAsync(string id, NativeVideoBounds bounds) => mac.UpdateAsync(id, bounds);
+
+    public Task DestroyAsync(string id) => mac.DestroyAsync(id);
+
+    public Task<bool> FullscreenAsync(bool? enabled) => mac.FullscreenAsync(enabled);
 #else
     public bool Embedded => false;
 

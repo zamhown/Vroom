@@ -170,10 +170,11 @@ public sealed class HandBrakeService(CatalogRepository repository)
         };
         foreach (var arg in arguments)
             start.ArgumentList.Add(arg);
-        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+        if (OperatingSystem.IsAndroid() || (OperatingSystem.IsIOS() && !OperatingSystem.IsMacCatalyst()))
             throw new PlatformNotSupportedException("host.HandBrakeService.handbrakecliRequiresADesktopHost");
         using var process =
-            Process.Start(start) ?? throw new IOException("host.HandBrakeService.cannotStartHandbrakecli");
+            Vroom.Core.Processes.ChildProcessLifetime.Start(start)
+            ?? throw new IOException("host.HandBrakeService.cannotStartHandbrakecli");
         using var ownership = new HandBrakeProcessScope(process);
         process.StandardInput.Close();
         using var registration = deadline.Token.Register(() => FfmpegService.Kill(process));

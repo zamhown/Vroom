@@ -2,6 +2,29 @@
 
 > 本文保留历次验证。当前合同为标签声明 v3（内置包 3.12.1）、媒体数据库 v4、客户端 API 15。旧兼容路径不恢复；2026-11-11 用户明确授权的媒体 v3 → v4 单次升级是唯一例外。最新一轮结果在最前面，后面的旧记录只描述当时状态。
 
+## macOS Spaces 显示恢复与窗口居中（2026-11-15）
+
+- 用户报告左右切换 Spaces 时先黑屏再显示界面。检查时页面的辅助功能控件仍然存在，未发生页面重新 bootstrap 或内容进程终止。移除 Mac 标题栏在激活/失焦时的重复配置，并将主 WKWebView 与其子窗口的公开 `inactiveSchedulingPolicy` 设为 `None`，避免界面进程完全挂起。没有加入页面刷新、播放器重建或覆盖页面的截图。
+- 修正构建 PID 81360 使用 `.artifacts/macos-live/catalog` 临时资料库。19:43–19:44 的原生窗口诊断记录多次真实 Spaces 进出；用户亲自切换后明确反馈“已经不黑屏”。自动化快捷键没有触发系统 Spaces，离开当前桌面的窗口截图也可能只有背景，因此未将这些截图或快捷键当作 Spaces 验收证据。
+- 原生 AppKit 坐标确认：屏幕可用区域 `(0,63,1728,1021)`，主窗口 `(199,74,1330,998)`；播放设置窗口 `(586,318,555,510)`、添加影片窗口 `(617,471,493,203)`，均在取整误差内居中。添加影片展开后为 `(617,413,493,320)`，仍相对主窗口居中。窗口创建和激活共用一次定位；内容自适应在收到用户移动/缩放通知后保留其位置。实测覆盖初次打开、内容展开和收起；自动化拖动没有产生真实窗口移动，不列为拖动验收。多显示器与手动拖动后的实际效果仍需单独验收。
+- 完整门禁 `VROOM_REQUIRE_GPU=1 node scripts/check.mjs --require-media` 通过：274 项前端测试、378 项 .NET 测试（3 项 Windows 专用跳过）、10 项脚本测试（2 项 Windows 专用跳过）、8 步 Web E2E；格式、类型、lint、原生编译与实际 GPU 测试通过。日志为 `.artifacts/check-macos-windows.log`。保留既有 ESLint / Vite 提示及本机 Xamarin 设置文件警告。
+- `VROOM_REQUIRE_GPU=1 npm run publish:macos -- --without-model` 重新打包通过，输出 `artifacts/publish/macos-arm64/Vroom.app` / `Vroom.zip`，SHA-256 复验通过；88 个原生库的依赖/签名审计、包内 GPU 测试及隔离页面冷启动通过。实际启动最终包（PID 86562），完成添加影片取消、1080p 页内播放、居中的播放设置打开和原生关闭、全屏与 Escape 返回；关闭设置后视频继续更新，日志共记录 602 个 Metal 展示帧，Cmd+Q 后主进程与解码器均退出。随后使用默认资料目录重新打开最终包。发布日志为 `.artifacts/publish-macos-windows.log`，窗口日志为 `.artifacts/macos-window-release-stderr.log`。包仍为 ad-hoc、未公证、不含模型、最低 macOS 27.2；不据此扩大原有发布兼容性声明。
+- 本轮没有修改或重置用户资料库与媒体；原生诊断日志位于 `.artifacts/macos-window-stderr.log`。
+
+## macOS 跨进程 GPU 播放与工程化（2026-11-14）
+
+- 环境：Apple M5 / arm64、macOS 27.2、Xcode 27.2；SDK 10.0.403、workload set 10.0.404。安装器在本地化工作负载输出、Finder 环境和项目本地 SDK 下运行；`npm run setup:runtime -- --skip-model` 及独立预检通过。所有媒体和资料库测试使用 `.artifacts/macos-live` 或自动生成的临时目录，未重置用户资料库。
+- 实现：每个播放会话的 libmpv / OpenGL 解码进程通过 Mach 传递 IOSurface，由 Catalyst 的 Metal 层与透明 WKWebView 合成；生产路径没有 CPU 逐帧读回。双会话测试检查真实像素变化、红蓝方向、尺寸改变，一个进程 SIGSTOP / SIGKILL 后另一个继续绘制和 seek。kqueue 监督器的真实子进程测试覆盖参数/stdio/退出码和宿主 SIGKILL 后清理；另外实际杀死测试 App，确认其监督器和解码器退出。
+- 原生界面已实际检查：系统文件选择器多选中文及空格路径、原路径导入、重复导入保持 3 个媒体条目、1080p / 4K 页内画面、右键菜单覆盖、暂停/seek、VideoToolbox 状态、全屏进入与 Escape 返回、原生播放设置及系统关闭按钮。中英文切换和标签往返保持同一解码 PID / 会话。修正了 Catalyst 同时满足 `IsIOS()` 而误禁用 FFmpeg / HandBrake 的判断。
+- 系统辅助功能的下拉框 AXPress 在本机 WebKit 中触发 `AXPMacPlatformElement _synthesizeMouseClick` 崩溃；实际坐标点击可正常切换语言。加入内容进程终止回收，实测旧解码器退出、工作区恢复。原生窗口适配保留 UIKit delegate，并将系统关闭转交共享取消逻辑；不重设 Catalyst 的 NSWindow 场景层级。文件选择取消后再次播放 1080p，实际画面继续更新。未将这些系统异常归因于解码器。
+- 短测：20 秒 H.264 合成片，30 fps，页面渲染表面 2372×1818；有效采样 1080p 10.06 秒、4K 7.05 秒。两者均为 VideoToolbox，解码与显示掉帧增量均 0；解码子进程 CPU 分别约 7.25% / 8.37%（单逻辑核百分比），RSS 峰值约 83.8 / 122.0 MiB。同机直接 mpv `gpu-next` / macvk、1186×909 窗口的 10 秒采样同为 0 掉帧，CPU 约 10.63% / 11.03%，RSS 333.2 / 390.5 MiB。Vroom 数字不含主进程和 WebKit，也未单独测 GPU 利用率；不据此断言整应用优于 mpv，亦不外推长片、HDR 或所有格式。原始样本在 `.artifacts/macos-live/performance-*.json`。
+- 最终窗口修正后，重新执行 `VROOM_REQUIRE_GPU=1 node scripts/check.mjs --require-media` 全部通过：前端 44 文件 / 274 项；.NET 378 通过、3 项 Windows 专用测试跳过，共 381；Web E2E 8 步。脚本测试 10 通过、2 项 Windows 专用跳过，包含真实 GPU、监督器与依赖搬移。CSharpier、Prettier、ESLint、TypeScript、Vite、包体预算和全解决方案构建通过。保留 321 项既有 ESLint 警告、Vite chunk 提示及本机过期 Xamarin 设置文件提示，未改用户全局设置。日志：`.artifacts/check-macos-final.log`。
+- 实机补充验证了主窗口关闭后立即回收解码器、应用留在 Dock、重新打开后恢复工作区和播放，以及弹窗打开时 Cmd+Q 退出。工作区不复用已关闭的 MainPage；应用级初始化只执行一次；只有仍有活动请求的对话框可以创建额外场景，避免恢复无 opener 的旧窗口。重新打开后再次检查全屏与 Escape。
+- Release 实际冷启动暴露了裁剪导致空白窗口的问题：当前 Apple SDK 的 `TrimMode=copy` 只保留框架程序集；改用 `MtouchLink=None` 保留应用的反射合同和 Objective-C 入口。发布新增真实启动检查：隔离资料库、精简 PATH、无 `VROOM_RUNTIME`，必须由 WKWebView 通过桥接完成 bootstrap。修正后的 Release 包已实际启动并使用包内解码器播放 1080p；不能以工具版本检查或编译成功替代这项验证。
+- 最终 `VROOM_REQUIRE_GPU=1 npm run publish:macos -- --without-model` 成功，产物为 `artifacts/publish/macos-arm64/Vroom.app` / `Vroom.zip`（约 128 MiB），SHA-256 复验通过。`validation.json` 记录 88 个 Mach-O 文件、依赖搬移/页面启动/双进程 GPU 测试通过；当前包为 ad-hoc 签名，依赖决定的最低系统为 macOS 27.2。日志：`.artifacts/publish-macos-final.log`。CI 只上传最终目录中的包，不把诊断暂存目录或上一成功版本混入交付物。
+- 真实 HandBrake 导出覆盖四种容器、文件冲突及媒体身份；修正测试对 macOS `/var` 与 `/private/var` 的别名假设，按真实文件身份判断。Mach-O 测试把原依赖目录移走后实际运行复制产物，并确认不修改上游库；发布脚本审计非系统绝对依赖、包外软链接、架构与签名，计算真实最低系统版本。
+- 尚未验收：Intel 实机、旧系统、HDR/广色域、多显示器、完整 GPU/长片性能矩阵、Windows 本轮实机回归及实际 GitHub CI。当前机器没有 Developer ID 身份，签名/公证流水线已实现但未向 Apple 提交；默认 Qwen 下载受到网络 TLS 限制，本轮包不含模型，不能声称助手推理已验证。工程入口和正式发布条件见 [MACOS.md](MACOS.md)。
+
 ## 公共 Ribbon 固定区与影碟悬停整理（2026-11-12）
 
 - 源码审查：`Page` 提供固定工具区上下文，`Ribbon` 经共享 `PageToolbar` 自动进入最近的页面工具区。列表不再手工放置 header，详情中的资源布局同样固定；空工具区隐藏，配置预览隔离上下文。表单和滚动视口不移动，布局的上级禁用条件显式传给固定区，空布局叶节点不留下额外间距。

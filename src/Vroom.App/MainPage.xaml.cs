@@ -9,6 +9,12 @@ public partial class MainPage : ContentPage
     private readonly ClientApi api;
     private readonly LocalDiagnostics diagnostics;
     private readonly Task initialization;
+    private readonly Vroom.Core.Media.NativeMpvService playback;
+    private Task? shutdown;
+    private int readyReported;
+#if MACCATALYST
+    private readonly MacDialogWindows dialogs;
+#endif
 #if WINDOWS
     private WindowsCompositionHost? client;
 #else
@@ -19,7 +25,8 @@ public partial class MainPage : ContentPage
     {
         this.api = api;
         diagnostics = services.GetRequiredService<LocalDiagnostics>();
-        initialization = Task.Run(() => services.InitializeVroomAsync());
+        initialization = services.GetRequiredService<AppInitialization>().Ready;
+        playback = services.GetRequiredService<Vroom.Core.Media.NativeMpvService>();
         InitializeComponent();
 #if WINDOWS
         ClientHost.Loaded += async (_, _) =>
@@ -47,24 +54,38 @@ public partial class MainPage : ContentPage
         };
 #else
         client = new HybridWebView { HybridRoot = "wwwroot", DefaultFile = "index.html" };
+#if MACCATALYST
+        dialogs = new MacDialogWindows(
+            diagnostics,
+            services.GetRequiredService<Vroom.Core.Media.NativeMpvService>().StopAllAsync
+        );
+        client.WebViewInitializing += (_, e) => dialogs.Configure(e.PlatformArgs!.Configuration);
+        client.WebViewInitialized += (_, e) => dialogs.Attach(e.PlatformArgs!.Sender);
+#endif
         client.RawMessageReceived += (_, e) => ReceiveMessage(e.Message ?? "{}");
         ClientHost.Content = client;
         services.GetRequiredService<NativeVideoSurface>().Attach(client);
 #endif
-        Unloaded += async (_, _) =>
+        Unloaded += async (_, _) => await ShutdownAsync();
+    }
+
+    internal Task ShutdownAsync() => shutdown ??= ShutdownCoreAsync();
+
+    private async Task ShutdownCoreAsync()
+    {
+        try
         {
-            try
-            {
-                await services.GetRequiredService<Vroom.Core.Media.NativeMpvService>().StopAllAsync();
-            }
-            catch (Exception ex)
-            {
-                diagnostics.Error("native.playback.shutdown", ex);
-            }
+            await playback.StopAllAsync();
+        }
+        catch (Exception ex)
+        {
+            diagnostics.Error("native.playback.shutdown", ex);
+        }
 #if WINDOWS
-            client?.Dispose();
+        client?.Dispose();
+#elif MACCATALYST
+        dialogs.Dispose();
 #endif
-        };
     }
 
     private async void ReceiveMessage(string raw)
@@ -78,6 +99,15 @@ public partial class MainPage : ContentPage
             var request = message.RootElement.GetProperty("request").GetRawText();
             await initialization;
             response = await Task.Run(() => api.RequestAsync(request));
+            if (message.RootElement.GetProperty("request").GetProperty("method").GetString() == "bootstrap")
+            {
+                using var resultDocument = JsonDocument.Parse(response);
+                if (
+                    resultDocument.RootElement.GetProperty("ok").GetBoolean()
+                    && Interlocked.Exchange(ref readyReported, 1) == 0
+                )
+                    diagnostics.Write("native.client.ready", "Client bootstrap completed.");
+            }
         }
         catch (Exception ex)
         {

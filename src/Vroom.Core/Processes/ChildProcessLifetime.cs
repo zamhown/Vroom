@@ -7,6 +7,25 @@ namespace Vroom.Core.Processes;
 /// <summary>Windows closes the job handle even after a host crash, terminating the owned process tree.</summary>
 internal static class ChildProcessLifetime
 {
+    internal static Process? Start(ProcessStartInfo info)
+    {
+        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
+        {
+            var driver = Path.Combine(Media.MediaRuntime.Directory, "share", "vulkan", "icd.d", "MoltenVK_icd.json");
+            if (File.Exists(driver))
+                info.Environment["VK_DRIVER_FILES"] = driver;
+            var supervisor = Path.Combine(Media.MediaRuntime.Directory, "host", "vroom-process-host");
+            if (File.Exists(supervisor))
+            {
+                // ArgumentList preserves spaces, Unicode and shell metacharacters literally.
+                // Inherited stdio belongs to the tool; the supervisor uses kqueue, not stdin.
+                info.ArgumentList.Insert(0, info.FileName);
+                info.FileName = supervisor;
+            }
+        }
+        return Process.Start(info);
+    }
+
     internal static SafeFileHandle? Attach(Process process)
     {
         if (!OperatingSystem.IsWindows())

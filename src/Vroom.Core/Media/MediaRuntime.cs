@@ -35,7 +35,16 @@ public static class MediaRuntime
     public const string ModelFile = "qwen2.5-0.5b-instruct-q4_k_m.gguf";
 
     public static string Directory { get; set; } =
-        Environment.GetEnvironmentVariable("VROOM_RUNTIME") ?? Path.Combine(AppContext.BaseDirectory, "runtime");
+        Environment.GetEnvironmentVariable("VROOM_RUNTIME") ?? DefaultDirectory();
+
+    private static string DefaultDirectory()
+    {
+        // Catalyst's managed assemblies live in Contents/MonoBundle. Read-only tools and
+        // models belong to Resources, not the working directory chosen by Finder.
+        if (OperatingSystem.IsMacCatalyst())
+            return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "runtime"));
+        return Path.Combine(AppContext.BaseDirectory, "runtime");
+    }
 
     private static string Executable(string name) => OperatingSystem.IsWindows() ? name + ".exe" : name;
 
@@ -44,7 +53,7 @@ public static class MediaRuntime
             Tool(settings.FfmpegPath, Path.Combine("ffmpeg", Executable("ffmpeg")), "ffmpeg"),
             Tool(settings.FfprobePath, Path.Combine("ffmpeg", Executable("ffprobe")), "ffprobe"),
             Tool(settings.HandBrakePath, Path.Combine("handbrake", Executable("HandBrakeCLI")), "HandBrakeCLI"),
-            Tool(settings.MpvPath, Path.Combine("mpv", Executable("mpv")), null),
+            Tool(settings.MpvPath, Path.Combine("mpv", Executable("mpv")), "mpv"),
             Tool(settings.ModelPath, Path.Combine("models", ModelFile), null)
         );
 
@@ -59,6 +68,18 @@ public static class MediaRuntime
         var local = Path.Combine(Directory, bundled);
         if (File.Exists(local))
             return new(Path.GetFullPath(local), ToolSource.Bundled);
+        if (command is not null && (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst()))
+        {
+            // Finder launches do not inherit the login shell's Homebrew PATH.
+            foreach (var directory in new[] { "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin" })
+            {
+                var candidate = Path.Combine(directory, command);
+                if (File.Exists(candidate))
+                    return new(candidate, ToolSource.SystemPath);
+            }
+        }
+        if (command == "mpv")
+            return new("", ToolSource.Missing);
         return command is null ? new("", ToolSource.Missing) : new(command, ToolSource.SystemPath);
     }
 }

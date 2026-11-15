@@ -155,17 +155,21 @@ export function DialogWindow({
       previousHeight = 0,
       maxHeight = Infinity;
     let observer: ResizeObserver | undefined;
-    const web = (
-      view as Window & {
-        chrome?: {
-          webview?: {
-            postMessage(value: string): void;
-            addEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
-            removeEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
-          };
+    const web = view as Window & {
+      __vroomDialogHost?: {
+        postMessage(value: string): void;
+        addEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
+        removeEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
+      };
+      chrome?: {
+        webview?: {
+          postMessage(value: string): void;
+          addEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
+          removeEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
         };
-      }
-    ).chrome?.webview;
+      };
+    };
+    const transport = web.__vroomDialogHost ?? web.chrome?.webview;
     const content = view.document.querySelector<HTMLElement>('.dialog-window-content')!;
     const body = view.document.querySelector<HTMLElement>('.dialog-window-body')!;
     const footer = view.document.querySelector<HTMLElement>('.dialog-window-actions')!;
@@ -187,7 +191,7 @@ export function DialogWindow({
       content.dataset.scrollable = String(height > maxHeight);
       if (height === previousHeight) return;
       previousHeight = height;
-      web?.postMessage(`dialog-size|${height}`);
+      transport?.postMessage(`dialog-size|${height}`);
     };
     const sizeLimit = ({ data }: MessageEvent) => {
       if (
@@ -200,7 +204,7 @@ export function DialogWindow({
       maxHeight = data.maxHeight;
       measure();
     };
-    web?.addEventListener('message', sizeLimit);
+    transport?.addEventListener('message', sizeLimit);
     const schedule = () => {
       if (alive && !frame)
         frame = view.requestAnimationFrame(() => {
@@ -233,7 +237,7 @@ export function DialogWindow({
     return () => {
       alive = false;
       observer?.disconnect();
-      web?.removeEventListener('message', sizeLimit);
+      transport?.removeEventListener('message', sizeLimit);
       view.removeEventListener('resize', schedule);
       if (frame) view.cancelAnimationFrame(frame);
     };

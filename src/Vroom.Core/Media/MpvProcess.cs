@@ -86,13 +86,18 @@ public sealed class MpvProcess : IAsyncDisposable
         }
         try
         {
-            var info = new ProcessStartInfo(executable)
+            var macSurface = windowId != 0 && (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst());
+            var info = new ProcessStartInfo(
+                macSurface ? Path.Combine(MediaRuntime.Directory, "host", "vroom-decoder") : executable
+            )
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
+            if (macSurface)
+                info.ArgumentList.Add($"--vroom-surface=app.vroom.video.{Environment.ProcessId}.{windowId}");
             var embeddedInput = windowId != 0 || headless;
             foreach (
                 var arg in new[]
@@ -128,14 +133,15 @@ public sealed class MpvProcess : IAsyncDisposable
                 info.ArgumentList.Add("--window-dragging=no");
                 info.ArgumentList.Add("--input-doubleclick-time=300");
             }
-            if (windowId != 0)
+            if (windowId != 0 && !macSurface)
                 info.ArgumentList.Add("--wid=" + unchecked((uint)windowId));
             if (headless)
                 info.ArgumentList.Add("--ao=null");
             else if (windowId == 0)
                 info.ArgumentList.Add("--force-window=yes");
             info.WorkingDirectory = directory;
-            process = Process.Start(info) ?? throw new IOException("host.Mpv.startFailed");
+            process =
+                Vroom.Core.Processes.ChildProcessLifetime.Start(info) ?? throw new IOException("host.Mpv.startFailed");
             stderr = DrainAsync(process.StandardError);
             stdout = DrainAsync(process.StandardOutput);
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct, lifetime.Token);

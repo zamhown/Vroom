@@ -177,7 +177,7 @@ public sealed class FfmpegService(CatalogRepository repository)
 
     public static Process Start(string executable, IEnumerable<string> arguments)
     {
-        if (OperatingSystem.IsIOS() || OperatingSystem.IsAndroid())
+        if ((OperatingSystem.IsIOS() && !OperatingSystem.IsMacCatalyst()) || OperatingSystem.IsAndroid())
             throw new PlatformNotSupportedException(
                 "host.FfmpegService.mobileDevicesSupportSystemFormatsDirectlyFfmpeg"
             );
@@ -194,7 +194,8 @@ public sealed class FfmpegService(CatalogRepository repository)
         };
         foreach (var argument in arguments)
             info.ArgumentList.Add(argument);
-        return Process.Start(info) ?? throw new IOException("host.FfmpegService.unableToStartTheMediaProcess");
+        return Vroom.Core.Processes.ChildProcessLifetime.Start(info)
+            ?? throw new IOException("host.FfmpegService.unableToStartTheMediaProcess");
     }
 
     public static async Task<string> CaptureAsync(

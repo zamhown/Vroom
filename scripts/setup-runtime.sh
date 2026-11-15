@@ -9,6 +9,11 @@ for arg in "$@"; do
   esac
 done
 
+# Finder does not load shell profiles. Locate the standard Homebrew installation.
+if [ "$(uname -s)" = Darwin ]; then
+  export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+fi
+
 missing=()
 if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then missing+=(ffmpeg); fi
 if ! command -v mpv >/dev/null; then missing+=(mpv); fi
@@ -40,6 +45,13 @@ for executable in ffmpeg ffprobe mpv HandBrakeCLI; do
   command -v "$executable" >/dev/null || { printf 'Missing tool after installation: %s\n' "$executable" >&2; exit 1; }
 done
 
+if [ "$(uname -s)" = Darwin ]; then
+  command -v brew >/dev/null || { printf 'Homebrew is required for the macOS libmpv development library.\n' >&2; exit 1; }
+  if ! brew --prefix --installed mpv >/dev/null 2>&1; then brew install mpv; fi
+  node "$root/scripts/build-process-host.mjs"
+  node "$root/scripts/build-macos-native.mjs" --decoder
+fi
+
 mkdir -p "$root/runtime/models" "$root/runtime/ffmpeg" "$root/runtime/mpv" "$root/runtime/handbrake"
 ln -sfn "$(command -v ffmpeg)" "$root/runtime/ffmpeg/ffmpeg"
 ln -sfn "$(command -v ffprobe)" "$root/runtime/ffmpeg/ffprobe"
@@ -61,12 +73,12 @@ if [ "$skip_model" = false ]; then
     fi
   }
   if [ ! -f "$model" ] || ! verify_model "$model"; then
-    curl --fail --location --retry 3 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o "$model.partial"
+    curl --fail --location --retry 3 --retry-all-errors --connect-timeout 20 --speed-time 60 --speed-limit 1024 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o "$model.partial"
     verify_model "$model.partial"
     mv "$model.partial" "$model"
   fi
   if [ ! -f "$root/runtime/models/LICENSE" ]; then
-    curl --fail --location --retry 3 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/raw/9217f5db79a29953eb74d5343926648285ec7e67/LICENSE' -o "$root/runtime/models/LICENSE"
+    curl --fail --location --retry 3 --retry-all-errors --connect-timeout 20 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/raw/9217f5db79a29953eb74d5343926648285ec7e67/LICENSE' -o "$root/runtime/models/LICENSE"
   fi
 fi
 printf 'Runtime ready: %s/runtime\n' "$root"

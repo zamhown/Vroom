@@ -17,9 +17,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, xcode-27]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -36,13 +36,33 @@ jobs:
         if: runner.os == 'Windows'
         run: node scripts/check.mjs --install --skip-model --require-media
       - name: Portable gates
-        if: runner.os != 'Windows'
+        if: runner.os == 'Linux'
         run: node scripts/check.mjs --install --web --skip-runtime
-      - name: Mac Catalyst compile
+      - name: Select pinned Xcode
         if: runner.os == 'macOS'
         run: |
-          dotnet workload install maui-maccatalyst
-          dotnet build src/Vroom.App -p:VroomTargetFramework=net10.0-maccatalyst -nologo
+          echo "DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer" >> "$GITHUB_ENV"
+          test -d /Applications/Xcode_27.2.app
+      - name: macOS gates including real media
+        if: runner.os == 'macOS'
+        run: node scripts/check.mjs --install --skip-model --require-media
+      - name: Package and audit relocated macOS runtime
+        if: runner.os == 'macOS'
+        run: npm run publish:macos -- --without-model
+      - name: macOS development package
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: macos-development-package
+          path: |
+            artifacts/publish/macos-arm64/Vroom.zip
+            artifacts/publish/macos-arm64/SHA256SUMS
+            artifacts/publish/macos-arm64/validation.json
+            artifacts/publish/macos-x64/Vroom.zip
+            artifacts/publish/macos-x64/SHA256SUMS
+            artifacts/publish/macos-x64/validation.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Production dependency audit
         if: runner.os == 'Windows'
         working-directory: src/Vroom.Client

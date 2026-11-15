@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// Development baseline, not a claim that embedded macOS playback is implemented.
+// Real runtime/GPU validation plus an isolated launcher. Visual acceptance remains manual.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { dotnetEnvironment, installedWorkloads } from './lib/dotnet.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const client = path.join(root, 'src/Vroom.Client');
@@ -15,7 +16,7 @@ const buildArgs = [
   '-f',
   'net10.0-maccatalyst',
   '-r',
-  'maccatalyst-arm64',
+  `maccatalyst-${process.arch}`,
   '-c',
   'Debug',
 ];
@@ -67,14 +68,14 @@ async function main() {
   const mode = process.argv[2] ?? '--check';
   if (mode === '--help') {
     console.log(
-      'Usage: node scripts/verify-macos.mjs [--check|--build|--run]\n--check: inspect an Apple Silicon Mac and write a local report.\n--build: also install project npm dependencies, run tests, build Mac Catalyst, and generate a synthetic clip and isolated launcher.\n--run: perform --build and launch the isolated development app.\nRequires installed arm64 Node, the SDK selected by global.json, a matching Mac Catalyst workload/Xcode, mpv, FFmpeg and ffprobe.\nNo system tools are installed, no catalog is reset, and no report is uploaded.',
+      'Usage: node scripts/verify-macos.mjs [--check|--build|--run]\n--check: inspect a Mac and write a local report.\n--build: also install project npm dependencies, run real GPU/decoder tests, build Mac Catalyst, and generate a synthetic clip and isolated launcher.\n--run: perform --build and launch the isolated development app.\nRequires native arm64 or x64 Node, the SDK selected by global.json, a matching Mac Catalyst workload/Xcode, Homebrew libmpv, FFmpeg, ffprobe and HandBrakeCLI.\nNo system tools are installed, no catalog is reset, and no report is uploaded.',
     );
     return;
   }
   if (!['--check', '--build', '--run'].includes(mode) || process.argv.length > 3)
     throw new Error('Use --check, --build, or --run (see --help).');
-  if (process.platform !== 'darwin' || process.arch !== 'arm64')
-    throw new Error('Run this script on the Apple Silicon Mac using native arm64 Node, outside Rosetta.');
+  if (process.platform !== 'darwin' || !['arm64', 'x64'].includes(process.arch))
+    throw new Error('Run this script on a Mac using native arm64 or x64 Node.');
   if (Number(process.versions.node.split('.')[0]) < 20)
     throw new Error('Node 20 or newer is required to prepare the project Node runtime.');
   await fs.mkdir(path.join(root, '.artifacts'), { recursive: true });
@@ -88,14 +89,14 @@ async function main() {
     steps: [],
     warnings: [],
     errors: [],
-    embeddedPlayback: 'not-implemented',
-    nativeDialogWindows: 'not-implemented',
+    embeddedPlayback: 'not-tested',
+    nativeDialogWindows: 'requires-visual-verification',
     visualParity: 'not-verified',
     hardwareDecoding: 'not-verified',
-    hostCrashCleanup: 'not-implemented',
+    hostCrashCleanup: 'not-verified',
     status: 'running',
   };
-  const env = { ...process.env, DOTNET_CLI_UI_LANGUAGE: 'en' };
+  const env = { ...dotnetEnvironment(root), DOTNET_CLI_UI_LANGUAGE: 'en' };
   async function command(label, executable, args = [], options = {}) {
     const logfile = path.join(output, `${report.steps.length + 1}-${label}.log`);
     console.log(label);
@@ -157,8 +158,8 @@ async function main() {
     report.xcode = (await inspect('xcode', '/usr/bin/xcodebuild', ['-version'])).trim();
     report.sdk = (await inspect('dotnet-sdk', 'dotnet', ['--version'])).trim();
     await inspect('dotnet-info', 'dotnet', ['--info']);
-    const workloads = await inspect('dotnet-workloads', 'dotnet', ['workload', 'list']);
-    if (!/^\s*(?:maui|maui-maccatalyst)\s/m.test(workloads))
+    const workloads = await inspect('dotnet-workloads', 'dotnet', ['workload', 'list', '--machine-readable']);
+    if (!installedWorkloads(workloads).some(id => ['maui', 'maui-maccatalyst'].includes(id)))
       report.errors.push(
         'Install the Mac Catalyst workload matching global.json and the selected Xcode; do not disable the Xcode version check.',
       );
@@ -167,18 +168,22 @@ async function main() {
       ['mpv', 'VROOM_TEST_MPV'],
       ['ffmpeg', 'VROOM_TEST_FFMPEG'],
       ['ffprobe', 'VROOM_TEST_FFPROBE'],
+      ['HandBrakeCLI', 'VROOM_TEST_HANDBRAKE'],
     ]) {
       tools[name] = await findExecutable(name, process.env[variable]);
       if (!tools[name]) {
         report.errors.push(
-          `Missing ${name}. Install it first (Homebrew: brew install mpv ffmpeg), or set ${variable} to its absolute executable path.`,
+          `Missing ${name}. Install it first (Homebrew: brew install mpv ffmpeg handbrake), or set ${variable} to its absolute executable path.`,
         );
         continue;
       }
       const architecture = await inspect(`${name}-architecture`, '/usr/bin/lipo', ['-archs', tools[name]]);
-      if (!/\barm64\b/.test(architecture))
-        report.errors.push(`${name} must include arm64; found ${architecture.trim()}.`);
-      const version = await inspect(`${name}-version`, tools[name], [name === 'mpv' ? '--version' : '-version']);
+      const expected = process.arch === 'arm64' ? 'arm64' : 'x86_64';
+      if (!architecture.trim().split(/\s+/).includes(expected))
+        report.errors.push(`${name} must include ${expected}; found ${architecture.trim()}.`);
+      const version = await inspect(`${name}-version`, tools[name], [
+        ['mpv', 'HandBrakeCLI'].includes(name) ? '--version' : '-version',
+      ]);
       report[name] = { path: tools[name], version: version.split('\n')[0] };
     }
     if (tools.mpv) {
@@ -189,7 +194,7 @@ async function main() {
         report.libmpv = await fs.realpath(library);
       } catch {
         report.warnings.push(
-          'libmpv.dylib was not found beside this mpv installation. A render-API experiment will need a compatible development library.',
+          'libmpv.dylib was not found beside this mpv installation. Building the isolated renderer requires Homebrew mpv development headers and library.',
         );
       }
       if (!/^mpv v?0\.42\.0(?:\s|$)/.test(report.mpv.version))
@@ -206,6 +211,14 @@ async function main() {
     // Explicitly use the project Node binary after npm has installed platform-native dependencies.
     await command('npm-ci', 'npm', ['ci', '--no-audit', '--no-fund'], { cwd: client, timeout: 15 * 60_000 });
     const node = path.join(client, 'node_modules/node/bin/node');
+    await command('process-host-build', node, ['scripts/build-process-host.mjs']);
+    await command('native-renderer-build', node, ['scripts/build-macos-native.mjs', '--decoder']);
+    await command('process-ownership-tests', node, ['--test', 'scripts/process-host.test.mjs']);
+    await command('gpu-isolation-tests', node, ['--test', 'scripts/macos-video.test.mjs'], {
+      env: { VROOM_TEST_FFMPEG: tools.ffmpeg, VROOM_REQUIRE_GPU: '1' },
+    });
+    report.embeddedPlayback = 'gpu-transfer-resize-orientation-and-isolation-tested';
+    report.hostCrashCleanup = 'tested-abrupt-host-exit';
     await command('typescript', node, ['node_modules/typescript/bin/tsc', '-b'], { cwd: client, timeout: 5 * 60_000 });
     await command('frontend-tests', node, ['node_modules/vitest/vitest.mjs', 'run'], {
       cwd: client,
@@ -254,10 +267,14 @@ async function main() {
       ['mpv', 'mpv'],
       ['ffmpeg', 'ffmpeg'],
       ['ffprobe', 'ffmpeg'],
+      ['HandBrakeCLI', 'handbrake'],
     ]) {
       await fs.mkdir(path.join(runtime, directory), { recursive: true });
       await fs.symlink(tools[name], path.join(runtime, directory, name));
     }
+    await fs.mkdir(path.join(runtime, 'host'), { recursive: true });
+    await fs.symlink(path.join(root, 'runtime/host/vroom-process-host'), path.join(runtime, 'host/vroom-process-host'));
+    await fs.symlink(path.join(root, 'runtime/host/vroom-decoder'), path.join(runtime, 'host/vroom-decoder'));
     const media = path.join(output, 'media');
     await fs.mkdir(media);
     const fixture = path.join(media, 'playback-fixture.mp4');
@@ -288,7 +305,17 @@ async function main() {
       fixture,
     ]);
     const isolated = { VROOM_DATA: path.join(output, 'catalog'), VROOM_RUNTIME: runtime };
-    const launchArgs = [...buildArgs, '-t:Run', '--no-restore'];
+    const bundle = path.join(
+      root,
+      'src/Vroom.App/bin/Debug/net10.0-maccatalyst',
+      `maccatalyst-${process.arch}`,
+      'Vroom.app',
+    );
+    const launchArgs = [
+      '-n',
+      bundle,
+      ...Object.entries(isolated).flatMap(([key, value]) => ['--env', `${key}=${value}`]),
+    ];
     const launcher = path.join(output, 'launch.command');
     await fs.writeFile(
       launcher,
@@ -298,7 +325,7 @@ async function main() {
         Object.entries(isolated)
           .map(([key, value]) => `export ${key}=${shellQuote(value)}\n`)
           .join('') +
-        ['dotnet', ...launchArgs].map(shellQuote).join(' ') +
+        ['/usr/bin/open', ...launchArgs].map(shellQuote).join(' ') +
         '\n',
       { mode: 0o700 },
     );
@@ -311,7 +338,7 @@ async function main() {
     report.warnings.push(
       'Manually check part switching, modeless dialogs over video, resizing, fullscreen, external mpv/IINA/VLC launch and Keychain persistence. Online subtitle authentication/download needs your own OpenSubtitles credentials. Automated contract tests do not establish visual or native-window parity.',
     );
-    if (mode === '--run') await command('isolated-app', 'dotnet', launchArgs, { env: isolated, timeout: 60 * 60_000 });
+    if (mode === '--run') await command('isolated-app', '/usr/bin/open', launchArgs);
   } catch (error) {
     report.status = 'failed';
     report.errors.push(error.message);
@@ -320,7 +347,7 @@ async function main() {
     report.finished = new Date().toISOString();
     await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n');
     console.log(
-      `Report: ${path.join(output, 'report.json')}\nStatus: ${report.status}\nEmbedded playback and visual parity remain unverified.`,
+      `Report: ${path.join(output, 'report.json')}\nStatus: ${report.status}\nGPU transport: ${report.embeddedPlayback}\nNative window and visual acceptance remain manual.`,
     );
     for (const error of report.errors) console.error(error);
   }

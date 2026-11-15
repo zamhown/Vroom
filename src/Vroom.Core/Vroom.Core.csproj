@@ -30,6 +30,7 @@
       Include="../../resources/localization/**/*.json"
       Link="resources/localization/%(RecursiveDir)%(Filename)%(Extension)"
       CopyToOutputDirectory="PreserveNewest"
+      PublishFolderType="Resource"
     />
     <EmbeddedResource
       Include="../../resources/tagging/*"
@@ -40,6 +41,7 @@
       Include="../../resources/tagging/*"
       Link="resources/tagging/%(Filename)%(Extension)"
       CopyToOutputDirectory="PreserveNewest"
+      PublishFolderType="Resource"
     />
   </ItemGroup>
 </Project>

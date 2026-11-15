@@ -7,7 +7,7 @@
 [![CI](https://github.com/zamhown/Vroom/actions/workflows/ci.yml/badge.svg)](https://github.com/zamhown/Vroom/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-white.svg)](LICENSE)
 
-**项目尚未发布。** Windows 是主要开发平台；macOS 需要实机验收，Android / iOS 为实验性目标。Linux 可运行本机 Web 宿主。源码仓库不包含媒体、资料库、模型或运行时二进制。
+**项目尚未发布。** Windows 与 macOS 使用原生桌面宿主；macOS 已接入页内隔离播放和完整打包入口，实机范围与发布边界见 [macOS 指南](docs/MACOS.md)。Android / iOS 为实验性目标，Linux 可运行本机 Web 宿主。源码仓库不包含媒体、资料库、模型或运行时二进制。
 
 ## 快速开始
 
@@ -73,9 +73,12 @@ node scripts/check.mjs
 
 Windows 发布：`powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-windows.ps1`，输出到 `artifacts/publish/windows-x64/`。输出未签名，不是安装器，须保留整个目录及第三方许可。
 
+macOS 使用相同的 `npm run setup` / `npm start`。发布运行 `npm run publish:macos -- --without-model`，生成内置媒体运行时的 `.app`、ZIP、校验和及验证报告；正式签名与公证步骤见 [macOS 开发与发布](docs/MACOS.md)。
+
 ## 文档
 
 - [开发与脚本](docs/DEVELOPMENT.md) · [贡献指南](CONTRIBUTING.md) · [安全报告](SECURITY.md)
+- [macOS 开发、发布与验收](docs/MACOS.md)
 - [架构](docs/ARCHITECTURE.md) · [公开标签契约](resources/tagging/KNOWLEDGE.md) · [默认标签](docs/SYSTEM-TAGS.md)
 - [界面准则](docs/DESIGN-GUIDELINES.md) · [国际化](docs/I18N.md) · [品牌资源](docs/BRANDING.md)
 - [迁移与验证记录](docs/REPOSITORY-MIGRATION.md) · [历史验收记录](docs/VALIDATION.md)

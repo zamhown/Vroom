@@ -5,6 +5,8 @@
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
+        <true/>
+        <key>UIApplicationSupportsTabbedSceneCollection</key>
         <false/>
         <key>UISceneConfigurations</key>
         <dict>
@@ -32,10 +34,8 @@
     <array>
         <integer>2</integer>
     </array>
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>arm64</string>
-    </array>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.video</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>

@@ -1,5 +1,8 @@
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import { client, flags, root, run } from './lib/process.mjs';
+import { installedWorkloads } from './lib/dotnet.mjs';
 const options = flags(['--skip-runtime', '--skip-model', '--web']);
 // Keep the bootstrap process outside node_modules while npm replaces that directory.
 run('npm', ['ci', '--no-fund', '--no-audit'], { cwd: client, npmRuntime: process.execPath });
@@ -13,9 +16,12 @@ if (!options.has('--web') && ['win32', 'darwin'].includes(process.platform)) {
   });
   if (inventory.error) throw inventory.error;
   if (inventory.status !== 0) throw new Error(inventory.stderr || 'Cannot inspect .NET workloads.');
-  const { installed } = JSON.parse(inventory.stdout.trim());
-  if (!installed.includes(workload) && !installed.includes('maui')) {
-    run('dotnet', ['workload', 'install', workload, '--skip-manifest-update']);
+  const installed = installedWorkloads(inventory.stdout);
+  const pinned = JSON.parse(fs.readFileSync(path.join(root, 'global.json'), 'utf8')).sdk.workloadVersion;
+  const version = spawnSync('dotnet', ['workload', '--version'], { cwd: root, encoding: 'utf8' });
+  const matches = version.status === 0 && version.stdout.split(/\r?\n/).some(line => line.trim() === pinned);
+  if ((!installed.includes(workload) && !installed.includes('maui')) || !matches) {
+    run('dotnet', ['workload', 'install', workload]);
   } else console.log(`Desktop workload ready: ${workload}`);
 }
 if (options.has('--web') || process.platform === 'linux') {

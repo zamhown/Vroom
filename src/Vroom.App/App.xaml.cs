@@ -2,17 +2,18 @@ namespace Vroom.App;
 
 public partial class App : Application
 {
-    private readonly MainPage page;
+    private readonly IServiceProvider services;
 
-    public App(MainPage page)
+    public App(IServiceProvider services)
     {
-        this.page = page;
+        this.services = services;
         InitializeComponent();
         UserAppTheme = AppTheme.Dark;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
+        var page = services.GetRequiredService<MainPage>();
         var window = new Window(page)
         {
             Title = "Vroom",
@@ -21,6 +22,7 @@ public partial class App : Application
             MinimumWidth = 1000,
             MinimumHeight = 680,
         };
+        window.Destroying += async (_, _) => await page.ShutdownAsync();
         DesktopWindowChrome.Attach(window);
         return window;
     }

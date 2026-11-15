@@ -20,10 +20,14 @@ public sealed class NativePlatformActions : IPlatformActions
     }
 
     public async Task<IReadOnlyList<string>> PickFilesAsync() =>
+#if MACCATALYST
+        await PickDocumentsAsync(false);
+#else
         await MainThread.InvokeOnMainThreadAsync(async () =>
             (IReadOnlyList<string>)
                 ((await FilePicker.Default.PickMultipleAsync()) ?? []).Select(file => file.FullPath).ToArray()
         );
+#endif
 
     public async Task<string?> PickFolderAsync()
     {
@@ -38,32 +42,56 @@ public sealed class NativePlatformActions : IPlatformActions
             return folder?.Path;
         });
 #elif MACCATALYST
-        // UIDocumentPicker in folder mode; security-scoped access is started so later scans can read it.
-        return await MainThread.InvokeOnMainThreadAsync(async () =>
-        {
-            var completion = new TaskCompletionSource<string?>();
-            var picker = new UIKit.UIDocumentPickerViewController([UniformTypeIdentifiers.UTTypes.Folder], false)
-            {
-                AllowsMultipleSelection = false,
-            };
-            picker.DidPickDocumentAtUrls += (_, e) =>
-            {
-                var url = e.Urls.FirstOrDefault();
-                url?.StartAccessingSecurityScopedResource();
-                completion.TrySetResult(url?.Path);
-            };
-            picker.WasCancelled += (_, _) => completion.TrySetResult(null);
-            var controller = Platform.GetCurrentUIViewController();
-            if (controller is null)
-                return null;
-            await controller.PresentViewControllerAsync(picker, true);
-            return await completion.Task;
-        });
+        return (await PickDocumentsAsync(true)).FirstOrDefault();
 #else
         await Task.CompletedTask;
         return null;
 #endif
     }
+
+#if MACCATALYST
+    private static readonly SemaphoreSlim PickerGate = new(1, 1);
+
+    private static async Task<IReadOnlyList<string>> PickDocumentsAsync(bool folder)
+    {
+        await PickerGate.WaitAsync();
+        try
+        {
+            // Open in place: a media library must refer to the original file, never a picker cache copy.
+            return await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var completion = new TaskCompletionSource<IReadOnlyList<string>>(
+                    TaskCreationOptions.RunContinuationsAsynchronously
+                );
+                using var picker = new UIKit.UIDocumentPickerViewController(
+                    [folder ? UniformTypeIdentifiers.UTTypes.Folder : UniformTypeIdentifiers.UTTypes.Item],
+                    false
+                )
+                {
+                    AllowsMultipleSelection = !folder,
+                };
+                picker.DidPickDocumentAtUrls += (_, e) =>
+                {
+                    // This direct-distribution host is not sandboxed; normal filesystem/TCC access
+                    // persists across launches, without retaining security-scope grants indefinitely.
+                    completion.TrySetResult(
+                        e.Urls.Where(url => url.IsFileUrl && url.Path is not null).Select(url => url.Path!).ToArray()
+                    );
+                };
+                picker.WasCancelled += (_, _) => completion.TrySetResult([]);
+                var controller = Platform.GetCurrentUIViewController();
+                if (controller is null)
+                    return [];
+                await controller.PresentViewControllerAsync(picker, true);
+                return await completion.Task;
+            });
+        }
+        finally
+        {
+            PickerGate.Release();
+        }
+    }
+#endif
 
     public Task RevealFileAsync(string path) =>
         Task.Run(() =>

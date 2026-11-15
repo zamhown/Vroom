@@ -1,0 +1,64 @@
+name: macos-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      without_model:
+        description: Omit the optional local model
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-release
+  cancel-in-progress: false
+
+jobs:
+  signed-package:
+    # A trusted, manually managed Mac with Xcode, a Developer ID identity and an
+    # existing notarytool Keychain profile. Never run pull requests on this runner.
+    runs-on: [self-hosted, macOS, vroom-signing]
+    timeout-minutes: 90
+    environment: macos-release
+    env:
+      VROOM_CODESIGN_IDENTITY: ${{ vars.VROOM_CODESIGN_IDENTITY }}
+      VROOM_NOTARY_PROFILE: ${{ vars.VROOM_NOTARY_PROFILE }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - name: Install, validate and exercise real GPU playback
+        env:
+          VROOM_REQUIRE_GPU: '1'
+        run: node scripts/check.mjs --install --skip-model --require-media
+      - name: Include model when requested
+        if: ${{ !inputs.without_model }}
+        run: npm run setup:runtime
+      - name: Sign, notarize, staple and verify
+        env:
+          WITHOUT_MODEL: ${{ inputs.without_model }}
+          VROOM_REQUIRE_GPU: '1'
+        run: |
+          args=()
+          if [ "$WITHOUT_MODEL" = true ]; then args+=(--without-model); fi
+          npm run publish:macos -- --sign --notarize "${args[@]}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: macos-signed-package
+          path: |
+            artifacts/publish/macos-arm64/Vroom.zip
+            artifacts/publish/macos-arm64/SHA256SUMS
+            artifacts/publish/macos-arm64/validation.json
+            artifacts/publish/macos-x64/Vroom.zip
+            artifacts/publish/macos-x64/SHA256SUMS
+            artifacts/publish/macos-x64/validation.json
+          if-no-files-found: error
+          retention-days: 14

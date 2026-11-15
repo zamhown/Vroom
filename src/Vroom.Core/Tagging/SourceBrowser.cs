@@ -391,7 +391,7 @@ internal sealed class BrowserSession : IAsyncDisposable
                 + ", MAP * ~NOTFOUND"
         );
         start.ArgumentList.Add("about:blank");
-        var process = Process.Start(start) ?? throw new IOException("Browser failed to start");
+        var process = ChildProcessLifetime.Start(start) ?? throw new IOException("Browser failed to start");
         var protocol = new SourceBrowserProtocol();
         SafeFileHandle? processLifetime = null;
         BrowserSession? result = null;
